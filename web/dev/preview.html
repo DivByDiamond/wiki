@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="green" data-size="m" data-pixel="1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview</title>
+<link rel="stylesheet" href="../dist/app.css">
+<script src="../dist/app.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="#">OC2R Wiki</a>
+  <form id="search-form" action="#"><div class="field"><input id="search-input" name="q" placeholder="Search ( / )"></div><button class="btn">Go</button></form>
+  <button class="btn" id="settings-toggle" aria-controls="settings-panel">&#9881;</button>
+</header>
+<div id="search-results"></div>
+<div class="layout">
+  <nav class="sidebar"><ul><li><a href="#" aria-current="page">Quick start</a></li><li><a href="#">Computer</a><ul><li><a href="#">Monitor</a></li></ul></li></ul></nav>
+  <main class="article">
+    <div class="banner banner--warn">No translation yet.</div>
+    <div class="prose">
+      <h1>Computer</h1><p>Body text with <a href="#">a link</a> and <code>code</code>.</p>
+      <div class="callout tip"><p>Tip text.</p></div>
+      <div class="callout warn"><p>Warning text.</p></div>
+      <div class="recipe"><div class="slot">A</div><div class="slot"></div><div class="slot">B</div><div class="slot"></div><div class="slot">C</div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot">D</div></div>
+      <pre><code>print("hi")</code></pre>
+      <div class="diff"><ins>added</ins><del>removed</del></div>
+    </div>
+    <div class="pager"><a href="#">Back</a><a href="#">Next</a></div>
+  </main>
+  <aside class="toc"><ul><li><a href="#">Overview</a></li></ul></aside>
+</div>
+</body>
+</html>
