@@ -25,6 +25,13 @@ impl Clock for SystemClock {
     }
 }
 
+/// 24 random bytes as hex: session ids and OAuth `state` values.
+pub fn random_token() -> String {
+    let mut raw = [0u8; 24];
+    rand::rng().fill_bytes(&mut raw);
+    raw.iter().map(|b| format!("{b:02x}")).collect()
+}
+
 struct Entry {
     user_id: i64,
     created_at: u64,
@@ -63,9 +70,7 @@ impl Sessions {
     }
 
     pub fn create(&self, user_id: i64) -> String {
-        let mut raw = [0u8; 24];
-        rand::rng().fill_bytes(&mut raw);
-        let token: String = raw.iter().map(|b| format!("{b:02x}")).collect();
+        let token = random_token();
         let now = self.clock.now();
         let mut map = self.map.lock().unwrap();
         map.retain(|_, e| !e.expired(now));

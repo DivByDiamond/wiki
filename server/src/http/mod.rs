@@ -3,6 +3,7 @@ pub mod limit;
 pub mod middleware;
 pub mod reader;
 pub mod state;
+pub mod user;
 
 use crate::auth::policy::{Action, Actor, can};
 use crate::error::{AppError, AppResult};

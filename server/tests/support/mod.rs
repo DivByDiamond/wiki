@@ -54,3 +54,37 @@ pub async fn text(res: Response<Body>) -> String {
     let bytes = res.into_body().collect().await.unwrap().to_bytes();
     String::from_utf8(bytes.to_vec()).unwrap()
 }
+
+/// Fake GitHub: `exchange` returns the canned result, so no network is touched.
+pub struct FakeGithub(pub Result<oc2r_wiki::auth::github::GithubUser, String>);
+
+impl oc2r_wiki::auth::github::GithubClient for FakeGithub {
+    fn authorize_url(&self, state: &str) -> String {
+        format!("https://github.example/authorize?client_id=cid&state={state}")
+    }
+
+    fn exchange<'a>(&'a self, _code: &'a str) -> oc2r_wiki::auth::github::ExchangeFuture<'a> {
+        let r = self.0.clone();
+        Box::pin(async move { r })
+    }
+}
+
+/// App with sign-in configured (client id "cid", secret "sec") and the given extra env.
+pub fn staff_app(
+    github: Result<oc2r_wiki::auth::github::GithubUser, String>,
+    env: &[(&str, &str)],
+) -> (Router, AppState) {
+    let cfg = oc2r_wiki::config::Config::from_lookup(|k| match k {
+        "GITHUB_CLIENT_ID" => Some("cid".into()),
+        "GITHUB_CLIENT_SECRET" => Some("sec".into()),
+        _ => env
+            .iter()
+            .find(|(n, _)| *n == k)
+            .map(|(_, v)| (*v).to_owned()),
+    })
+    .unwrap();
+    let st = AppState::new(open_memory().unwrap())
+        .with_config(cfg)
+        .with_github(std::sync::Arc::new(FakeGithub(github)));
+    (router(st.clone()), st)
+}

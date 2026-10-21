@@ -1,12 +1,16 @@
 use super::state::AppState;
 use crate::auth::{policy::Actor, tokens::api_key};
-use axum::{extract::FromRequestParts, http::request::Parts};
+use axum::{
+    extract::FromRequestParts,
+    http::{HeaderMap, request::Parts},
+};
 use std::convert::Infallible;
 
 pub struct Auth(pub Actor);
 
-fn cookie<'a>(parts: &'a Parts, name: &str) -> Option<&'a str> {
-    let header = parts.headers.get("cookie")?.to_str().ok()?;
+/// Value of cookie `name` from a request's `Cookie` header.
+pub fn cookie<'a>(headers: &'a HeaderMap, name: &str) -> Option<&'a str> {
+    let header = headers.get("cookie")?.to_str().ok()?;
     header
         .split(';')
         .filter_map(|p| p.trim().split_once('='))
@@ -37,7 +41,7 @@ impl FromRequestParts<AppState> for Auth {
                 _ => Actor::Anonymous,
             }));
         }
-        let user = cookie(parts, "sid")
+        let user = cookie(&parts.headers, "sid")
             .and_then(|t| state.sessions.user_id(t))
             .and_then(|id| state.access.user(id).ok().flatten());
         Ok(Auth(match user {

@@ -1,7 +1,7 @@
 mod articles;
 mod history;
 mod search;
-mod view;
+pub(crate) mod view;
 
 use super::state::AppState;
 use crate::domain::page::{Lang, Slug};

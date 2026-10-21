@@ -4,7 +4,13 @@ use std::net::SocketAddr;
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
-    let cfg = Config::from_env();
+    let cfg = match Config::from_env() {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("invalid configuration: {e}");
+            std::process::exit(1);
+        }
+    };
     let db = match db::open(&cfg.db_path) {
         Ok(db) => db,
         Err(e) => {

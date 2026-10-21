@@ -139,7 +139,8 @@ mod tests {
             "GITHUB_CLIENT_ID" => Some("abc".into()),
             "PUBLIC_URL" => Some("https://w.example/".into()),
             _ => None,
-        });
+        })
+        .unwrap();
         let u = RealGithub::new(&cfg).authorize_url("x y");
         assert!(u.contains("client_id=abc") && u.contains("state=x%20y"));
         assert!(u.contains("https%3A%2F%2Fw.example%2Fauth%2Fgithub%2Fcallback"));
