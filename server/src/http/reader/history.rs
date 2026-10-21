@@ -2,7 +2,7 @@ use super::{
     html,
     view::{Shell, format_utc},
 };
-use crate::diff::{Line, diff_lines};
+use crate::diff::{Line, MAX_DIFF_CELLS, diff_lines_bounded};
 use crate::domain::{page::Page, revision::size_delta};
 use crate::error::{AppError, AppResult};
 use crate::http::state::AppState;
@@ -30,6 +30,7 @@ struct HistoryPage {
     rows: Vec<Row>,
     diff: Option<Vec<DiffLine>>,
     diff_label: String,
+    too_large: Option<(i64, i64)>,
 }
 
 pub fn history(s: &AppState, shell: Shell, page: &Page) -> AppResult<Response> {
@@ -56,6 +57,7 @@ pub fn history(s: &AppState, shell: Shell, page: &Page) -> AppResult<Response> {
         rows,
         diff: None,
         diff_label: String::new(),
+        too_large: None,
     })
 }
 
@@ -69,7 +71,16 @@ pub fn diff(s: &AppState, shell: Shell, page: &Page, range: &str) -> AppResult<R
     let (a, b) = parse_range(range)?;
     let old = s.pages.revision(page.id, a)?.ok_or(AppError::NotFound)?;
     let new = s.pages.revision(page.id, b)?.ok_or(AppError::NotFound)?;
-    let lines = diff_lines(&old.body, &new.body)
+    let Some(diff) = diff_lines_bounded(&old.body, &new.body, MAX_DIFF_CELLS) else {
+        return html(&HistoryPage {
+            shell,
+            rows: Vec::new(),
+            diff: None,
+            diff_label: String::new(),
+            too_large: Some((a, b)),
+        });
+    };
+    let lines = diff
         .into_iter()
         .map(|l| match l {
             Line::Added(t) => DiffLine {
@@ -91,5 +102,6 @@ pub fn diff(s: &AppState, shell: Shell, page: &Page, range: &str) -> AppResult<R
         rows: Vec::new(),
         diff: Some(lines),
         diff_label: format!("№{a} и №{b}"),
+        too_large: None,
     })
 }

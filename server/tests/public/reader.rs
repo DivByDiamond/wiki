@@ -179,3 +179,18 @@ async fn root_redirects_and_other_routes_survive() {
     assert_eq!(page(&app, "/health").await, (200, "ok".into()));
     assert_eq!(get(&app, "/api/pages").await.status(), 200);
 }
+
+#[tokio::test]
+async fn huge_diff_gets_notice_with_revision_links() {
+    let (app, st, ..) = app_with_state();
+    let big = |p: &str| (0..20_000).map(|i| format!("{p}{i}\n")).collect::<String>();
+    save_page(&st, "big", Lang::En, &big("a"), "s1");
+    save_page(&st, "big", Lang::En, &big("b"), "s2");
+    let ids = rev_ids(&st, "big");
+    let (status, body) = page(&app, &format!("/en/big?diff={}..{}", ids[0], ids[1])).await;
+    assert_eq!(status, 200);
+    assert!(body.contains("banner banner--warn"));
+    assert!(body.contains("Различия слишком велики для отображения"));
+    assert!(body.contains(&format!("?rev={}", ids[0])));
+    assert!(body.contains(&format!("?rev={}", ids[1])));
+}

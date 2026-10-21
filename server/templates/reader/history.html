@@ -2,6 +2,9 @@
 {% block content %}
 <h1>{{ shell.title }}: история</h1>
 <p><a href="/{{ shell.lang }}/{{ shell.path }}">К статье</a></p>
+{% if let Some((a, b)) = too_large %}
+<div class="banner banner--warn">Различия слишком велики для отображения. <a href="/{{ shell.lang }}/{{ shell.path }}?rev={{ a }}">Версия №{{ a }}</a>, <a href="/{{ shell.lang }}/{{ shell.path }}?rev={{ b }}">версия №{{ b }}</a></div>
+{% endif %}
 {% if let Some(lines) = diff %}
 <h2>Сравнение {{ diff_label }}</h2>
 <div class="diff">
