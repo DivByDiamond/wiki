@@ -49,6 +49,11 @@ pub(crate) fn error_page(lang: Lang, err: AppError) -> Response {
             "Неверный запрос",
             m.clone(),
         ),
+        AppError::RateLimited(_) => (
+            StatusCode::TOO_MANY_REQUESTS,
+            "Слишком много запросов",
+            "Подождите немного и повторите.".to_string(),
+        ),
         _ => return err.into_response(),
     };
     let page = ErrorPage {
@@ -57,7 +62,13 @@ pub(crate) fn error_page(lang: Lang, err: AppError) -> Response {
         message: &message,
     };
     match page.render() {
-        Ok(body) => (status, Html(body)).into_response(),
+        Ok(body) => {
+            let mut res = (status, Html(body)).into_response();
+            if let AppError::RateLimited(secs) = err {
+                res.headers_mut().insert("retry-after", secs.into());
+            }
+            res
+        }
         Err(e) => AppError::Internal(e.to_string()).into_response(),
     }
 }

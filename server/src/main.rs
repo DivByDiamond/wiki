@@ -1,4 +1,5 @@
 use oc2r_wiki::{config::Config, http::state::AppState, router, store::db};
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +20,12 @@ async fn main() {
         }
     };
     tracing::info!("listening on {}", cfg.bind);
-    if let Err(e) = axum::serve(listener, router(AppState::new(db))).await {
+    if let Err(e) = axum::serve(
+        listener,
+        router(AppState::new(db)).into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    {
         eprintln!("server error: {e}");
         std::process::exit(1);
     }

@@ -1,7 +1,10 @@
 use super::{error_page, html, unknown_lang, view::Shell};
 use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
-use crate::http::state::AppState;
+use crate::http::{
+    limit::{client_ip::ClientIp, enforce},
+    state::AppState,
+};
 use askama::Template;
 use axum::{
     extract::{Path, Query, State},
@@ -36,6 +39,7 @@ struct Fragment<'a> {
 
 pub async fn search(
     State(s): State<AppState>,
+    ClientIp(ip): ClientIp,
     Path(lang): Path<String>,
     Query(q): Query<SearchQuery>,
 ) -> Response {
@@ -43,6 +47,7 @@ pub async fn search(
         return unknown_lang();
     };
     let run = || -> AppResult<Response> {
+        enforce(&s, "search", &ip)?;
         let text = q.q.as_deref().unwrap_or("").trim();
         let hits = s
             .pages

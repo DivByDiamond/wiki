@@ -4,7 +4,10 @@ use super::{
 };
 use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
-use crate::http::state::AppState;
+use crate::http::{
+    limit::{client_ip::ClientIp, enforce},
+    state::AppState,
+};
 use crate::render;
 use askama::Template;
 use axum::{
@@ -36,16 +39,17 @@ struct ArticlePage {
 
 pub async fn article(
     State(s): State<AppState>,
+    ClientIp(ip): ClientIp,
     Path((lang, slug)): Path<(String, String)>,
     Query(q): Query<ArticleQuery>,
 ) -> Response {
     let Some(lang) = Lang::parse(&lang) else {
         return unknown_lang();
     };
-    handle(&s, lang, &slug, &q).unwrap_or_else(|e| error_page(lang, e))
+    handle(&s, &ip, lang, &slug, &q).unwrap_or_else(|e| error_page(lang, e))
 }
 
-fn handle(s: &AppState, lang: Lang, slug: &str, q: &ArticleQuery) -> AppResult<Response> {
+fn handle(s: &AppState, ip: &str, lang: Lang, slug: &str, q: &ArticleQuery) -> AppResult<Response> {
     let slug = parse_slug(slug)?;
     let (page, missing_translation) = match s.pages.find(&slug, lang)? {
         Some(p) => (p, false),
@@ -57,9 +61,11 @@ fn handle(s: &AppState, lang: Lang, slug: &str, q: &ArticleQuery) -> AppResult<R
     };
     let shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?;
     if q.history.is_some() {
+        enforce(s, "history", ip)?;
         return history::history(s, shell, &page);
     }
     if let Some(range) = &q.diff {
+        enforce(s, "diff", ip)?;
         return history::diff(s, shell, &page, range);
     }
     let (revision, old_rev) = match &q.rev {

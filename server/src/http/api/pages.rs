@@ -5,7 +5,12 @@ use crate::domain::{
     revision::{Author, NewRevision},
 };
 use crate::error::{AppError, AppResult};
-use crate::http::{middleware::Auth, require, state::AppState};
+use crate::http::{
+    limit::{client_ip::ClientIp, enforce},
+    middleware::Auth,
+    require,
+    state::AppState,
+};
 use axum::{
     Json,
     body::Bytes,
@@ -63,11 +68,16 @@ pub async fn get_page(
 pub async fn put_page(
     State(s): State<AppState>,
     Auth(actor): Auth,
+    ClientIp(ip): ClientIp,
     Path(slug): Path<String>,
     Query(q): Query<PageQuery>,
     body: Bytes,
 ) -> AppResult<Json<Value>> {
     require(&actor, Action::WritePage)?;
+    match &actor {
+        Actor::Key { id, .. } => enforce(&s, "put", &format!("key{id}"))?,
+        _ => enforce(&s, "put", &ip)?,
+    }
     let (slug, lang) = parse(&slug, q.lang.as_deref())?;
     let body = String::from_utf8(body.to_vec())
         .map_err(|_| AppError::Invalid("body must be UTF-8".into()))?;
