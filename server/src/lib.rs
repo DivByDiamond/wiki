@@ -3,6 +3,7 @@ pub mod config;
 pub mod diff;
 pub mod domain;
 pub mod error;
+pub mod render;
 
 use axum::{Router, routing::get};
 
