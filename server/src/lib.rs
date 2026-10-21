@@ -1,4 +1,5 @@
 pub mod config;
+pub mod error;
 
 use axum::{Router, routing::get};
 
