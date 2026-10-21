@@ -1,12 +1,26 @@
-use oc2r_wiki::{config::Config, router};
+use oc2r_wiki::{config::Config, http::state::AppState, router, store::db};
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
     let cfg = Config::from_env();
-    let listener = tokio::net::TcpListener::bind(&cfg.bind)
-        .await
-        .expect("bind");
+    let db = match db::open(&cfg.db_path) {
+        Ok(db) => db,
+        Err(e) => {
+            eprintln!("cannot open database {}: {}", cfg.db_path, e.0);
+            std::process::exit(1);
+        }
+    };
+    let listener = match tokio::net::TcpListener::bind(&cfg.bind).await {
+        Ok(l) => l,
+        Err(e) => {
+            eprintln!("cannot bind {}: {e}", cfg.bind);
+            std::process::exit(1);
+        }
+    };
     tracing::info!("listening on {}", cfg.bind);
-    axum::serve(listener, router()).await.expect("serve");
+    if let Err(e) = axum::serve(listener, router(AppState::new(db))).await {
+        eprintln!("server error: {e}");
+        std::process::exit(1);
+    }
 }
