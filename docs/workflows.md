@@ -60,7 +60,7 @@
 | `GET /api/pages` | read | Список страниц с актуальной ревизией |
 | `GET /api/pages/{slug}?lang=ru` | read | Страница и метаданные |
 | `PUT /api/pages/{slug}?lang=ru&summary=...` | write | Создать или обновить, тело запроса — Markdown |
-| `GET /api/pages/{slug}/revisions?lang=ru` | read | История |
+| `GET /api/revisions/{slug}?lang=ru` | read | История |
 | `GET /api/export` | export | Все страницы архивом Markdown |
 
 Запись через ключ создаёт обычную ревизию с автором «ключ: название». Если тело совпадает

@@ -13,6 +13,7 @@ use http::state::AppState;
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(|| async { "ok" }))
+        .merge(http::api::routes())
         .with_state(state)
 }
 
