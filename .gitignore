@@ -114,3 +114,11 @@ dist
 
 # superpowers scratch
 .superpowers/
+
+# wiki server and frontend build output
+/target
+/web/node_modules
+/web/dist
+*.db
+*.db-wal
+*.db-shm
