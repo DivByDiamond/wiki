@@ -22,7 +22,8 @@ async fn main() {
     tracing::info!("listening on {}", cfg.bind);
     if let Err(e) = axum::serve(
         listener,
-        router(AppState::new(db)).into_make_service_with_connect_info::<SocketAddr>(),
+        router(AppState::new(db).with_config(cfg.clone()))
+            .into_make_service_with_connect_info::<SocketAddr>(),
     )
     .await
     {

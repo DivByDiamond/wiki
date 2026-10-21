@@ -1,4 +1,8 @@
-use crate::auth::tokens::session::Sessions;
+use crate::auth::{
+    github::{GithubClient, RealGithub},
+    tokens::session::Sessions,
+};
+use crate::config::Config;
 use crate::domain::ports::{access::AccessRepo, pages::PageRepo, proposals::ProposalRepo};
 use crate::http::limit::rate_limit::RateLimiter;
 use crate::store::{
@@ -15,6 +19,8 @@ pub struct AppState {
     pub proposals: Arc<dyn ProposalRepo>,
     pub sessions: Arc<Sessions>,
     pub limiter: Arc<RateLimiter>,
+    pub config: Arc<Config>,
+    pub github: Arc<dyn GithubClient>,
 }
 
 impl AppState {
@@ -31,6 +37,21 @@ impl AppState {
             proposals: Arc::new(SqliteProposals::new(db)),
             sessions: Arc::new(Sessions::new()),
             limiter: Arc::new(limiter),
+            github: Arc::new(RealGithub::new(&Config::default())),
+            config: Arc::new(Config::default()),
         }
+    }
+
+    /// Replaces the configuration and rebuilds the real GitHub client from it.
+    pub fn with_config(mut self, config: Config) -> Self {
+        self.github = Arc::new(RealGithub::new(&config));
+        self.config = Arc::new(config);
+        self
+    }
+
+    /// Swaps the GitHub client (tests inject a fake).
+    pub fn with_github(mut self, github: Arc<dyn GithubClient>) -> Self {
+        self.github = github;
+        self
     }
 }
