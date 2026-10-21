@@ -2,7 +2,7 @@ use crate::support::{app, app_with_state, json, make_key};
 use axum::{Router, body::Body, http::Request};
 use tower::ServiceExt;
 
-async fn put(
+pub async fn put(
     app: &Router,
     uri: &str,
     key: Option<&str>,
@@ -18,7 +18,7 @@ async fn put(
         .unwrap()
 }
 
-async fn get(app: &Router, uri: &str, key: Option<&str>) -> axum::response::Response {
+pub async fn get(app: &Router, uri: &str, key: Option<&str>) -> axum::response::Response {
     let mut req = Request::get(uri);
     if let Some(k) = key {
         req = req.header("authorization", format!("Bearer {k}"));
@@ -94,17 +94,20 @@ async fn revoked_key_stops_working_immediately() {
 async fn repeated_put_does_not_add_revision() {
     let (app, write, _) = app();
     let first = put(&app, "/api/pages/a?lang=en", Some(&write), b"same".to_vec()).await;
-    assert!(
-        json(first).await["outcome"]
-            .as_str()
-            .unwrap()
-            .starts_with("Created")
-    );
+    let first = json(first).await;
+    assert_eq!(first["outcome"], "created");
+    assert!(first["revision"].as_i64().unwrap() > 0);
     let second = put(&app, "/api/pages/a?lang=en", Some(&write), b"same".to_vec()).await;
     assert_eq!(second.status(), 200);
-    assert_eq!(json(second).await["outcome"], "Unchanged");
+    let second = json(second).await;
+    assert_eq!(second["outcome"], "unchanged");
+    assert!(second["revision"].is_null());
+    let third = put(&app, "/api/pages/a?lang=en", Some(&write), b"new".to_vec()).await;
+    let third = json(third).await;
+    assert_eq!(third["outcome"], "updated");
+    assert!(third["revision"].as_i64().unwrap() > first["revision"].as_i64().unwrap());
     let hist = json(get(&app, "/api/revisions/a?lang=en", None).await).await;
-    assert_eq!(hist.as_array().unwrap().len(), 1);
+    assert_eq!(hist.as_array().unwrap().len(), 2);
 }
 
 #[tokio::test]

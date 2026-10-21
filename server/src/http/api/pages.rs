@@ -1,6 +1,7 @@
 use crate::auth::policy::{Action, Actor};
 use crate::domain::{
     page::{Lang, Slug},
+    ports::pages::SaveOutcome,
     revision::{Author, NewRevision},
 };
 use crate::error::{AppError, AppResult};
@@ -76,7 +77,11 @@ pub async fn put_page(
         author: author(&s, &actor),
     };
     let outcome = s.pages.save(&slug, lang, rev)?;
-    Ok(Json(json!({ "outcome": format!("{outcome:?}") })))
+    Ok(Json(match outcome {
+        SaveOutcome::Created(id) => json!({ "outcome": "created", "revision": id }),
+        SaveOutcome::Updated(id) => json!({ "outcome": "updated", "revision": id }),
+        SaveOutcome::Unchanged => json!({ "outcome": "unchanged" }),
+    }))
 }
 
 pub async fn revisions(

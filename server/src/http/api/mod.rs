@@ -1,8 +1,15 @@
 mod export;
+mod json_errors;
 mod pages;
 
 use super::state::AppState;
-use axum::{Router, extract::DefaultBodyLimit, routing::get};
+use crate::error::AppError;
+use axum::{
+    Router,
+    extract::DefaultBodyLimit,
+    middleware::map_response,
+    routing::{any, get},
+};
 
 /// Largest accepted page body (1 MiB).
 const MAX_BODY: usize = 1024 * 1024;
@@ -18,4 +25,6 @@ pub fn routes() -> Router<AppState> {
         )
         .route("/api/revisions/{*slug}", get(pages::revisions))
         .route("/api/export", get(export::export))
+        .route("/api/{*rest}", any(|| async { AppError::NotFound }))
+        .layer(map_response(json_errors::to_json))
 }

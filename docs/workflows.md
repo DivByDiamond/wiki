@@ -59,7 +59,7 @@
 |---|---|---|
 | `GET /api/pages` | read | Список страниц с актуальной ревизией |
 | `GET /api/pages/{slug}?lang=ru` | read | Страница и метаданные |
-| `PUT /api/pages/{slug}?lang=ru&summary=...` | write | Создать или обновить, тело запроса — Markdown |
+| `PUT /api/pages/{slug}?lang=ru&summary=...` | write | Создать или обновить, тело запроса — Markdown; ответ `{"outcome": "created"\|"updated"\|"unchanged", "revision": id}` (без `revision` при `unchanged`) |
 | `GET /api/revisions/{slug}?lang=ru` | read | История |
 | `GET /api/export` | export | Все страницы архивом Markdown |
 
@@ -67,4 +67,4 @@
 с текущей ревизией, новая ревизия не создаётся (повторная заливка из CI безвредна).
 
 Коды ошибок: 401 нет или неверный ключ, 403 не хватает прав, 404 нет страницы,
-422 неверный slug или язык, 429 лимит запросов (с заголовком `Retry-After`).
+413 тело больше 1 МиБ, 422 неверный slug или язык, 429 лимит запросов (с заголовком `Retry-After`).

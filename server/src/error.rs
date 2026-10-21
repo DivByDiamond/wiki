@@ -11,6 +11,7 @@ pub enum AppError {
     Forbidden,
     NotFound,
     Invalid(String),
+    TooLarge,
     RateLimited(u64),
     Internal(String),
 }
@@ -32,6 +33,11 @@ impl AppError {
             ),
             Self::NotFound => (StatusCode::NOT_FOUND, "not_found", "Не найдено".into()),
             Self::Invalid(m) => (StatusCode::UNPROCESSABLE_ENTITY, "invalid", m.clone()),
+            Self::TooLarge => (
+                StatusCode::PAYLOAD_TOO_LARGE,
+                "too_large",
+                "Слишком большое тело запроса".into(),
+            ),
             Self::RateLimited(_) => (
                 StatusCode::TOO_MANY_REQUESTS,
                 "rate_limited",
@@ -81,6 +87,8 @@ mod tests {
         let (s, j) = body(AppError::NotFound).await;
         assert_eq!((s, j["error"].as_str()), (404, Some("not_found")));
         assert_eq!(body(AppError::Invalid("x".into())).await.0, 422);
+        let (s, j) = body(AppError::TooLarge).await;
+        assert_eq!((s, j["error"].as_str()), (413, Some("too_large")));
     }
 
     #[test]
