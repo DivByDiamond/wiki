@@ -2,8 +2,10 @@
 
 ## Правила
 
-1. **Не больше 4 файлов в папке.** Папки считаются отдельно, подпапки не входят в счёт.
-2. **Не больше 250 строк в файле.** Превысили — делим по ответственности.
+1. **Не больше 4 файлов кода в папке.** Папки считаются отдельно, подпапки не входят в счёт.
+2. **Не больше 250 строк в файле кода, для `.css` до 500.** Превысили — делим по ответственности.
+   Оба лимита только для кода (`.rs`, `.ts`, `.css`, шаблоны, `.sql`). Документы, конфиги,
+   `LICENSE`, `Cargo.lock` и `todo.md` лимитам не подчиняются.
 3. **KISS:** самое простое решение, которое закрывает требование. Никакого запаса «на потом».
 4. **DRY:** один конвейер рендера, один `AppError`, одна политика прав, одна функция записи ревизии.
 5. **SOLID:**
@@ -12,7 +14,6 @@
    - новые виды правок или ролей добавляются новыми модулями, а не правкой старых `match`;
    - трейты узкие: `PageRepo`, `ProposalRepo`, `AccessRepo`, а не один общий `Store`.
 6. **Лицензия:** GPL-3.0-or-later. `LICENSE` в корне, в `Cargo.toml` поле `license`.
-7. Исключения из правила 1 только для файлов, которые требует инструмент: `Cargo.lock`, `.gitignore`.
 
 ## Корень
 
@@ -32,7 +33,7 @@ deploy/           Caddyfile  oc2r-wiki.service  backup.sh
 ```
 server/Cargo.toml
 server/src/
-  main.rs  app.rs  config.rs  error.rs
+  main.rs  lib.rs  config.rs  error.rs   (lib.rs: список модулей и router, main.rs только запуск)
   domain/        mod.rs  page.rs  revision.rs  proposal.rs
   domain/ports/  mod.rs  pages.rs  proposals.rs  access.rs
   diff/          mod.rs  lines.rs
@@ -49,7 +50,9 @@ server/src/
   http/admin/    mod.rs  pages.rs  proposals.rs  keys.rs
   http/api/      mod.rs  pages.rs  export.rs
 server/templates/   reader/  admin/  layout/   (в каждой не больше 4 файлов)
-server/tests/       api.rs  revisions.rs  proposals.rs  e2e.rs
+server/tests/       e2e.rs  support/mod.rs
+server/tests/public/  main.rs  api.rs  reader.rs
+server/tests/staff/   main.rs  proposals.rs  admin.rs
 ```
 
 Назначение слоёв:
@@ -67,7 +70,7 @@ server/tests/       api.rs  revisions.rs  proposals.rs  e2e.rs
 ## web/
 
 ```
-web/package.json  tsconfig.json  build.mjs
+web/package.json  tsconfig.json  build.ts
 web/src/
   main.ts
   settings/  store.ts  theme.ts  panel.ts
@@ -77,7 +80,7 @@ web/src/
 web/styles/  tokens.css  layout.css  components.css  pixel.css
 ```
 
-- Сборка только `esbuild`. Результат в `web/dist`, затем встраивается в бинарник сервера.
+- Инструмент один: Bun (`bun install`, `bun test`, `Bun.build`). Next.js и другие фреймворки не используем. Результат в `web/dist`, затем встраивается в бинарник сервера.
 - `tokens.css` — переменные (цвета, акцент, `--pixel`). `pixel.css` включается переменной, а не
   дублирует стили.
 - Скрипт темы в `<head>` — отдельная маленькая строка в шаблоне, а не часть бандла.
