@@ -62,7 +62,41 @@ mod tests {
     fn recipe_slot_script_is_neutralised() {
         let html = to_html(":::recipe\n<script>alert(1)</script>\n:::");
         assert!(!html.contains("<script"));
-        assert!(!html.contains("alert(1)</"));
+        assert!(!html.contains("onerror"));
+        assert!(html.contains("&lt;script&gt;alert(1)&lt;/script&gt;"));
+    }
+
+    #[test]
+    fn every_link_is_noopener_and_has_no_target() {
+        let html = to_html("<a href=\"https://x.test\" target=\"_blank\" rel=\"opener\">t</a>");
+        assert!(html.contains("<a "));
+        assert!(html.contains("rel=\"noopener noreferrer\""));
+        assert!(!html.contains("target"));
+    }
+
+    #[test]
+    fn svg_with_onload_is_removed() {
+        let html = to_html("<svg onload=alert(1)><circle/></svg>");
+        assert!(!html.contains("<svg"));
+        assert!(!html.contains("onload"));
+    }
+
+    #[test]
+    fn data_uri_image_has_no_data_src() {
+        let html = to_html("<img src=\"data:text/html,x\">");
+        assert!(!html.contains("data:"));
+    }
+
+    #[test]
+    fn mixed_case_script_is_removed() {
+        let html = to_html("<ScRiPt>alert(1)</ScRiPt>");
+        assert!(!html.to_lowercase().contains("script"));
+    }
+
+    #[test]
+    fn heading_attribute_syntax_has_no_handler() {
+        let html = to_html("# h {onclick=alert(1)}");
+        assert!(!html.contains("onclick"));
     }
 
     #[test]
