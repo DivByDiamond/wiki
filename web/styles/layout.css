@@ -1,0 +1,102 @@
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.site-header .logo {
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.site-header form { display: flex; flex: 1 1 14rem; max-width: 26rem; gap: 0.4rem; }
+.site-header form .field { flex: 1; margin: 0; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem 16px 3rem;
+}
+
+.sidebar, .toc { font-size: 0.9rem; }
+.article { min-width: 0; }
+.toc { order: -1; }
+
+.sidebar ul, .toc ul { list-style: none; margin: 0; padding: 0; }
+.sidebar ul ul, .toc ul ul { padding-left: 0.9rem; }
+.sidebar a, .toc a {
+  display: block;
+  padding: 0.2rem 0.5rem;
+  color: var(--fg);
+  text-decoration: none;
+  border-radius: 2px;
+}
+.sidebar a:hover, .toc a:hover { background: var(--bg-alt); }
+.sidebar a[aria-current="page"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.toc a { color: var(--muted); }
+
+.banner {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+}
+.banner--warn { border-left-color: var(--warn); }
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.page-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; font-size: 0.9rem; }
+
+.prose { max-width: 48rem; }
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { line-height: 1.25; margin: 1.6em 0 0.5em; }
+.prose h1 { margin-top: 0; font-size: 1.9rem; }
+.prose h2 { font-size: 1.5rem; padding-bottom: 0.2em; border-bottom: 1px solid var(--line); }
+.prose h3 { font-size: 1.2rem; }
+.prose pre {
+  overflow-x: auto;
+  padding: 0.8rem 1rem;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  font-size: 0.875rem;
+}
+.prose code { font-family: var(--font-mono); font-size: 0.9em; }
+.prose :not(pre) > code { padding: 0.1em 0.35em; background: var(--bg-alt); border-radius: 3px; }
+.prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+.prose th, .prose td { padding: 0.4rem 0.7rem; border: 1px solid var(--line); text-align: left; }
+.prose th { background: var(--bg-alt); }
+.prose blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--line); color: var(--muted); }
+
+@media (min-width: 720px) {
+  .layout { grid-template-columns: 14rem minmax(0, 1fr); }
+  .toc { order: 0; grid-column: 2; }
+}
+
+@media (min-width: 1100px) {
+  .layout { grid-template-columns: 15rem minmax(0, 1fr) 14rem; gap: 2rem; }
+  .toc { grid-column: 3; position: sticky; top: 4.5rem; align-self: start; }
+  .sidebar { position: sticky; top: 4.5rem; align-self: start; max-height: calc(100vh - 5rem); overflow-y: auto; }
+}

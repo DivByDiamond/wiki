@@ -1,0 +1,89 @@
+@import "./layout.css";
+@import "./components.css";
+@import "./pixel.css";
+
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f3f6f4;
+  --fg: #1b1f1d;
+  --muted: #536058;
+  --line: #d3dad5;
+  --ink: #1a1a1a;
+  --on-accent: #ffffff;
+  --accent: #1d7a33;
+  --font-size: 16px;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --pixel: 1;
+  --pixel-border: 3px solid var(--ink);
+  --pixel-shadow: 3px 3px 0 var(--ink);
+  --ins-bg: #d4f1dc;
+  --del-bg: #f8d7d7;
+  --tip: #1d7a33;
+  --warn: #a64b00;
+  --version: #4b4fc4;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #14181a;
+  --bg-alt: #1c2225;
+  --fg: #e4e9e6;
+  --muted: #9aa8a0;
+  --line: #333d40;
+  --ink: #050607;
+  --on-accent: #0b1210;
+  --accent: #5fd07a;
+  --ins-bg: #1f4a2c;
+  --del-bg: #5a2626;
+  --tip: #5fd07a;
+  --warn: #ff9a4d;
+  --version: #9ea3ff;
+  color-scheme: dark;
+}
+
+:root[data-accent="violet"] { --accent: #6a3dc2; }
+:root[data-accent="orange"] { --accent: #a34a00; }
+:root[data-accent="teal"] { --accent: #00776e; }
+:root[data-theme="dark"][data-accent="green"] { --accent: #5fd07a; }
+:root[data-theme="dark"][data-accent="violet"] { --accent: #b9a0ff; }
+:root[data-theme="dark"][data-accent="orange"] { --accent: #ff9a4d; }
+:root[data-theme="dark"][data-accent="teal"] { --accent: #3fd1c4; }
+
+:root[data-size="s"] { --font-size: 14px; }
+:root[data-size="m"] { --font-size: 16px; }
+:root[data-size="l"] { --font-size: 19px; }
+
+:root[data-pixel="0"] {
+  --pixel: 0;
+  --pixel-border: 1px solid var(--line);
+  --pixel-shadow: none;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: var(--font-size); -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+a { color: var(--accent); text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+img { max-width: 100%; height: auto; }
+hr { border: 0; border-top: 1px solid var(--line); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

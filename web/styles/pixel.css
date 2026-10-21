@@ -1,0 +1,72 @@
+/* Minecraft-flavored details; [data-pixel="0"] makes them thin and flat via the tokens. */
+
+.site-header { border-bottom: var(--pixel-border); }
+.sidebar { padding-right: 0.5rem; }
+
+@media (min-width: 720px) {
+  .sidebar { border-right: var(--pixel-border); }
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6,
+.site-header .logo {
+  font-family: var(--font-mono);
+}
+:root[data-pixel="1"] .prose h1 { letter-spacing: -0.02em; }
+
+.callout {
+  margin: 1.25rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--bg-alt);
+  border: var(--pixel-border);
+  border-left-width: 6px;
+  border-left-color: var(--tip);
+  box-shadow: var(--pixel-shadow);
+}
+.callout.warn { border-left-color: var(--warn); }
+.callout.version { border-left-color: var(--version); }
+.callout > :first-child { margin-top: 0; }
+.callout > :last-child { margin-bottom: 0; }
+
+.recipe {
+  display: grid;
+  grid-template-columns: repeat(3, 3.5rem);
+  grid-auto-rows: 3.5rem;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  margin: 1.25rem 0;
+  padding: 8px;
+  background: #c6c6c6;
+  border: var(--pixel-border);
+  box-shadow: var(--pixel-shadow);
+}
+.recipe .slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 0.7rem;
+  line-height: 1.1;
+  text-align: center;
+  color: #1a1a1a;
+  background: #8b8b8b;
+  border: 1px solid #555;
+  border-top: 3px solid #373737;
+  border-left: 3px solid #373737;
+  border-bottom-color: #ffffff;
+  border-right-color: #ffffff;
+}
+.recipe .slot img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+
+:root[data-pixel="0"] .recipe { background: var(--bg-alt); }
+:root[data-pixel="0"] .recipe .slot {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--fg);
+}
+
+:root[data-pixel="1"] .btn,
+:root[data-pixel="1"] .choice { border-radius: 0; }
+:root[data-pixel="1"] .btn { border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+:root[data-pixel="1"] .btn:active { transform: translate(2px, 2px); box-shadow: none; }
+:root[data-pixel="1"] #settings-panel { border: var(--pixel-border); box-shadow: var(--pixel-shadow); }
