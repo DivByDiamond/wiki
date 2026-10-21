@@ -2,6 +2,10 @@
 
 use axum::{Router, body::Body, http::Response};
 use http_body_util::BodyExt;
+use oc2r_wiki::domain::{
+    page::{Lang, Slug},
+    revision::{Author, NewRevision},
+};
 use oc2r_wiki::{auth::tokens::api_key, http::state::AppState, router, store::db::open_memory};
 use serde_json::Value;
 
@@ -32,4 +36,21 @@ pub fn app() -> (Router, String, String) {
 pub async fn json(res: Response<Body>) -> Value {
     let bytes = res.into_body().collect().await.unwrap().to_bytes();
     serde_json::from_slice(&bytes).unwrap()
+}
+
+/// Saves a revision of `slug` in `lang` through the page repository.
+pub fn save_page(st: &AppState, slug: &str, lang: Lang, body: &str, summary: &str) {
+    let rev = NewRevision {
+        body: body.into(),
+        summary: summary.into(),
+        author: Author::User("tester".into()),
+    };
+    st.pages
+        .save(&Slug::parse(slug).unwrap(), lang, rev)
+        .unwrap();
+}
+
+pub async fn text(res: Response<Body>) -> String {
+    let bytes = res.into_body().collect().await.unwrap().to_bytes();
+    String::from_utf8(bytes.to_vec()).unwrap()
 }

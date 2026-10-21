@@ -1,0 +1,9 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>{{ heading }}</h1>
+<p>{{ message }}</p>
+<form action="/{{ shell.lang }}/search" method="get" role="search">
+  <input name="q" type="search" placeholder="Поиск">
+  <button class="btn" type="submit">Найти</button>
+</form>
+{% endblock %}

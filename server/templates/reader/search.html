@@ -1,0 +1,5 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>Поиск</h1>
+{% block results %}<ul class="search-results">{% for h in hits %}<li><a href="/{{ shell.lang }}/{{ h.slug }}">{{ h.slug }}</a> <span>{{ h.snippet }}</span></li>{% endfor %}</ul>{% endblock %}
+{% endblock %}

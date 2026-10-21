@@ -16,6 +16,7 @@ rand = "0.9"
 pulldown-cmark = "0.13"
 ammonia = "4"
 rusqlite = { version = "0.37", features = ["bundled"] }
+askama = "0.14"
 
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }

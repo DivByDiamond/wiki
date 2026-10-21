@@ -1,6 +1,7 @@
 pub mod api;
 pub mod middleware;
 pub mod rate_limit;
+pub mod reader;
 pub mod state;
 
 use crate::auth::policy::{Action, Actor, can};

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="{{ shell.lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ shell.title }}{% endblock %} - OC2R Wiki</title>
+<script>
+try {
+  var s = JSON.parse(localStorage.getItem('oc2r-wiki-settings') || '{}'), d = document.documentElement, t = s.theme || 'auto';
+  if (t === 'auto') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  d.setAttribute('data-theme', t);
+  d.setAttribute('data-accent', s.accent || 'green');
+  d.setAttribute('data-size', s.size || 'm');
+  d.setAttribute('data-pixel', (s.pixel === false || s.pixel === 0 || s.pixel === '0') ? '0' : '1');
+} catch (e) {}
+</script>
+<link rel="stylesheet" href="/static/app.css">
+<script defer src="/static/app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="/{{ shell.lang }}/start">OC2R Wiki</a>
+  <div style="position: relative">
+    <form id="search-form" action="/{{ shell.lang }}/search" method="get" role="search">
+      <input id="search-input" name="q" type="search" value="{{ shell.query }}" placeholder="/" autocomplete="off">
+    </form>
+    <div id="search-results"></div>
+  </div>
+  <nav class="lang-switch">
+    {% for l in ["en", "ru", "zh"] %}<a href="/{{ l }}/{{ shell.path }}"{% if *l == shell.lang %} aria-current="true"{% endif %}>{{ l }}</a> {% endfor %}
+  </nav>
+  <button id="settings-toggle" type="button" aria-controls="settings-panel" aria-expanded="false">&#9881;</button>
+</header>
+<div class="layout">
+  <nav class="sidebar">
+    {% for section in shell.sections %}
+    <h3>{{ section.name }}</h3>
+    <ul>
+      {% for item in section.items %}
+      <li><a href="/{{ shell.lang }}/{{ item.slug }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endfor %}
+  </nav>
+  <main class="article">
+    {% block content %}{% endblock %}
+  </main>
+  <aside class="toc"></aside>
+</div>
+</body>
+</html>

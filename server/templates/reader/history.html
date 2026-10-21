@@ -1,0 +1,20 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>{{ shell.title }}: история</h1>
+<p><a href="/{{ shell.lang }}/{{ shell.path }}">К статье</a></p>
+{% if let Some(lines) = diff %}
+<h2>Сравнение {{ diff_label }}</h2>
+<div class="diff">
+{% for l in lines %}{% if l.kind == "add" %}<ins>{{ l.text }}</ins>{% else if l.kind == "del" %}<del>{{ l.text }}</del>{% else %}<span>{{ l.text }}</span>{% endif %}
+{% endfor %}</div>
+{% endif %}
+<ul class="history">
+{% for r in rows %}
+  <li>
+    <a href="/{{ shell.lang }}/{{ shell.path }}?rev={{ r.id }}">{{ r.date }}</a>
+    - {{ r.author }} - {{ r.summary }} ({{ r.delta }})
+    {% if let Some(prev) = r.prev_id %}<a href="/{{ shell.lang }}/{{ shell.path }}?diff={{ prev }}..{{ r.id }}">сравнить с предыдущей</a>{% endif %}
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}
