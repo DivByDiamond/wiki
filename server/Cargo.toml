@@ -15,6 +15,7 @@ sha2 = "0.10"
 rand = "0.9"
 pulldown-cmark = "0.13"
 ammonia = "4"
+rusqlite = { version = "0.37", features = ["bundled"] }
 
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }
