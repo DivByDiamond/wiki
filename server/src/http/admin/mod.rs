@@ -3,6 +3,7 @@
 mod keys;
 mod pages;
 mod proposals;
+mod users;
 
 use super::{
     middleware::Auth,
@@ -38,6 +39,7 @@ pub fn routes() -> Router<AppState> {
         )
         .merge(proposals::routes())
         .merge(keys::routes())
+        .merge(users::routes())
 }
 
 /// The action every admin route is gated on (only admins pass it).

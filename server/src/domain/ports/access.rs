@@ -21,6 +21,9 @@ pub struct KeyRow {
 pub trait AccessRepo: Send + Sync {
     fn upsert_user(&self, github_id: i64, login: &str) -> StoreResult<UserRow>;
     fn user(&self, id: i64) -> StoreResult<Option<UserRow>>;
+    fn list_users(&self) -> StoreResult<Vec<UserRow>>;
+    /// Admins that are not blocked (the ones who can still manage the site).
+    fn count_active_admins(&self) -> StoreResult<u32>;
     fn set_blocked(&self, id: i64, blocked: bool) -> StoreResult<()>;
     fn set_admin(&self, id: i64, admin: bool) -> StoreResult<()>;
     fn create_key(

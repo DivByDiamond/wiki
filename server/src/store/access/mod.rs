@@ -29,6 +29,12 @@ impl AccessRepo for SqliteAccess {
     fn user(&self, id: i64) -> StoreResult<Option<UserRow>> {
         users::get(&self.db.lock().unwrap(), id)
     }
+    fn list_users(&self) -> StoreResult<Vec<UserRow>> {
+        users::list(&self.db.lock().unwrap())
+    }
+    fn count_active_admins(&self) -> StoreResult<u32> {
+        users::count_active_admins(&self.db.lock().unwrap())
+    }
     fn set_blocked(&self, id: i64, blocked: bool) -> StoreResult<()> {
         users::set_blocked(&self.db.lock().unwrap(), id, blocked)
     }
