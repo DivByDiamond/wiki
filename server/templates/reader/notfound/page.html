@@ -1,0 +1,31 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<section class="nf">
+  <div class="nf__hero">
+    <div class="nf__tile" role="img" aria-label="Missing texture"></div>
+    <p class="nf__code" aria-hidden="true">404</p>
+  </div>
+  <div>
+    <h1 class="nf__title">{{ t.heading }}</h1>
+    <p class="nf__text">{{ t.message }}</p>
+  </div>
+  <code class="nf__path">{{ requested }}</code>
+  <form class="nf__search" action="/{{ shell.lang }}/search" method="get" role="search">
+    <div class="field"><input name="q" type="search" placeholder="{{ t.placeholder }}" aria-label="{{ t.placeholder }}" autocomplete="off"></div>
+    <button class="btn btn--primary" type="submit">{{ t.search }}</button>
+  </form>
+  <div class="nf__actions">
+    <a class="btn" href="/{{ shell.lang }}/start">{{ t.home }}</a>
+  </div>
+  {% if !similar.is_empty() %}
+  <div class="nf__similar">
+    <h2>{{ t.similar }}</h2>
+    <ul>
+      {% for (slug, title) in similar %}
+      <li><a href="/{{ shell.lang }}/{{ slug }}">{{ title }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,6 +1,7 @@
 @import "./layout.css";
 @import "./components.css";
 @import "./pixel.css";
+@import "./pages/notfound.css";
 
 :root {
   --bg: #ffffff;

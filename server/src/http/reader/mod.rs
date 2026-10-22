@@ -1,5 +1,6 @@
 mod articles;
 mod history;
+mod notfound;
 mod search;
 pub(crate) mod view;
 

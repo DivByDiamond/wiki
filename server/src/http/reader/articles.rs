@@ -1,5 +1,5 @@
 use super::{
-    error_page, history, html, parse_slug, unknown_lang,
+    error_page, history, html, notfound, parse_slug, unknown_lang,
     view::{Shell, format_utc},
 };
 use crate::domain::page::Lang;
@@ -48,7 +48,12 @@ pub async fn article(
     let Some(lang) = Lang::parse(&lang) else {
         return unknown_lang();
     };
-    handle(&s, &ip, lang, &slug, &q).unwrap_or_else(|e| error_page(lang, e))
+    handle(&s, &ip, lang, &slug, &q).unwrap_or_else(|e| match e {
+        AppError::NotFound => {
+            notfound::render(&s, lang, &slug).unwrap_or_else(|e| error_page(lang, e))
+        }
+        e => error_page(lang, e),
+    })
 }
 
 fn handle(s: &AppState, ip: &str, lang: Lang, slug: &str, q: &ArticleQuery) -> AppResult<Response> {
