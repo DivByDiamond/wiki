@@ -1,6 +1,9 @@
 use crate::domain::proposal::Proposal;
 use crate::error::{AppError, AppResult};
-use crate::http::state::AppState;
+use crate::http::{
+    admin::{MAX_BODY, MAX_FORM},
+    state::AppState,
+};
 use axum::{
     Router,
     extract::DefaultBodyLimit,
@@ -11,10 +14,7 @@ use serde::Deserialize;
 mod decide;
 mod view;
 
-pub(super) const MAX_BODY: usize = 1024 * 1024;
 pub(super) const MAX_NOTE: usize = 1000;
-/// Transport cap for the url-encoded form (encoding can triple the size).
-const MAX_FORM: usize = 4 * MAX_BODY;
 
 pub fn routes() -> Router<AppState> {
     Router::new()

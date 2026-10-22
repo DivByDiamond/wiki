@@ -50,6 +50,7 @@ pub(crate) fn error_page(lang: Lang, err: AppError) -> Response {
             "Неверный запрос",
             m.clone(),
         ),
+        AppError::Conflict(m) => (StatusCode::CONFLICT, "Conflict", m.clone()),
         AppError::RateLimited(_) => (
             StatusCode::TOO_MANY_REQUESTS,
             "Слишком много запросов",

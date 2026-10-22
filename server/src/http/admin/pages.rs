@@ -1,4 +1,4 @@
-use super::{admin_login, admin_only, fail};
+use super::{MAX_BODY, MAX_FORM, admin_login, admin_only, fail};
 use crate::auth::policy::Actor;
 use crate::domain::{
     page::{Lang, Slug},
@@ -14,17 +14,14 @@ use crate::http::{
 use askama::Template;
 use axum::{
     Form, Router,
-    extract::{DefaultBodyLimit, Path, State},
+    extract::{DefaultBodyLimit, Path, Query, State},
     http::HeaderMap,
     response::{IntoResponse, Redirect, Response},
     routing::{get, post},
 };
 use serde::Deserialize;
 
-pub(super) const MAX_BODY: usize = 1024 * 1024;
 const MAX_SUMMARY: usize = 200;
-/// Transport cap for the url-encoded form (encoding can triple the size).
-const MAX_FORM: usize = 4 * MAX_BODY;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -66,6 +63,7 @@ struct Editor {
     slug: String,
     body: String,
     is_new: bool,
+    same: bool,
     history: Vec<HistoryRow>,
 }
 
@@ -75,6 +73,11 @@ pub struct EditForm {
     body: String,
     #[serde(default)]
     summary: String,
+}
+
+#[derive(Deserialize)]
+struct EditQuery {
+    same: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -115,11 +118,18 @@ async fn edit_form(
     State(s): State<AppState>,
     Auth(actor): Auth,
     Path((lang, slug)): Path<(String, String)>,
+    Query(q): Query<EditQuery>,
 ) -> Response {
-    show_editor(&s, &actor, &lang, &slug).unwrap_or_else(fail)
+    show_editor(&s, &actor, &lang, &slug, q.same.is_some()).unwrap_or_else(fail)
 }
 
-fn show_editor(s: &AppState, actor: &Actor, lang: &str, slug: &str) -> AppResult<Response> {
+fn show_editor(
+    s: &AppState,
+    actor: &Actor,
+    lang: &str,
+    slug: &str,
+    same: bool,
+) -> AppResult<Response> {
     admin_only(actor)?;
     let (lang, slug) = target(lang, slug)?;
     let page = s.pages.find(&slug, lang)?;
@@ -145,6 +155,7 @@ fn show_editor(s: &AppState, actor: &Actor, lang: &str, slug: &str) -> AppResult
         slug: slug.as_str().to_owned(),
         body,
         is_new: page.is_none(),
+        same,
         history,
     })
 }
@@ -220,11 +231,15 @@ fn roll_back(
         .trim()
         .parse::<i64>()
         .map_err(|_| AppError::Invalid("rev".into()))?;
+    let edit = format!("/admin/edit/{}/{}", lang.code(), slug.as_str());
+    if rev_id == page.current.id {
+        return Ok(Redirect::to(&format!("{edit}?same=1")).into_response());
+    }
     let old: Revision = s
         .pages
         .revision(page.id, rev_id)?
         .ok_or(AppError::NotFound)?;
     s.pages
         .save(&slug, lang, rollback_to(&old, Author::User(login)))?;
-    Ok(Redirect::to(&format!("/admin/edit/{}/{}", lang.code(), slug.as_str())).into_response())
+    Ok(Redirect::to(&edit).into_response())
 }

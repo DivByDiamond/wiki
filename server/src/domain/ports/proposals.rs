@@ -14,5 +14,9 @@ pub trait ProposalRepo: Send + Sync {
     fn list(&self, status: Status) -> StoreResult<Vec<Proposal>>;
     fn count_open_by_user(&self, user_id: i64) -> StoreResult<u32>;
     fn count_since_by_user(&self, user_id: i64, since: i64) -> StoreResult<u32>;
+    /// Atomically closes an open proposal; `false` when it was not open (someone else decided).
+    fn claim(&self, id: i64, status: Status, admin_id: i64, note: &str) -> StoreResult<bool>;
+    /// Puts a claimed proposal back to open (the publish after the claim failed).
+    fn reopen(&self, id: i64) -> StoreResult<()>;
     fn decide(&self, id: i64, status: Status, admin_id: i64, note: &str) -> StoreResult<()>;
 }

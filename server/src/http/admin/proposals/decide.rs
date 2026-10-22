@@ -41,6 +41,11 @@ fn accept_proposal(
     let p = open_proposal(s, id)?;
     check_note(&f.note)?;
     let page = s.pages.find_by_id(p.page_id)?.ok_or(AppError::NotFound)?;
+    if page.deleted {
+        return Err(AppError::Conflict(
+            "The page was deleted. Restore it first or reject the suggestion.".into(),
+        ));
+    }
     let body = if is_conflict(p.base_rev_id, page.current.id) {
         f.body
             .ok_or_else(|| AppError::Invalid("Конфликт: пришлите итоговый текст".into()))?
@@ -51,17 +56,18 @@ fn accept_proposal(
     if body.trim().is_empty() || body.len() > MAX_BODY {
         return Err(AppError::Invalid("The text is empty or too long.".into()));
     }
-    s.pages.save(
-        &page.slug,
-        page.lang,
-        NewRevision {
-            body,
-            summary: format!("{} (принял {})", p.summary, admin_name),
-            author: Author::User(login_of(s, p.user_id)?),
-        },
-    )?;
-    s.proposals
-        .decide(id, Status::Accepted, admin, f.note.trim())?;
+    let author = Author::User(login_of(s, p.user_id)?);
+    // Claim first: only one admin can win, so a revision is published at most once.
+    claim(s, id, Status::Accepted, admin, f.note.trim())?;
+    let rev = NewRevision {
+        body,
+        summary: format!("{} (принял {})", p.summary, admin_name),
+        author,
+    };
+    if let Err(e) = s.pages.save(&page.slug, page.lang, rev) {
+        s.proposals.reopen(id)?;
+        return Err(e.into());
+    }
     Ok(Redirect::to("/admin/proposals").into_response())
 }
 
@@ -86,19 +92,27 @@ fn reject_proposal(
     let admin = admin_id(actor)?;
     open_proposal(s, id)?;
     check_note(note)?;
-    s.proposals
-        .decide(id, Status::Rejected, admin, note.trim())?;
+    claim(s, id, Status::Rejected, admin, note.trim())?;
     Ok(Redirect::to("/admin/proposals").into_response())
 }
+
+const DECIDED: &str = "The suggestion is already decided.";
 
 fn open_proposal(s: &AppState, id: i64) -> AppResult<Proposal> {
     let p = load(s, id)?;
     if p.status != Status::Open {
-        return Err(AppError::Invalid(
-            "The suggestion is already decided.".into(),
-        ));
+        return Err(AppError::Conflict(DECIDED.into()));
     }
     Ok(p)
+}
+
+/// Closes the proposal; losing the race against another admin is a 409.
+fn claim(s: &AppState, id: i64, status: Status, admin: i64, note: &str) -> AppResult<()> {
+    if s.proposals.claim(id, status, admin, note)? {
+        Ok(())
+    } else {
+        Err(AppError::Conflict(DECIDED.into()))
+    }
 }
 
 fn check_note(note: &str) -> AppResult<()> {

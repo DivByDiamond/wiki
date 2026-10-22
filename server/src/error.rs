@@ -11,6 +11,8 @@ pub enum AppError {
     Forbidden,
     NotFound,
     Invalid(String),
+    /// The request clashes with the current state (already decided, name taken).
+    Conflict(String),
     TooLarge,
     RateLimited(u64),
     Internal(String),
@@ -33,6 +35,7 @@ impl AppError {
             ),
             Self::NotFound => (StatusCode::NOT_FOUND, "not_found", "Не найдено".into()),
             Self::Invalid(m) => (StatusCode::UNPROCESSABLE_ENTITY, "invalid", m.clone()),
+            Self::Conflict(m) => (StatusCode::CONFLICT, "conflict", m.clone()),
             Self::TooLarge => (
                 StatusCode::PAYLOAD_TOO_LARGE,
                 "too_large",
@@ -87,6 +90,8 @@ mod tests {
         let (s, j) = body(AppError::NotFound).await;
         assert_eq!((s, j["error"].as_str()), (404, Some("not_found")));
         assert_eq!(body(AppError::Invalid("x".into())).await.0, 422);
+        let (s, j) = body(AppError::Conflict("c".into())).await;
+        assert_eq!((s, j["error"].as_str()), (409, Some("conflict")));
         let (s, j) = body(AppError::TooLarge).await;
         assert_eq!((s, j["error"].as_str()), (413, Some("too_large")));
     }

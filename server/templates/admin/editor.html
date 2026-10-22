@@ -1,5 +1,8 @@
 {% extends "layout/base.html" %}
 {% block content %}
+{% if same %}
+<div class="banner">That is already the current revision, so nothing was rolled back.</div>
+{% endif %}
 <h1>{% if is_new %}Create{% else %}Edit{% endif %}: {{ lang }}/{{ slug }}</h1>
 <form class="card" method="post" action="/admin/edit/{{ lang }}/{{ slug }}">
   <div id="editor-toolbar"></div>
@@ -14,7 +17,7 @@
   <button class="btn btn--primary" type="submit">Save</button>
   <a class="btn" href="/admin">Back</a>
 </form>
-<div id="preview" data-preview-url="/admin/preview"></div>
+<div id="editor-preview"></div>
 {% if !history.is_empty() %}
 <h2>History</h2>
 <ul>

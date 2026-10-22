@@ -20,7 +20,12 @@ use axum::{
     response::{Html, IntoResponse, Redirect, Response},
     routing::post,
 };
-use pages::{MAX_BODY, target};
+use pages::target;
+
+/// Largest Markdown text an admin may save, preview or merge.
+pub(super) const MAX_BODY: usize = 1024 * 1024;
+/// Transport cap for the url-encoded form (encoding can triple the size).
+pub(super) const MAX_FORM: usize = 4 * MAX_BODY;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
@@ -101,9 +106,25 @@ fn set_deleted(
             .find(|p| p.slug == slug && p.lang == lang)
             .map(|p| p.id)
     };
-    s.pages
-        .set_deleted(id.ok_or(AppError::NotFound)?, deleted)?;
+    let id = id.ok_or(AppError::NotFound)?;
+    if !deleted && s.pages.find(&slug, lang)?.is_some() {
+        return Err(taken());
+    }
+    s.pages.set_deleted(id, deleted).map_err(|e| {
+        // Defensive: the unique index on live (slug, lang) caught a race.
+        if !deleted && e.0.contains("UNIQUE") {
+            taken()
+        } else {
+            e.into()
+        }
+    })?;
     Ok(Redirect::to("/admin").into_response())
+}
+
+fn taken() -> AppError {
+    AppError::Conflict(
+        "A live page with this address already exists. Delete or rename it first.".into(),
+    )
 }
 
 /// Markdown in the request body, rendered HTML out (for the editor preview).

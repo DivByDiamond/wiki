@@ -99,6 +99,12 @@ impl ProposalRepo for SqliteProposals {
     fn count_since_by_user(&self, user_id: i64, since: i64) -> StoreResult<u32> {
         proposals::count_since_by_user(&self.db.lock().unwrap(), user_id, since)
     }
+    fn claim(&self, id: i64, status: Status, admin_id: i64, note: &str) -> StoreResult<bool> {
+        proposals::claim(&self.db.lock().unwrap(), id, status, admin_id, note)
+    }
+    fn reopen(&self, id: i64) -> StoreResult<()> {
+        proposals::reopen(&self.db.lock().unwrap(), id)
+    }
     fn decide(&self, id: i64, status: Status, admin_id: i64, note: &str) -> StoreResult<()> {
         proposals::decide(&self.db.lock().unwrap(), id, status, admin_id, note)
     }
@@ -221,5 +227,19 @@ mod tests {
         assert!(p.decide(id, Status::Rejected, u2, "again").is_err());
         assert!(p.decide(999, Status::Accepted, u2, "").is_err());
         assert_eq!(p.get(id).unwrap().unwrap().status, Status::Accepted);
+    }
+
+    #[test]
+    fn claim_wins_once_and_reopen_releases_it() {
+        let (db, page, rev, u1, u2) = seeded();
+        let p = SqliteProposals::new(db);
+        let id = p.create(page, rev, "a", "", u1).unwrap();
+        assert!(p.claim(id, Status::Accepted, u2, "ok").unwrap());
+        assert!(!p.claim(id, Status::Rejected, u2, "late").unwrap());
+        assert!(!p.claim(999, Status::Accepted, u2, "").unwrap());
+        assert_eq!(p.get(id).unwrap().unwrap().status, Status::Accepted);
+        p.reopen(id).unwrap();
+        assert_eq!(p.get(id).unwrap().unwrap().status, Status::Open);
+        assert!(p.claim(id, Status::Rejected, u2, "again").unwrap());
     }
 }

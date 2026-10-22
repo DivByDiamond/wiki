@@ -78,6 +78,35 @@ pub fn count_since_by_user(conn: &Connection, user_id: i64, since: i64) -> Store
     )
 }
 
+/// Closes an open proposal in one guarded UPDATE; `false` when it was not open.
+pub fn claim(
+    conn: &Connection,
+    id: i64,
+    status: Status,
+    admin_id: i64,
+    note: &str,
+) -> StoreResult<bool> {
+    let changed = conn
+        .execute(
+            "update proposals set status = ?1, decided_by = ?2, decided_at = ?3, \
+             decision_note = ?4 where id = ?5 and status = 'open'",
+            params![status.as_str(), admin_id, now(), note, id],
+        )
+        .map_err(err)?;
+    Ok(changed == 1)
+}
+
+/// Undoes a claim: back to open with the decision fields cleared.
+pub fn reopen(conn: &Connection, id: i64) -> StoreResult<()> {
+    conn.execute(
+        "update proposals set status = 'open', decided_by = null, decided_at = null, \
+         decision_note = '' where id = ?1 and status <> 'open'",
+        [id],
+    )
+    .map_err(err)?;
+    Ok(())
+}
+
 /// Closes an open proposal; deciding a missing or already decided one is an error.
 pub fn decide(
     conn: &Connection,
@@ -86,14 +115,7 @@ pub fn decide(
     admin_id: i64,
     note: &str,
 ) -> StoreResult<()> {
-    let changed = conn
-        .execute(
-            "update proposals set status = ?1, decided_by = ?2, decided_at = ?3, \
-             decision_note = ?4 where id = ?5 and status = 'open'",
-            params![status.as_str(), admin_id, now(), note, id],
-        )
-        .map_err(err)?;
-    if changed == 0 {
+    if !claim(conn, id, status, admin_id, note)? {
         return Err(StoreError(format!("proposal {id} is not open")));
     }
     Ok(())
