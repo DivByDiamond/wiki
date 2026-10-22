@@ -14,6 +14,8 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(|| async { "ok" }))
         .merge(http::api::routes())
+        .merge(http::assets::routes())
+        .merge(http::admin::routes())
         .merge(http::user::routes())
         .merge(http::reader::routes())
         .with_state(state)

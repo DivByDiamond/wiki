@@ -2,6 +2,6 @@
 mod support;
 
 mod api;
-mod api_security;
+mod assets;
 mod limits;
 mod reader;

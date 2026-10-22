@@ -218,3 +218,5 @@ async fn revisions_are_newest_first_with_key_name() {
     assert_eq!(items[1]["summary"], "one");
     assert_eq!(items[0]["author"], "ключ: writer");
 }
+
+mod security;

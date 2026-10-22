@@ -18,6 +18,7 @@ ammonia = "4"
 rusqlite = { version = "0.37", features = ["bundled"] }
 askama = "0.14"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+rust-embed = "8"
 
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }

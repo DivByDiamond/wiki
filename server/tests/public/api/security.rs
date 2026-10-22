@@ -1,4 +1,4 @@
-use crate::api::{get, put};
+use super::{get, put};
 use crate::support::{app_with_state, json, make_key, save_page};
 use axum::{body::Body, http::Request};
 use oc2r_wiki::domain::page::{Lang, Slug};
