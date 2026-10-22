@@ -6,7 +6,7 @@
 
 **Architecture:** Один Rust-бинарник (axum + SQLite). `domain` задаёт типы, правила и порты (trait), `store` реализует порты, `http` тонкий. Markdown рендерится на сервере одним конвейером. Фронтенд на TypeScript без рантайм-библиотек улучшает страницы (настройки, поиск, редактор).
 
-**Tech Stack:** Rust edition 2024, axum, tokio, rusqlite (bundled, FTS5), pulldown-cmark, ammonia, sha2, rand, reqwest, serde, tracing, askama, rust-embed; TypeScript, Bun (сборка, тесты, менеджер пакетов; без Next.js и без фреймворков); Caddy.
+**Tech Stack:** Rust edition 2024, axum, tokio, rusqlite (bundled, FTS5), pulldown-cmark, ammonia, sha2, rand, reqwest, serde, tracing, askama, rust-embed; TypeScript, Bun (сборка, тесты, менеджер пакетов; без Next.js и без фреймворков); nginx behind Cloudflare.
 
 Спецификация: `docs/design.md`, `docs/workflows.md`, `docs/reader.md`, `docs/structure.md`.
 
