@@ -49,5 +49,9 @@ fn apply(
     if !done {
         return Err(guard::last_admin());
     }
+    // Blocking or demoting must also end the target's current sessions.
+    if matches!(change, Change::Block | Change::RevokeAdmin) {
+        s.sessions.destroy_for_user(id);
+    }
     Ok(Redirect::to("/admin/users").into_response())
 }

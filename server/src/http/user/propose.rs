@@ -1,6 +1,9 @@
 use super::{fail, guard::check_origin};
 use crate::auth::policy::{Action, Actor};
-use crate::domain::page::{Lang, Slug};
+use crate::domain::{
+    page::{Lang, Slug},
+    ports::proposals::Quota,
+};
 use crate::error::{AppError, AppResult};
 use crate::http::{
     limit::enforce,
@@ -37,11 +40,12 @@ pub fn routes() -> Router<AppState> {
 }
 
 /// Open and daily limits for one reader.
-pub fn check_quota(open: u32, today: u32) -> Result<(), AppError> {
-    if open >= MAX_OPEN || today >= MAX_PER_DAY {
-        return Err(AppError::RateLimited(3600));
+fn quota(since: i64) -> Quota {
+    Quota {
+        open: MAX_OPEN,
+        per_day: MAX_PER_DAY,
+        since,
     }
-    Ok(())
 }
 
 #[derive(Template)]
@@ -155,31 +159,13 @@ fn store(
     if body == base.body {
         return Err(AppError::Invalid("The text is unchanged.".into()));
     }
-    let since = crate::store::db::now() - DAY_SECS;
-    check_quota(
-        s.proposals.count_open_by_user(uid)?,
-        s.proposals.count_since_by_user(uid, since)?,
-    )?;
-    s.proposals.create(page.id, base.id, &body, summary, uid)?;
+    let since = crate::domain::now() - DAY_SECS;
+    if s.proposals
+        .create(page.id, base.id, &body, summary, uid, quota(since))?
+        .is_none()
+    {
+        return Err(AppError::RateLimited(3600));
+    }
     let to = format!("/{}/{}?proposed=1", lang.code(), slug.as_str());
     Ok(Redirect::to(&to).into_response())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn quota_limits() {
-        assert!(check_quota(0, 0).is_ok());
-        assert!(check_quota(MAX_OPEN - 1, MAX_PER_DAY - 1).is_ok());
-        assert!(matches!(
-            check_quota(MAX_OPEN, 0),
-            Err(AppError::RateLimited(_))
-        ));
-        assert!(matches!(
-            check_quota(0, MAX_PER_DAY),
-            Err(AppError::RateLimited(_))
-        ));
-    }
 }

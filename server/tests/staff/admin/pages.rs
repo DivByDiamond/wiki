@@ -50,7 +50,10 @@ fn history(st: &AppState) -> Vec<(i64, String, String)> {
         .history(page.id)
         .unwrap()
         .into_iter()
-        .map(|r| (r.id, r.body, r.author.label()))
+        .map(|r| {
+            let body = st.pages.revision(page.id, r.id).unwrap().unwrap().body;
+            (r.id, body, r.author.label())
+        })
         .collect()
 }
 
@@ -77,7 +80,6 @@ async fn non_admin_is_403_and_anonymous_is_401() {
         ("GET", "/admin"),
         ("GET", "/admin/edit/en/a"),
         ("POST", "/admin/edit/en/a"),
-        ("POST", "/admin/preview"),
     ] {
         assert_eq!(
             send(&app, m, uri, Some(&cookie), "body=x").await.status(),
@@ -85,6 +87,9 @@ async fn non_admin_is_403_and_anonymous_is_401() {
             "{uri}"
         );
     }
+    // preview is a proposer tool, available to any unblocked signed-in user
+    let res = send(&app, "POST", "/admin/preview", Some(&cookie), "body=x").await;
+    assert_eq!(res.status(), 200);
 }
 
 #[tokio::test]

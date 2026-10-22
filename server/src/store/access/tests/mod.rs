@@ -1,7 +1,18 @@
 use super::{SqliteAccess, SqliteProposals};
-use crate::domain::ports::{access::AccessRepo, proposals::ProposalRepo};
+use crate::domain::ports::{
+    access::AccessRepo,
+    proposals::{ProposalRepo, Quota},
+};
 use crate::domain::proposal::Status;
 use crate::store::db::{Db, open_memory};
+
+fn quota() -> Quota {
+    Quota {
+        open: 100,
+        per_day: 1000,
+        since: 0,
+    }
+}
 
 #[test]
 fn upsert_user_is_stable_and_updates_login() {
@@ -68,14 +79,20 @@ fn seeded() -> (Db, i64, i64, i64, i64) {
 fn proposals_create_get_and_list_by_status() {
     let (db, page, rev, u1, u2) = seeded();
     let p = SqliteProposals::new(db);
-    let id1 = p.create(page, rev, "one", "s1", u1).unwrap();
-    let id2 = p.create(page, rev, "two", "s2", u2).unwrap();
+    let id1 = p
+        .create(page, rev, "one", "s1", u1, quota())
+        .unwrap()
+        .unwrap();
+    let id2 = p
+        .create(page, rev, "two", "s2", u2, quota())
+        .unwrap()
+        .unwrap();
     let got = p.get(id1).unwrap().unwrap();
     assert_eq!((got.body.as_str(), got.summary.as_str()), ("one", "s1"));
     assert_eq!((got.user_id, got.status), (u1, Status::Open));
     assert!(p.get(999).unwrap().is_none());
     assert_eq!(p.list(Status::Open).unwrap().len(), 2);
-    p.decide(id2, Status::Accepted, u1, "ok").unwrap();
+    p.claim(id2, Status::Accepted, u1, "ok").unwrap();
     let open = p.list(Status::Open).unwrap();
     assert_eq!(open.len(), 1);
     assert_eq!(open[0].id, id1);
@@ -89,11 +106,11 @@ fn proposals_create_get_and_list_by_status() {
 fn proposals_counts() {
     let (db, page, rev, u1, u2) = seeded();
     let p = SqliteProposals::new(db.clone());
-    let a = p.create(page, rev, "a", "", u1).unwrap();
-    p.create(page, rev, "b", "", u1).unwrap();
-    p.create(page, rev, "c", "", u2).unwrap();
+    let a = p.create(page, rev, "a", "", u1, quota()).unwrap().unwrap();
+    p.create(page, rev, "b", "", u1, quota()).unwrap();
+    p.create(page, rev, "c", "", u2, quota()).unwrap();
     assert_eq!(p.count_open_by_user(u1).unwrap(), 2);
-    p.decide(a, Status::Rejected, u2, "no").unwrap();
+    p.claim(a, Status::Rejected, u2, "no").unwrap();
     assert_eq!(p.count_open_by_user(u1).unwrap(), 1);
     db.lock()
         .unwrap()
@@ -105,21 +122,38 @@ fn proposals_counts() {
 }
 
 #[test]
-fn deciding_twice_is_an_error() {
+fn claiming_twice_fails() {
     let (db, page, rev, u1, u2) = seeded();
     let p = SqliteProposals::new(db);
-    let id = p.create(page, rev, "a", "", u1).unwrap();
-    p.decide(id, Status::Accepted, u2, "fine").unwrap();
-    assert!(p.decide(id, Status::Rejected, u2, "again").is_err());
-    assert!(p.decide(999, Status::Accepted, u2, "").is_err());
+    let id = p.create(page, rev, "a", "", u1, quota()).unwrap().unwrap();
+    assert!(p.claim(id, Status::Accepted, u2, "fine").unwrap());
+    assert!(!p.claim(id, Status::Rejected, u2, "again").unwrap());
+    assert!(!p.claim(999, Status::Accepted, u2, "").unwrap());
     assert_eq!(p.get(id).unwrap().unwrap().status, Status::Accepted);
+}
+
+#[test]
+fn quota_is_enforced_inside_the_insert() {
+    let (db, page, rev, u1, u2) = seeded();
+    let p = SqliteProposals::new(db);
+    let one = |per_day| Quota {
+        open: 1,
+        per_day,
+        since: 0,
+    };
+    let first = p.create(page, rev, "a", "", u1, one(10)).unwrap().unwrap();
+    // The open limit blocks the second proposal while the first is still open.
+    assert!(p.create(page, rev, "b", "", u1, one(10)).unwrap().is_none());
+    p.claim(first, Status::Rejected, u2, "").unwrap();
+    // Now no proposal is open, but the daily budget is already used up.
+    assert!(p.create(page, rev, "c", "", u1, one(1)).unwrap().is_none());
 }
 
 #[test]
 fn claim_wins_once_and_reopen_releases_it() {
     let (db, page, rev, u1, u2) = seeded();
     let p = SqliteProposals::new(db);
-    let id = p.create(page, rev, "a", "", u1).unwrap();
+    let id = p.create(page, rev, "a", "", u1, quota()).unwrap().unwrap();
     assert!(p.claim(id, Status::Accepted, u2, "ok").unwrap());
     assert!(!p.claim(id, Status::Rejected, u2, "late").unwrap());
     assert!(!p.claim(999, Status::Accepted, u2, "").unwrap());

@@ -86,6 +86,9 @@ revisions_fts  FTS5 по body и slug, обновляется триггерам
   других сайтов сервера. Приложение доверяет `X-Real-IP` только потому, что слушает loopback.
 - Если приложение недоступно, nginx отдаёт заглушку `deploy/down.html` со статусом 503 (файл нужно
   положить в `/var/www/oc2r-wiki/down.html`).
+- Ответы идут с HSTS (`max-age=31536000`), CSP (`default-src 'self'`; inline-скрипт темы и inline-стили
+  разрешены, картинки по https), `X-Content-Type-Options: nosniff` и `Referrer-Policy`. Страница с только что
+  созданным ключом получает `Cache-Control: no-store` от приложения.
 - Unit-файлы systemd лежат в `deploy/systemd/`: сервис `oc2r-wiki` (читает `/etc/oc2r-wiki.env`) и таймер
   резервной копии. Сам скрипт - `deploy/backup.sh` (нужен CLI `sqlite3`).
 - Резервная копия: `sqlite3 .backup` раз в неделю (`oc2r-wiki-backup.timer`) и перед обновлением, копии

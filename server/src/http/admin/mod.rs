@@ -129,7 +129,8 @@ fn taken() -> AppError {
     )
 }
 
-/// Markdown in the request body, rendered HTML out (for the editor preview).
+/// Markdown in the request body, rendered HTML out (admin editor and reader
+/// suggest page both use it, so any signed-in reader may call it).
 async fn preview(
     State(s): State<AppState>,
     Auth(actor): Auth,
@@ -138,7 +139,7 @@ async fn preview(
 ) -> Response {
     let run = || -> AppResult<Response> {
         check_origin(&headers, &s.config)?;
-        admin_only(&actor)?;
+        super::require(&actor, Action::Propose)?;
         Ok(Html(render::to_html(&body)).into_response())
     };
     run().unwrap_or_else(fail)

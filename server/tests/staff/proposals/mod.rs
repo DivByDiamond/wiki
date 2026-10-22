@@ -2,7 +2,7 @@ use crate::login::{gh, sign_in};
 use crate::support::{save_page, staff_app, text};
 use axum::{Router, body::Body, http::Request, response::Response};
 use oc2r_wiki::{
-    domain::{page::Lang, proposal::Status},
+    domain::{page::Lang, ports::proposals::Quota, proposal::Status},
     http::state::AppState,
 };
 use tower::ServiceExt;

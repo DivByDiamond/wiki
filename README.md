@@ -70,6 +70,8 @@ cd .. && cargo build --release -p oc2r-wiki
 
 On the production server all variables are read from `/etc/oc2r-wiki.env` (root, mode 600), with `WIKI_BIND=127.0.0.1:8091` and `PUBLIC_URL=https://wiki.loki-code.dev`. Port 8080 is taken there by another container.
 
+`ADMIN_GITHUB_IDS` is applied on every sign-in: demoting that user in `/admin/users` is undone the next time they sign in unless the id is removed from the env file and the service is restarted.
+
 ### GitHub OAuth app
 
 Create one at GitHub: Settings, Developer settings, OAuth Apps, New. Set the callback URL to `<PUBLIC_URL>/auth/github/callback`, then put the client id and secret into `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`. Find your numeric id at `https://api.github.com/users/<login>` and list it in `ADMIN_GITHUB_IDS`.
@@ -81,7 +83,7 @@ Sign in as an admin, open `/admin/keys`, create a key with the scopes you need a
 ### Deploy
 
 Ready-made files are in [`deploy/`](deploy):
-- `nginx-wiki.conf` - nginx vhost: HTTP to HTTPS redirect, certbot certificate, proxy to `127.0.0.1:8091`, real client IP from `CF-Connecting-IP` (trusted only from Cloudflare ranges)
+- `nginx-wiki.conf` - nginx vhost: HTTP to HTTPS redirect, certbot certificate, proxy to `127.0.0.1:8091`, real client IP from `CF-Connecting-IP` (trusted only from Cloudflare ranges), HSTS and CSP headers
 - `down.html` - fallback page that nginx serves with status 503 when the app is down
 - `systemd/` - unit `oc2r-wiki.service` (reads `/etc/oc2r-wiki.env`) and the weekly backup `oc2r-wiki-backup.service` / `.timer`
 - `backup.sh` - SQLite backup to `/var/lib/oc2r-wiki/backups`, keeps 60 days
@@ -168,6 +170,8 @@ cd .. && cargo build --release -p oc2r-wiki
 
 На продакшен-сервере все переменные читаются из `/etc/oc2r-wiki.env` (root, режим 600), там `WIKI_BIND=127.0.0.1:8091` и `PUBLIC_URL=https://wiki.loki-code.dev`. Порт 8080 там занят другим контейнером.
 
+`ADMIN_GITHUB_IDS` применяется при каждом входе: если снять с пользователя админку в `/admin/users`, она вернётся при следующем входе, пока id не убран из env-файла и служба не перезапущена.
+
 ### OAuth-приложение GitHub
 
 Создайте его в GitHub: Settings, Developer settings, OAuth Apps, New. Callback URL: `<PUBLIC_URL>/auth/github/callback`. Client id и secret положите в `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`. Числовой id узнать можно на `https://api.github.com/users/<login>`, его нужно указать в `ADMIN_GITHUB_IDS`.
@@ -179,7 +183,7 @@ cd .. && cargo build --release -p oc2r-wiki
 ### Деплой
 
 Готовые файлы лежат в [`deploy/`](deploy):
-- `nginx-wiki.conf` - vhost nginx: редирект с HTTP на HTTPS, сертификат certbot, проксирование на `127.0.0.1:8091`, реальный IP клиента из `CF-Connecting-IP` (доверяется только диапазонам Cloudflare)
+- `nginx-wiki.conf` - vhost nginx: редирект с HTTP на HTTPS, сертификат certbot, проксирование на `127.0.0.1:8091`, реальный IP клиента из `CF-Connecting-IP` (доверяется только диапазонам Cloudflare), заголовки HSTS и CSP
 - `down.html` - страница-заглушка, которую nginx отдаёт со статусом 503, когда приложение недоступно
 - `systemd/` - unit `oc2r-wiki.service` (читает `/etc/oc2r-wiki.env`) и еженедельная копия `oc2r-wiki-backup.service` / `.timer`
 - `backup.sh` - копия SQLite в `/var/lib/oc2r-wiki/backups`, хранится 60 дней

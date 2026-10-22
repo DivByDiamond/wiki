@@ -2,7 +2,7 @@ use crate::login::{gh, sign_in};
 use crate::support::{save_page, staff_app};
 use axum::{Router, body::Body, http::Request, response::Response};
 use oc2r_wiki::{
-    domain::{page::Lang, page::Slug, proposal::Status},
+    domain::{page::Lang, page::Slug, ports::proposals::Quota, proposal::Status},
     http::state::AppState,
 };
 use tower::ServiceExt;
@@ -29,7 +29,19 @@ async fn setup() -> (Router, AppState, String, i64) {
     let page = page(&st);
     let pid = st
         .proposals
-        .create(page.id, page.current.id, "proposed", "fix typo", writer)
+        .create(
+            page.id,
+            page.current.id,
+            "proposed",
+            "fix typo",
+            writer,
+            Quota {
+                open: 100,
+                per_day: 100,
+                since: 0,
+            },
+        )
+        .unwrap()
         .unwrap();
     (app, st, cookie, pid)
 }

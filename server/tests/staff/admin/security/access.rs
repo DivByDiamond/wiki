@@ -1,5 +1,6 @@
 //! Every admin route: 401 anonymous, 403 for non-admins and blocked admins,
-//! and 403 for a foreign `Origin` on every POST.
+//! and 403 for a foreign `Origin` on every POST. `/admin/preview` is gated by
+//! "Propose" instead: any unblocked signed-in user may call it.
 use crate::admin::common::{ORIGIN, env, login, send};
 
 const GET: &[&str] = &[
@@ -43,15 +44,16 @@ async fn anonymous_gets_401_everywhere() {
 }
 
 #[tokio::test]
-async fn signed_in_non_admin_and_blocked_admin_get_403_everywhere() {
+async fn signed_in_non_admin_and_blocked_admin_get_403_on_admin_routes() {
     let e = env();
     e.proposal();
     let (plain, _) = login(&e.st, 50, "plain", false, false);
     let (blocked, _) = login(&e.st, 51, "ex", true, true);
-    for cookie in [&plain, &blocked] {
+    for (cookie, preview) in [(&plain, 200), (&blocked, 403)] {
         for (m, p) in routes() {
+            let want = if p == "/admin/preview" { preview } else { 403 };
             let r = send(&e.app, m, p, Some(cookie), Some(ORIGIN), "").await;
-            assert_eq!(r.status(), 403, "{cookie} {m} {p}");
+            assert_eq!(r.status(), want, "{cookie} {m} {p}");
         }
     }
 }

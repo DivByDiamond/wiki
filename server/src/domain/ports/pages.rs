@@ -1,7 +1,7 @@
 use super::StoreResult;
 use crate::domain::{
     page::{Lang, Page, Slug},
-    revision::{NewRevision, Revision},
+    revision::{NewRevision, Revision, RevisionMeta},
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -17,7 +17,6 @@ pub struct PageSummary {
     pub lang: Lang,
     pub section: String,
     pub position: i64,
-    pub title_rev_id: i64,
 }
 
 pub struct SearchHit {
@@ -31,7 +30,7 @@ pub trait PageRepo: Send + Sync {
     /// Like `find` but by id, and it also returns deleted pages.
     fn find_by_id(&self, page_id: i64) -> StoreResult<Option<Page>>;
     fn revision(&self, page_id: i64, rev_id: i64) -> StoreResult<Option<Revision>>;
-    fn history(&self, page_id: i64) -> StoreResult<Vec<Revision>>;
+    fn history(&self, page_id: i64) -> StoreResult<Vec<RevisionMeta>>;
     fn save(&self, slug: &Slug, lang: Lang, rev: NewRevision) -> StoreResult<SaveOutcome>;
     fn list(&self) -> StoreResult<Vec<PageSummary>>;
     fn list_deleted(&self) -> StoreResult<Vec<PageSummary>>;

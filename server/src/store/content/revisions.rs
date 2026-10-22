@@ -1,6 +1,6 @@
 use crate::domain::{
     ports::StoreResult,
-    revision::{Author, NewRevision, Revision},
+    revision::{Author, NewRevision, Revision, RevisionMeta},
 };
 use crate::store::db::{err, now};
 use rusqlite::{Connection, Row, params};
@@ -54,11 +54,24 @@ pub fn get(conn: &Connection, page_id: i64, rev_id: i64) -> StoreResult<Option<R
     }
 }
 
-pub fn history(conn: &Connection, page_id: i64) -> StoreResult<Vec<Revision>> {
-    let sql = format!("select {COLUMNS} from revisions where page_id = ?1 order by id desc");
-    let mut stmt = conn.prepare(&sql).map_err(err)?;
-    stmt.query_map([page_id], from_row)
-        .map_err(err)?
-        .collect::<Result<_, _>>()
-        .map_err(err)
+/// History rows without bodies; `length()` counts characters like the delta.
+pub fn history(conn: &Connection, page_id: i64) -> StoreResult<Vec<RevisionMeta>> {
+    let mut stmt = conn
+        .prepare(
+            "select id, summary, author_kind, author_ref, created_at, length(body) \
+             from revisions where page_id = ?1 order by id desc",
+        )
+        .map_err(err)?;
+    stmt.query_map([page_id], |r| {
+        Ok(RevisionMeta {
+            id: r.get(0)?,
+            summary: r.get(1)?,
+            author: author_from(&r.get::<_, String>(2)?, r.get(3)?),
+            created_at: r.get(4)?,
+            size: r.get(5)?,
+        })
+    })
+    .map_err(err)?
+    .collect::<Result<_, _>>()
+    .map_err(err)
 }

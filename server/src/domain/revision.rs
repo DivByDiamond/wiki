@@ -32,6 +32,18 @@ pub struct NewRevision {
     pub author: Author,
 }
 
+/// A history row without the body: the reader history and the admin editor only
+/// need the size, so large pages are not loaded just to list their revisions.
+#[derive(Debug, Clone)]
+pub struct RevisionMeta {
+    pub id: i64,
+    pub summary: String,
+    pub author: Author,
+    pub created_at: i64,
+    /// Body length in characters, the same unit as the history delta.
+    pub size: i64,
+}
+
 pub fn rollback_to(target: &Revision, author: Author) -> NewRevision {
     NewRevision {
         body: target.body.clone(),
@@ -42,10 +54,6 @@ pub fn rollback_to(target: &Revision, author: Author) -> NewRevision {
 
 pub fn is_noop(current: Option<&Revision>, body: &str) -> bool {
     current.is_some_and(|c| c.body == body)
-}
-
-pub fn size_delta(old: Option<&str>, new: &str) -> i64 {
-    new.chars().count() as i64 - old.map_or(0, |o| o.chars().count() as i64)
 }
 
 #[cfg(test)]
@@ -75,12 +83,6 @@ mod tests {
         assert!(is_noop(Some(&rev(1, "a")), "a"));
         assert!(!is_noop(Some(&rev(1, "a")), "b"));
         assert!(!is_noop(None, "a"));
-    }
-
-    #[test]
-    fn delta_counts_chars_not_bytes() {
-        assert_eq!(size_delta(None, "привет"), 6);
-        assert_eq!(size_delta(Some("abc"), "a"), -2);
     }
 
     #[test]

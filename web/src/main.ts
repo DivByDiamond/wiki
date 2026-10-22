@@ -22,7 +22,7 @@ function start(): void {
     refresh();
   });
   mountSearch();
-  if (document.getElementById("editor")) {
+  if (document.getElementById("editor") || document.getElementById("merge")) {
     void import("./editor/editor.ts").then((m) => m.mountEditor());
   }
 }

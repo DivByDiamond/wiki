@@ -88,7 +88,10 @@ fn history(st: &AppState) -> Vec<(i64, String, String)> {
         .history(page.id)
         .unwrap()
         .into_iter()
-        .map(|r| (r.id, r.body, r.author.label()))
+        .map(|r| {
+            let body = st.pages.revision(page.id, r.id).unwrap().unwrap().body;
+            (r.id, body, r.author.label())
+        })
         .collect()
 }
 

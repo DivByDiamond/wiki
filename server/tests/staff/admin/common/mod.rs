@@ -3,7 +3,7 @@
 use crate::support::{save_page, staff_app, text};
 use axum::{Router, body::Body, http::Request, response::Response};
 use oc2r_wiki::{
-    domain::{page::Lang, page::Slug},
+    domain::{page::Lang, page::Slug, ports::proposals::Quota},
     http::state::AppState,
 };
 use tower::ServiceExt;
@@ -67,6 +67,13 @@ pub async fn send(
     app.clone().oneshot(req).await.unwrap()
 }
 
+/// `Quota` wide enough to seed proposals regardless of the real limits.
+pub const SEED_QUOTA: Quota = Quota {
+    open: 100,
+    per_day: 100,
+    since: 0,
+};
+
 impl Env {
     /// POST as the admin with the site's own origin.
     pub async fn post(&self, uri: &str, body: &str) -> Response {
@@ -95,7 +102,15 @@ impl Env {
         let p = self.page("a");
         self.st
             .proposals
-            .create(p.id, p.current.id, "proposed", "fix typo", writer)
+            .create(
+                p.id,
+                p.current.id,
+                "proposed",
+                "fix typo",
+                writer,
+                SEED_QUOTA,
+            )
+            .unwrap()
             .unwrap()
     }
 

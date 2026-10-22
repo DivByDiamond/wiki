@@ -1,4 +1,4 @@
-use crate::admin::common::{env, login};
+use crate::admin::common::{SEED_QUOTA, env, login};
 use crate::support::save_page;
 use oc2r_wiki::domain::page::Lang;
 
@@ -48,7 +48,8 @@ async fn proposal_pages_escape_summary_body_and_author() {
     let body = "</textarea><b id=pwn>x</b><script>alert(1)</script>";
     let pid =
         e.st.proposals
-            .create(p.id, p.current.id, body, XSS, writer)
+            .create(p.id, p.current.id, body, XSS, writer, SEED_QUOTA)
+            .unwrap()
             .unwrap();
     // make it conflicting so the merge textarea and the pre blocks are shown
     save_page(&e.st, "a", Lang::En, "v2", "other");

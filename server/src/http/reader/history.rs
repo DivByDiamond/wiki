@@ -3,7 +3,7 @@ use super::{
     view::{Shell, format_utc},
 };
 use crate::diff::{Line, MAX_DIFF_CELLS, diff_lines_bounded};
-use crate::domain::{page::Page, revision::size_delta};
+use crate::domain::page::Page;
 use crate::error::{AppError, AppResult};
 use crate::http::state::AppState;
 use askama::Template;
@@ -41,7 +41,7 @@ pub fn history(s: &AppState, shell: Shell, page: &Page) -> AppResult<Response> {
         .enumerate()
         .map(|(i, r)| {
             let older = revs.get(i + 1);
-            let d = size_delta(older.map(|o| o.body.as_str()), &r.body);
+            let d = r.size - older.map_or(0, |o| o.size);
             Row {
                 id: r.id,
                 date: format_utc(r.created_at),

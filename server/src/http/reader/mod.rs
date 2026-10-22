@@ -7,9 +7,11 @@ pub(crate) mod view;
 use super::state::AppState;
 use crate::domain::page::{Lang, Slug};
 use crate::error::{AppError, AppResult};
+use crate::http::middleware::Viewer;
 use askama::Template;
 use axum::{
     Router,
+    extract::{OriginalUri, Path, State},
     http::StatusCode,
     response::{Html, IntoResponse, Redirect, Response},
     routing::get,
@@ -19,8 +21,27 @@ use view::Shell;
 pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/", get(|| async { Redirect::to("/en/start") }))
+        .route("/{lang}", get(lang_root))
         .route("/{lang}/search", get(search::search))
         .route("/{lang}/{*slug}", get(articles::article))
+        .fallback(fallback)
+}
+
+/// `/en` on its own: send the reader to that language's start page.
+async fn lang_root(Path(lang): Path<String>) -> Response {
+    match Lang::parse(&lang) {
+        Some(lang) => Redirect::to(&format!("/{}/start", lang.code())).into_response(),
+        None => unknown_lang(),
+    }
+}
+
+/// Unmatched paths (`/favicon.ico`, typos) get the reader 404 page, not a bare body.
+async fn fallback(State(s): State<AppState>, viewer: Viewer, uri: OriginalUri) -> Response {
+    let path = uri.path().trim_matches('/');
+    let mut parts = path.splitn(2, '/');
+    let lang = parts.next().and_then(Lang::parse).unwrap_or(Lang::En);
+    let slug = parts.next().unwrap_or_default();
+    notfound::render(&s, lang, slug, viewer).unwrap_or_else(|e| error_page(lang, e))
 }
 
 #[derive(Template)]

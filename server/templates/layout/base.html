@@ -27,7 +27,7 @@ try {
     <div id="search-results"></div>
   </div>
   <nav class="lang-switch">
-    {% for l in ["en", "ru", "zh"] %}<a href="/{{ l }}/{{ shell.path }}"{% if *l == shell.lang %} aria-current="true"{% endif %}>{{ l }}</a> {% endfor %}
+    {% for l in ["en", "ru", "zh"] %}<a href="/{{ l }}/{{ shell.path }}{% if shell.path == "search" %}?q={{ shell.query|urlencode }}{% endif %}"{% if *l == shell.lang %} aria-current="true"{% endif %}>{{ l }}</a> {% endfor %}
   </nav>
   <div class="account">
     {% match shell.user %}{% when Some with (u) %}

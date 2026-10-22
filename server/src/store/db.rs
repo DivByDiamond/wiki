@@ -25,9 +25,10 @@ pub fn migrate(conn: &Connection) -> StoreResult<()> {
         .pragma_query_value(None, "user_version", |r| r.get(0))
         .map_err(err)?;
     for (i, sql) in MIGRATIONS.iter().enumerate().skip(applied) {
-        conn.execute_batch(sql).map_err(err)?;
-        conn.pragma_update(None, "user_version", i + 1)
-            .map_err(err)?;
+        let tx = conn.unchecked_transaction().map_err(err)?;
+        tx.execute_batch(sql).map_err(err)?;
+        tx.pragma_update(None, "user_version", i + 1).map_err(err)?;
+        tx.commit().map_err(err)?;
     }
     Ok(())
 }

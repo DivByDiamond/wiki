@@ -43,7 +43,7 @@ async fn unknown_user_is_404() {
 }
 
 #[tokio::test]
-async fn blocking_takes_effect_on_the_very_next_request() {
+async fn blocking_and_demoting_destroy_the_session() {
     let e = env();
     let (cookie, id) = login(&e.st, 9, "erin", true, false);
     let ok = send(&e.app, "GET", "/admin", Some(&cookie), None, "").await;
@@ -54,12 +54,23 @@ async fn blocking_takes_effect_on_the_very_next_request() {
             .status(),
         303
     );
+    // the cookie is dead, not merely refused: the session is destroyed
     let res = send(&e.app, "GET", "/admin", Some(&cookie), None, "").await;
-    assert_eq!(res.status(), 403);
+    assert_eq!(res.status(), 401);
+    // unblocking does not resurrect it either
     e.post(&format!("/admin/users/{id}/unblock"), "").await;
     let res = send(&e.app, "GET", "/admin", Some(&cookie), None, "").await;
+    assert_eq!(res.status(), 401);
+    // a fresh sign-in works again
+    let (cookie, _) = login(&e.st, 9, "erin", true, false);
+    let res = send(&e.app, "GET", "/admin", Some(&cookie), None, "").await;
     assert_eq!(res.status(), 200);
+    // revoking the admin flag destroys the session as well
     e.post(&format!("/admin/users/{id}/revoke-admin"), "").await;
+    let res = send(&e.app, "GET", "/admin", Some(&cookie), None, "").await;
+    assert_eq!(res.status(), 401);
+    // and a non-admin sign-in is refused with the "Not allowed" page
+    let (cookie, _) = login(&e.st, 9, "erin", false, false);
     let res = send(&e.app, "GET", "/admin", Some(&cookie), None, "").await;
     assert_eq!(res.status(), 403);
     assert!(text(res).await.contains("Not allowed"));

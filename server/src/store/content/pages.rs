@@ -5,7 +5,7 @@ use crate::domain::{
         StoreError, StoreResult,
         pages::{PageRepo, PageSummary, SaveOutcome, SearchHit},
     },
-    revision::{self, NewRevision, Revision},
+    revision::{self, NewRevision, Revision, RevisionMeta},
 };
 use crate::store::db::{Db, err, now};
 use rusqlite::{Connection, OptionalExtension, params};
@@ -57,12 +57,14 @@ fn reindex(conn: &Connection, page_id: i64) -> StoreResult<()> {
 
 fn summaries(db: &Db, deleted: bool) -> StoreResult<Vec<PageSummary>> {
     let conn = db.lock().unwrap();
+    // Deleted pages may share (slug, lang), so the newest deletion comes first:
+    // restoring then brings back the copy that was removed last.
     let mut stmt = conn
         .prepare(if deleted {
-            "select slug, lang, section, position, current_rev_id, id from pages
-             where deleted_at is not null order by section, position, slug"
+            "select slug, lang, section, position, id from pages
+             where deleted_at is not null order by deleted_at desc, id desc"
         } else {
-            "select slug, lang, section, position, current_rev_id, id from pages
+            "select slug, lang, section, position, id from pages
              where deleted_at is null order by section, position, slug"
         })
         .map_err(err)?;
@@ -74,13 +76,12 @@ fn summaries(db: &Db, deleted: bool) -> StoreResult<Vec<PageSummary>> {
                 r.get::<_, String>(2)?,
                 r.get::<_, i64>(3)?,
                 r.get::<_, i64>(4)?,
-                r.get::<_, i64>(5)?,
             ))
         })
         .map_err(err)?;
     let mut out = Vec::new();
     for row in rows {
-        let (slug, lang, section, position, title_rev_id, id) = row.map_err(err)?;
+        let (slug, lang, section, position, id) = row.map_err(err)?;
         if let (Some(slug), Some(lang)) = (Slug::parse(&slug), Lang::parse(&lang)) {
             out.push(PageSummary {
                 id,
@@ -88,7 +89,6 @@ fn summaries(db: &Db, deleted: bool) -> StoreResult<Vec<PageSummary>> {
                 lang,
                 section,
                 position,
-                title_rev_id,
             });
         }
     }
@@ -173,7 +173,7 @@ impl PageRepo for SqlitePages {
         revisions::get(&self.db.lock().unwrap(), page_id, rev_id)
     }
 
-    fn history(&self, page_id: i64) -> StoreResult<Vec<Revision>> {
+    fn history(&self, page_id: i64) -> StoreResult<Vec<RevisionMeta>> {
         revisions::history(&self.db.lock().unwrap(), page_id)
     }
 
@@ -225,18 +225,20 @@ impl PageRepo for SqlitePages {
     }
 
     fn set_deleted(&self, page_id: i64, deleted: bool) -> StoreResult<()> {
-        let conn = self.db.lock().unwrap();
+        let mut conn = self.db.lock().unwrap();
+        let tx = conn.transaction().map_err(err)?;
         let at: Option<i64> = deleted.then(now);
-        conn.execute(
+        tx.execute(
             "update pages set deleted_at = ?1 where id = ?2",
             params![at, page_id],
         )
         .map_err(err)?;
         if deleted {
-            search::remove(&conn, page_id)
+            search::remove(&tx, page_id)?;
         } else {
-            reindex(&conn, page_id)
+            reindex(&tx, page_id)?;
         }
+        tx.commit().map_err(err)
     }
 
     fn search(&self, query: &str, lang: Lang) -> StoreResult<Vec<SearchHit>> {

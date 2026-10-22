@@ -105,7 +105,8 @@ mod tests {
         r.save(&slug("a"), Lang::En, rev("one")).unwrap();
         r.save(&slug("a"), Lang::En, rev("two")).unwrap();
         let page = r.find(&slug("a"), Lang::En).unwrap().unwrap();
-        let first = r.history(page.id).unwrap().last().unwrap().clone();
+        let first = r.history(page.id).unwrap().last().unwrap().id;
+        let first = r.revision(page.id, first).unwrap().unwrap();
         r.save(
             &slug("a"),
             Lang::En,

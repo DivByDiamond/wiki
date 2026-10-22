@@ -125,11 +125,21 @@ async fn twenty_first_proposal_of_the_day_is_429() {
     for i in 0..20 {
         let id = st
             .proposals
-            .create(page_id, page_rev, &format!("old{i}"), "", uid)
+            .create(
+                page_id,
+                page_rev,
+                &format!("old{i}"),
+                "",
+                uid,
+                Quota {
+                    open: 100,
+                    per_day: 100,
+                    since: 0,
+                },
+            )
+            .unwrap()
             .unwrap();
-        st.proposals
-            .decide(id, Status::Rejected, uid, "no")
-            .unwrap();
+        st.proposals.claim(id, Status::Rejected, uid, "no").unwrap();
     }
     assert_eq!(
         post(&app, Some(&cookie), None, "fresh", "1", "")

@@ -12,7 +12,7 @@ use askama::Template;
 use axum::{
     Form, Router,
     extract::{Path, State},
-    http::HeaderMap,
+    http::{HeaderMap, HeaderValue, header},
     response::{IntoResponse, Redirect, Response},
     routing::{get, post},
 };
@@ -51,6 +51,7 @@ pub struct KeyForm {
 }
 
 fn page(s: &AppState, viewer: Viewer, new_key: Option<String>) -> AppResult<Response> {
+    let fresh = new_key.is_some();
     let keys = s
         .access
         .list_keys()?
@@ -71,6 +72,14 @@ fn page(s: &AppState, viewer: Viewer, new_key: Option<String>) -> AppResult<Resp
         shell: Shell::bare(Lang::En, "API keys", "start").for_viewer(viewer),
         keys,
         new_key,
+    })
+    .map(|mut res| {
+        // The plain key is in this response only; keep it out of caches and history.
+        if fresh {
+            res.headers_mut()
+                .insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
+        }
+        res
     })
 }
 

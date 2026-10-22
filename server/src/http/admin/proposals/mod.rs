@@ -24,7 +24,10 @@ pub fn routes() -> Router<AppState> {
             "/admin/proposals/{id}/accept",
             post(decide::accept).layer(DefaultBodyLimit::max(MAX_FORM)),
         )
-        .route("/admin/proposals/{id}/reject", post(decide::reject))
+        .route(
+            "/admin/proposals/{id}/reject",
+            post(decide::reject).layer(DefaultBodyLimit::max(MAX_FORM)),
+        )
 }
 
 #[derive(Deserialize)]

@@ -6,7 +6,7 @@ use crate::domain::{
     ports::{
         StoreResult,
         access::{AccessRepo, KeyRow, UserRow},
-        proposals::ProposalRepo,
+        proposals::{ProposalRepo, Quota},
     },
     proposal::{Proposal, Status},
 };
@@ -89,7 +89,8 @@ impl ProposalRepo for SqliteProposals {
         body: &str,
         summary: &str,
         user_id: i64,
-    ) -> StoreResult<i64> {
+        quota: Quota,
+    ) -> StoreResult<Option<i64>> {
         proposals::create(
             &self.db.lock().unwrap(),
             page_id,
@@ -97,6 +98,7 @@ impl ProposalRepo for SqliteProposals {
             body,
             summary,
             user_id,
+            quota,
         )
     }
     fn get(&self, id: i64) -> StoreResult<Option<Proposal>> {
@@ -116,9 +118,6 @@ impl ProposalRepo for SqliteProposals {
     }
     fn reopen(&self, id: i64) -> StoreResult<()> {
         proposals::reopen(&self.db.lock().unwrap(), id)
-    }
-    fn decide(&self, id: i64, status: Status, admin_id: i64, note: &str) -> StoreResult<()> {
-        proposals::decide(&self.db.lock().unwrap(), id, status, admin_id, note)
     }
 }
 

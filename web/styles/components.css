@@ -82,8 +82,8 @@
 #editor-toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
 #editor-preview { margin-top: 1rem; padding: 1rem; border: 1px dashed var(--line); }
 
-.diff { font-family: var(--font-mono); font-size: 0.85rem; white-space: pre-wrap; }
-.diff > * { display: block; padding: 0 0.4rem; text-decoration: none; }
+.diff { font-family: var(--font-mono); font-size: 0.85rem; white-space: normal; }
+.diff > * { display: block; padding: 0 0.4rem; text-decoration: none; white-space: pre-wrap; }
 .diff ins { background: var(--ins-bg); }
 .diff del { background: var(--del-bg); }
 .diff ins::before { content: "+ "; }

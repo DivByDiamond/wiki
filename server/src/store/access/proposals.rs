@@ -1,4 +1,4 @@
-use crate::domain::ports::{StoreError, StoreResult};
+use crate::domain::ports::{StoreResult, proposals::Quota};
 use crate::domain::proposal::{Proposal, Status};
 use crate::store::db::{err, now};
 use rusqlite::{Connection, OptionalExtension, params};
@@ -26,14 +26,30 @@ pub fn create(
     body: &str,
     summary: &str,
     user_id: i64,
-) -> StoreResult<i64> {
-    conn.execute(
-        "insert into proposals (page_id, base_rev_id, body, summary, user_id, created_at) \
-         values (?1,?2,?3,?4,?5,?6)",
-        params![page_id, base_rev_id, body, summary, user_id, now()],
-    )
-    .map_err(err)?;
-    Ok(conn.last_insert_rowid())
+    quota: Quota,
+) -> StoreResult<Option<i64>> {
+    // The limits are part of the INSERT, so two concurrent requests cannot both
+    // pass the check and exceed the quota.
+    let changed = conn
+        .execute(
+            "insert into proposals (page_id, base_rev_id, body, summary, user_id, created_at) \
+             select ?1,?2,?3,?4,?5,?6 \
+             where (select count(*) from proposals where user_id = ?5 and status = 'open') < ?7 \
+               and (select count(*) from proposals where user_id = ?5 and created_at >= ?8) < ?9",
+            params![
+                page_id,
+                base_rev_id,
+                body,
+                summary,
+                user_id,
+                now(),
+                i64::from(quota.open),
+                quota.since,
+                i64::from(quota.per_day)
+            ],
+        )
+        .map_err(err)?;
+    Ok((changed == 1).then(|| conn.last_insert_rowid()))
 }
 
 pub fn get(conn: &Connection, id: i64) -> StoreResult<Option<Proposal>> {
@@ -104,19 +120,5 @@ pub fn reopen(conn: &Connection, id: i64) -> StoreResult<()> {
         [id],
     )
     .map_err(err)?;
-    Ok(())
-}
-
-/// Closes an open proposal; deciding a missing or already decided one is an error.
-pub fn decide(
-    conn: &Connection,
-    id: i64,
-    status: Status,
-    admin_id: i64,
-    note: &str,
-) -> StoreResult<()> {
-    if !claim(conn, id, status, admin_id, note)? {
-        return Err(StoreError(format!("proposal {id} is not open")));
-    }
     Ok(())
 }

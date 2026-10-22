@@ -23,6 +23,9 @@ export function lineDiff(from: string[], to: string[]): Op[] {
 
 const lines = (s: string) => s.split("\n");
 
+/** Matches the server cap; a bigger LCS table would freeze the tab. */
+const MAX_CELLS = 4_000_000;
+
 /** Both sides of a merge are shown as changes against the common base. */
 export function threeWay(base: string, current: string, proposed: string): { current: Op[]; proposed: Op[] } {
   return {
@@ -44,7 +47,12 @@ export function mountMerge(root: HTMLElement): void {
   const get = (role: string) => root.querySelector<HTMLElement>(`pre[data-role=${role}]`);
   const base = get("base"), cur = get("current"), prop = get("proposed");
   if (!base || !cur || !prop) return;
-  const d = threeWay(base.textContent ?? "", cur.textContent ?? "", prop.textContent ?? "");
+  const from = lines(base.textContent ?? "");
+  const to = lines(cur.textContent ?? "");
+  const proposed = lines(prop.textContent ?? "");
+  const rows = from.length + 1;
+  if (rows * (to.length + 1) > MAX_CELLS || rows * (proposed.length + 1) > MAX_CELLS) return;
+  const d = threeWay(from.join("\n"), to.join("\n"), proposed.join("\n"));
   fill(cur, d.current);
   fill(prop, d.proposed);
 }
