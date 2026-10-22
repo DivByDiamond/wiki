@@ -34,6 +34,35 @@ async fn hostile_slugs_are_rejected_over_http() {
 }
 
 #[tokio::test]
+async fn the_search_address_is_reserved_for_new_pages() {
+    let (app, st, write, _) = app_with_state();
+    let res = put(
+        &app,
+        "/api/pages/search?lang=en",
+        Some(&write),
+        b"x".to_vec(),
+    )
+    .await;
+    assert_eq!(res.status(), 422);
+    assert_eq!(json(res).await["error"], "invalid");
+    assert_eq!(
+        get(&app, "/api/pages/search?lang=en", None).await.status(),
+        404
+    );
+    // A page that predates the reservation can still be updated.
+    save_page(&st, "search", Lang::En, "old", "legacy");
+    let res = put(
+        &app,
+        "/api/pages/search?lang=en",
+        Some(&write),
+        b"new".to_vec(),
+    )
+    .await;
+    assert_eq!(res.status(), 200);
+    assert_eq!(json(res).await["outcome"], "updated");
+}
+
+#[tokio::test]
 async fn soft_deleted_page_disappears_from_api() {
     let (app, st, _, _) = app_with_state();
     save_page(&st, "gone", Lang::En, "# Gone", "s");

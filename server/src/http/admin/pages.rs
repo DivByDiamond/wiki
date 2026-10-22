@@ -1,11 +1,12 @@
-use super::{MAX_BODY, MAX_FORM, admin_login, admin_only, fail};
+use super::{MAX_BODY, MAX_FORM, admin_login, admin_only, fail, target};
 use crate::auth::policy::Actor;
 use crate::domain::{
-    page::{Lang, Slug},
+    page::Lang,
     revision::{Author, NewRevision, Revision, rollback_to},
 };
 use crate::error::{AppError, AppResult};
 use crate::http::{
+    ensure_slug_allowed,
     middleware::{Auth, Viewer},
     reader::{self, view::Shell},
     state::AppState,
@@ -95,12 +96,6 @@ fn rows(list: Vec<crate::domain::ports::pages::PageSummary>) -> Vec<Row> {
         .collect()
 }
 
-pub(super) fn target(lang: &str, slug: &str) -> AppResult<(Lang, Slug)> {
-    let lang = Lang::parse(lang).ok_or(AppError::NotFound)?;
-    let slug = Slug::parse(slug).ok_or(AppError::NotFound)?;
-    Ok((lang, slug))
-}
-
 async fn dashboard(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
     show_dashboard(&s, &actor, viewer).unwrap_or_else(fail)
 }
@@ -183,6 +178,10 @@ fn save_edit(
     check_origin(headers, &s.config)?;
     let login = admin_login(s, actor)?;
     let (lang, slug) = target(lang, slug)?;
+    // `search` is a reader route, so a new page there could never be opened.
+    if s.pages.find(&slug, lang)?.is_none() {
+        ensure_slug_allowed(slug.as_str())?;
+    }
     // Browsers submit textareas with CRLF line breaks.
     let body = f.body.replace("\r\n", "\n");
     let summary = f.summary.trim();

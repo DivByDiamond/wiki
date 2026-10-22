@@ -6,6 +6,7 @@ use crate::domain::{
 };
 use crate::error::{AppError, AppResult};
 use crate::http::{
+    ensure_slug_allowed,
     limit::{client_ip::ClientIp, enforce},
     middleware::Auth,
     require,
@@ -79,6 +80,10 @@ pub async fn put_page(
         _ => enforce(&s, "put", &ip)?,
     }
     let (slug, lang) = parse(&slug, q.lang.as_deref())?;
+    // `search` is a reader route, so a new page there could never be opened.
+    if s.pages.find(&slug, lang)?.is_none() {
+        ensure_slug_allowed(slug.as_str())?;
+    }
     let body = String::from_utf8(body.to_vec())
         .map_err(|_| AppError::Invalid("body must be UTF-8".into()))?;
     let rev = NewRevision {

@@ -11,7 +11,7 @@ use super::{
     user::{self, check_origin},
 };
 use crate::auth::policy::{Action, Actor};
-use crate::domain::page::Lang;
+use crate::domain::page::{Lang, Slug};
 use crate::error::{AppError, AppResult};
 use crate::render;
 use axum::{
@@ -21,7 +21,6 @@ use axum::{
     response::{Html, IntoResponse, Redirect, Response},
     routing::post,
 };
-use pages::target;
 
 /// Largest Markdown text an admin may save, preview or merge.
 pub(super) const MAX_BODY: usize = 1024 * 1024;
@@ -63,6 +62,13 @@ pub(super) fn admin_id(actor: &Actor) -> AppResult<i64> {
 pub(super) fn admin_login(s: &AppState, actor: &Actor) -> AppResult<String> {
     let id = admin_id(actor)?;
     Ok(s.access.user(id)?.ok_or(AppError::Forbidden)?.login)
+}
+
+/// Parses `{lang}/{slug}` path segments shared by every page route.
+pub(super) fn target(lang: &str, slug: &str) -> AppResult<(Lang, Slug)> {
+    let lang = Lang::parse(lang).ok_or(AppError::NotFound)?;
+    let slug = Slug::parse(slug).ok_or(AppError::NotFound)?;
+    Ok((lang, slug))
 }
 
 /// HTML error page for admin routes.

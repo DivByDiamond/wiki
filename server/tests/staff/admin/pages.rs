@@ -93,6 +93,26 @@ async fn non_admin_is_403_and_anonymous_is_401() {
 }
 
 #[tokio::test]
+async fn the_search_address_is_reserved_for_new_pages() {
+    let (app, st, cookie) = setup().await;
+    let res = send(
+        &app,
+        "POST",
+        "/admin/edit/en/search",
+        Some(&cookie),
+        "body=x",
+    )
+    .await;
+    assert_eq!(res.status(), 422);
+    assert!(
+        st.pages
+            .find(&Slug::parse("search").unwrap(), Lang::En)
+            .unwrap()
+            .is_none()
+    );
+}
+
+#[tokio::test]
 async fn admin_edit_creates_revision_authored_by_admin() {
     let (app, st, cookie) = setup().await;
     let dash = send(&app, "GET", "/admin", Some(&cookie), "").await;

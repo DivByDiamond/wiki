@@ -20,3 +20,13 @@ pub fn require(actor: &Actor, action: Action) -> AppResult<()> {
         Err(AppError::Forbidden)
     }
 }
+
+/// New pages must not take a reader route address; such a page would be unreachable.
+pub fn ensure_slug_allowed(slug: &str) -> AppResult<()> {
+    if slug == "search" {
+        return Err(AppError::Invalid(
+            "The address `search` is reserved for the search page.".into(),
+        ));
+    }
+    Ok(())
+}
