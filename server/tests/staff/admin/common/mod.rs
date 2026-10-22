@@ -107,3 +107,16 @@ impl Env {
             .unwrap()
     }
 }
+
+/// First `ocw_` followed by 64 hex characters.
+pub fn extract_key(html: &str) -> String {
+    html.match_indices("ocw_")
+        .find_map(|(i, _)| {
+            let hex: String = html[i + 4..]
+                .chars()
+                .take_while(char::is_ascii_hexdigit)
+                .collect();
+            (hex.len() == 64).then(|| format!("ocw_{hex}"))
+        })
+        .expect("a full key in the response")
+}

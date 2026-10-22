@@ -54,8 +54,7 @@ async fn key_shown_once_and_revoked_key_stops_working() {
     .await;
     assert_eq!(r.status(), 200);
     let body = text(r).await;
-    let start = body.find("ocw_").expect("key shown");
-    let key = body[start..start + 68].to_owned();
+    let key = crate::admin::common::extract_key(&body);
     assert_eq!(put_status(&app, &key).await, 200);
 
     let list = text(call(&app, form("GET", "/admin/keys", &cookie, "")).await).await;
