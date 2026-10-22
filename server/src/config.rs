@@ -100,7 +100,7 @@ mod tests {
     }
 
     #[test]
-    fn parses_url_and_admin_logins() {
+    fn parses_url_and_admin_ids() {
         let c = cfg(&[
             ("PUBLIC_URL", "https://wiki.example/"),
             ("ADMIN_GITHUB_IDS", " 42 , 7,,"),

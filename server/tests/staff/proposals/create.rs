@@ -175,4 +175,3 @@ async fn invalid_submissions_are_rejected() {
     );
     assert!(st.proposals.list(Status::Open).unwrap().is_empty());
 }
-
