@@ -134,6 +134,21 @@ mod tests {
     }
 
     #[test]
+    fn find_by_id_returns_the_same_page_as_find() {
+        let r = repo();
+        r.save(&slug("a"), Lang::En, rev("x")).unwrap();
+        let a = r.find(&slug("a"), Lang::En).unwrap().unwrap();
+        let b = r.find_by_id(a.id).unwrap().unwrap();
+        assert_eq!((b.id, b.slug, b.lang), (a.id, a.slug, a.lang));
+        assert_eq!(b.current.id, a.current.id);
+        assert!(!b.deleted);
+        r.set_deleted(a.id, true).unwrap();
+        assert!(r.find_by_id(a.id).unwrap().unwrap().deleted);
+        assert_eq!(r.list_deleted().unwrap()[0].id, a.id);
+        assert!(r.find_by_id(a.id + 1).unwrap().is_none());
+    }
+
+    #[test]
     fn deleted_pages_are_hidden_and_restorable() {
         let r = repo();
         r.save(&slug("a"), Lang::En, rev("x")).unwrap();

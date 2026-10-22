@@ -1,0 +1,34 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>Admin</h1>
+<p>
+  <a class="btn" href="/admin/proposals">Suggestions</a>
+  <a class="btn" href="/admin/keys">API keys</a>
+</p>
+<h2>Pages</h2>
+<ul>
+  {% for p in pages %}
+  <li>
+    <a href="/{{ p.lang }}/{{ p.slug }}">{{ p.lang }}/{{ p.slug }}</a>
+    <a href="/admin/edit/{{ p.lang }}/{{ p.slug }}">Edit</a>
+    <form method="post" action="/admin/delete/{{ p.lang }}/{{ p.slug }}" style="display: inline">
+      <button class="btn" type="submit">Delete</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<p>New pages are created by saving an edit at a new address, for example <code>/admin/edit/en/my-page</code>.</p>
+{% if !deleted.is_empty() %}
+<h2>Deleted pages</h2>
+<ul>
+  {% for p in deleted %}
+  <li>
+    {{ p.lang }}/{{ p.slug }}
+    <form method="post" action="/admin/restore/{{ p.lang }}/{{ p.slug }}" style="display: inline">
+      <button class="btn" type="submit">Restore</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

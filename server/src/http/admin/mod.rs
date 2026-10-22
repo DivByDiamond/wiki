@@ -1,0 +1,122 @@
+//! Admin panel: pages, edit suggestions and API keys. Every route is admin-only.
+
+mod keys;
+mod pages;
+mod proposals;
+
+use super::{
+    middleware::Auth,
+    state::AppState,
+    user::{self, check_origin},
+};
+use crate::auth::policy::{Action, Actor};
+use crate::domain::page::Lang;
+use crate::error::{AppError, AppResult};
+use crate::render;
+use axum::{
+    Router,
+    extract::{DefaultBodyLimit, Path, State},
+    http::HeaderMap,
+    response::{Html, IntoResponse, Redirect, Response},
+    routing::post,
+};
+use pages::{MAX_BODY, target};
+
+pub fn routes() -> Router<AppState> {
+    Router::new()
+        .merge(pages::routes())
+        .route("/admin/delete/{lang}/{*slug}", post(delete))
+        .route("/admin/restore/{lang}/{*slug}", post(restore))
+        .route(
+            "/admin/preview",
+            post(preview).layer(DefaultBodyLimit::max(MAX_BODY)),
+        )
+        .merge(proposals::routes())
+        .merge(keys::routes())
+}
+
+/// The action every admin route is gated on (only admins pass it).
+pub(super) const ADMIN: Action = Action::ManageUsers;
+
+/// Admin gate: anonymous gets 401, everyone else without rights 403.
+pub(super) fn admin_only(actor: &Actor) -> AppResult<()> {
+    super::require(actor, ADMIN)
+}
+
+/// Id of the signed-in admin; API keys never act as an admin user.
+pub(super) fn admin_id(actor: &Actor) -> AppResult<i64> {
+    admin_only(actor)?;
+    match actor {
+        Actor::User { id, .. } => Ok(*id),
+        _ => Err(AppError::Forbidden),
+    }
+}
+
+/// GitHub login of the signed-in admin, used as the revision author.
+pub(super) fn admin_login(s: &AppState, actor: &Actor) -> AppResult<String> {
+    let id = admin_id(actor)?;
+    Ok(s.access.user(id)?.ok_or(AppError::Forbidden)?.login)
+}
+
+/// HTML error page for admin routes.
+pub(super) fn fail(e: AppError) -> Response {
+    user::fail(Lang::En, e)
+}
+
+async fn delete(
+    State(s): State<AppState>,
+    Auth(actor): Auth,
+    headers: HeaderMap,
+    Path((lang, slug)): Path<(String, String)>,
+) -> Response {
+    set_deleted(&s, &actor, &headers, &lang, &slug, true).unwrap_or_else(fail)
+}
+
+async fn restore(
+    State(s): State<AppState>,
+    Auth(actor): Auth,
+    headers: HeaderMap,
+    Path((lang, slug)): Path<(String, String)>,
+) -> Response {
+    set_deleted(&s, &actor, &headers, &lang, &slug, false).unwrap_or_else(fail)
+}
+
+fn set_deleted(
+    s: &AppState,
+    actor: &Actor,
+    headers: &HeaderMap,
+    lang: &str,
+    slug: &str,
+    deleted: bool,
+) -> AppResult<Response> {
+    check_origin(headers, &s.config)?;
+    admin_id(actor)?;
+    let (lang, slug) = target(lang, slug)?;
+    let id = if deleted {
+        s.pages.find(&slug, lang)?.map(|p| p.id)
+    } else {
+        s.pages
+            .list_deleted()?
+            .into_iter()
+            .find(|p| p.slug == slug && p.lang == lang)
+            .map(|p| p.id)
+    };
+    s.pages
+        .set_deleted(id.ok_or(AppError::NotFound)?, deleted)?;
+    Ok(Redirect::to("/admin").into_response())
+}
+
+/// Markdown in the request body, rendered HTML out (for the editor preview).
+async fn preview(
+    State(s): State<AppState>,
+    Auth(actor): Auth,
+    headers: HeaderMap,
+    body: String,
+) -> Response {
+    let run = || -> AppResult<Response> {
+        check_origin(&headers, &s.config)?;
+        admin_only(&actor)?;
+        Ok(Html(render::to_html(&body)).into_response())
+    };
+    run().unwrap_or_else(fail)
+}

@@ -1,0 +1,17 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>Suggestions</h1>
+{% if rows.is_empty() %}
+<p>No open suggestions.</p>
+{% else %}
+<ul>
+  {% for r in rows %}
+  <li>
+    <a href="/admin/proposals/{{ r.id }}">{{ r.lang }}/{{ r.slug }}</a>
+    - {{ r.author }} - {{ r.summary }}{% if r.conflict %} (conflict){% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+<p><a class="btn" href="/admin">Back</a></p>
+{% endblock %}

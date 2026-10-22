@@ -1,0 +1,34 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>{% if is_new %}Create{% else %}Edit{% endif %}: {{ lang }}/{{ slug }}</h1>
+<form class="card" method="post" action="/admin/edit/{{ lang }}/{{ slug }}">
+  <div id="editor-toolbar"></div>
+  <div class="field">
+    <label for="editor">Text (Markdown)</label>
+    <textarea id="editor" name="body" rows="24" required>{{ body }}</textarea>
+  </div>
+  <div class="field">
+    <label for="summary">What did you change?</label>
+    <input id="summary" name="summary" maxlength="200">
+  </div>
+  <button class="btn btn--primary" type="submit">Save</button>
+  <a class="btn" href="/admin">Back</a>
+</form>
+<div id="preview" data-preview-url="/admin/preview"></div>
+{% if !history.is_empty() %}
+<h2>History</h2>
+<ul>
+  {% for h in history %}
+  <li>
+    #{{ h.id }} {{ h.summary }} ({{ h.author }})
+    {% if h.current %}current{% else %}
+    <form method="post" action="/admin/rollback/{{ lang }}/{{ slug }}" style="display: inline">
+      <input type="hidden" name="rev" value="{{ h.id }}">
+      <button class="btn" type="submit">Roll back to this</button>
+    </form>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

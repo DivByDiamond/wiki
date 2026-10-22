@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>API keys</h1>
+<p><a href="/admin">Back to admin</a></p>
+{% if let Some(k) = new_key %}
+<div class="notice">
+  <p>Copy this key now. It is shown only once and cannot be recovered.</p>
+  <p><code>{{ k }}</code></p>
+</div>
+{% endif %}
+<h2>Active keys</h2>
+<ul>
+  {% for k in keys %}
+  <li>
+    {{ k.name }} ({{ k.perms }})
+    <form method="post" action="/admin/keys/{{ k.id }}/revoke" style="display: inline">
+      <button class="btn" type="submit">Revoke</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+<h2>Create a key</h2>
+<form method="post" action="/admin/keys">
+  <p><label>Name <input name="name" maxlength="100" required></label></p>
+  <p>
+    <label><input type="checkbox" name="read" value="1" checked> read</label>
+    <label><input type="checkbox" name="write" value="1"> write</label>
+    <label><input type="checkbox" name="export" value="1"> export</label>
+  </p>
+  <button class="btn" type="submit">Create</button>
+</form>
+{% endblock %}

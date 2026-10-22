@@ -55,6 +55,46 @@ fn reindex(conn: &Connection, page_id: i64) -> StoreResult<()> {
     search::index(conn, page_id, &slug, &body)
 }
 
+fn summaries(db: &Db, deleted: bool) -> StoreResult<Vec<PageSummary>> {
+    let conn = db.lock().unwrap();
+    let mut stmt = conn
+        .prepare(if deleted {
+            "select slug, lang, section, position, current_rev_id, id from pages
+             where deleted_at is not null order by section, position, slug"
+        } else {
+            "select slug, lang, section, position, current_rev_id, id from pages
+             where deleted_at is null order by section, position, slug"
+        })
+        .map_err(err)?;
+    let rows = stmt
+        .query_map([], |r| {
+            Ok((
+                r.get::<_, String>(0)?,
+                r.get::<_, String>(1)?,
+                r.get::<_, String>(2)?,
+                r.get::<_, i64>(3)?,
+                r.get::<_, i64>(4)?,
+                r.get::<_, i64>(5)?,
+            ))
+        })
+        .map_err(err)?;
+    let mut out = Vec::new();
+    for row in rows {
+        let (slug, lang, section, position, title_rev_id, id) = row.map_err(err)?;
+        if let (Some(slug), Some(lang)) = (Slug::parse(&slug), Lang::parse(&lang)) {
+            out.push(PageSummary {
+                id,
+                slug,
+                lang,
+                section,
+                position,
+                title_rev_id,
+            });
+        }
+    }
+    Ok(out)
+}
+
 impl PageRepo for SqlitePages {
     fn find(&self, slug: &Slug, lang: Lang) -> StoreResult<Option<Page>> {
         let conn = self.db.lock().unwrap();
@@ -86,6 +126,45 @@ impl PageRepo for SqlitePages {
             section,
             position,
             deleted: false,
+            current,
+        }))
+    }
+
+    fn find_by_id(&self, page_id: i64) -> StoreResult<Option<Page>> {
+        let conn = self.db.lock().unwrap();
+        let row = conn
+            .query_row(
+                "select slug, lang, section, position, current_rev_id, deleted_at is not null
+                 from pages where id = ?1",
+                [page_id],
+                |r| {
+                    Ok((
+                        r.get::<_, String>(0)?,
+                        r.get::<_, String>(1)?,
+                        r.get(2)?,
+                        r.get(3)?,
+                        r.get::<_, i64>(4)?,
+                        r.get::<_, bool>(5)?,
+                    ))
+                },
+            )
+            .optional()
+            .map_err(err)?;
+        let Some((slug, lang, section, position, rev_id, deleted)) = row else {
+            return Ok(None);
+        };
+        let (Some(slug), Some(lang)) = (Slug::parse(&slug), Lang::parse(&lang)) else {
+            return Err(StoreError(format!("bad stored page: {slug}/{lang}")));
+        };
+        let current = revisions::get(&conn, page_id, rev_id)?
+            .ok_or_else(|| StoreError("missing current revision".into()))?;
+        Ok(Some(Page {
+            id: page_id,
+            slug,
+            lang,
+            section,
+            position,
+            deleted,
             current,
         }))
     }
@@ -138,38 +217,11 @@ impl PageRepo for SqlitePages {
     }
 
     fn list(&self) -> StoreResult<Vec<PageSummary>> {
-        let conn = self.db.lock().unwrap();
-        let mut stmt = conn
-            .prepare(
-                "select slug, lang, section, position, current_rev_id from pages
-                 where deleted_at is null order by section, position, slug",
-            )
-            .map_err(err)?;
-        let rows = stmt
-            .query_map([], |r| {
-                Ok((
-                    r.get::<_, String>(0)?,
-                    r.get::<_, String>(1)?,
-                    r.get::<_, String>(2)?,
-                    r.get::<_, i64>(3)?,
-                    r.get::<_, i64>(4)?,
-                ))
-            })
-            .map_err(err)?;
-        let mut out = Vec::new();
-        for row in rows {
-            let (slug, lang, section, position, title_rev_id) = row.map_err(err)?;
-            if let (Some(slug), Some(lang)) = (Slug::parse(&slug), Lang::parse(&lang)) {
-                out.push(PageSummary {
-                    slug,
-                    lang,
-                    section,
-                    position,
-                    title_rev_id,
-                });
-            }
-        }
-        Ok(out)
+        summaries(&self.db, false)
+    }
+
+    fn list_deleted(&self) -> StoreResult<Vec<PageSummary>> {
+        summaries(&self.db, true)
     }
 
     fn set_deleted(&self, page_id: i64, deleted: bool) -> StoreResult<()> {

@@ -1,0 +1,43 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>Suggestion #{{ id }}: {{ lang }}/{{ slug }}</h1>
+<p>{{ author }} - {{ summary }}</p>
+{% if conflict %}
+<div class="banner banner--warn">The page changed after this suggestion was made (base #{{ base_rev }}, current #{{ current_rev }}). Merge the texts by hand before accepting.</div>
+<h2>Base version</h2>
+<pre>{{ base_body }}</pre>
+<h2>Current version</h2>
+<pre>{{ current_body }}</pre>
+<h2>Suggested version</h2>
+<pre>{{ body }}</pre>
+{% endif %}
+<h2>Suggestion against the base version</h2>
+{% if let Some(lines) = base_diff %}
+<div class="diff">
+{% for l in lines %}{% if l.kind == "add" %}<ins>{{ l.text }}</ins>{% else if l.kind == "del" %}<del>{{ l.text }}</del>{% else %}<span>{{ l.text }}</span>{% endif %}
+{% endfor %}</div>
+{% else %}<p>The difference is too large to show.</p>{% endif %}
+<h2>Suggestion against the current version</h2>
+{% if let Some(lines) = current_diff %}
+<div class="diff">
+{% for l in lines %}{% if l.kind == "add" %}<ins>{{ l.text }}</ins>{% else if l.kind == "del" %}<del>{{ l.text }}</del>{% else %}<span>{{ l.text }}</span>{% endif %}
+{% endfor %}</div>
+{% else %}<p>The difference is too large to show.</p>{% endif %}
+{% if open %}
+<form class="card" method="post" action="/admin/proposals/{{ id }}/accept">
+  {% if conflict %}
+  <div class="field">
+    <label for="body">Merged text (Markdown)</label>
+    <textarea id="body" name="body" rows="24" required>{{ body }}</textarea>
+  </div>
+  {% endif %}
+  <div class="field">
+    <label for="note">Note</label>
+    <input id="note" name="note" maxlength="1000">
+  </div>
+  <button class="btn btn--primary" type="submit">Accept</button>
+  <button class="btn" type="submit" formaction="/admin/proposals/{{ id }}/reject">Reject</button>
+</form>
+{% endif %}
+<p><a class="btn" href="/admin/proposals">Back</a></p>
+{% endblock %}
