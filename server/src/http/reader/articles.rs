@@ -21,6 +21,7 @@ pub struct ArticleQuery {
     pub rev: Option<String>,
     pub history: Option<String>,
     pub diff: Option<String>,
+    pub proposed: Option<String>,
 }
 
 pub struct OldRev {
@@ -35,6 +36,7 @@ struct ArticlePage {
     html: String,
     old_rev: Option<OldRev>,
     missing_translation: bool,
+    proposed: bool,
 }
 
 pub async fn article(
@@ -85,5 +87,6 @@ fn handle(s: &AppState, ip: &str, lang: Lang, slug: &str, q: &ArticleQuery) -> A
         html: render::to_html(&revision.body),
         old_rev,
         missing_translation,
+        proposed: q.proposed.is_some(),
     })
 }

@@ -2,13 +2,16 @@
 {% block content %}
 <div class="page-actions">
   <a href="/{{ shell.lang }}/{{ shell.path }}?history">История</a>
-  <a href="/{{ shell.lang }}/{{ shell.path }}/propose">Предложить правку</a>
+  <a href="/propose/{{ shell.lang }}/{{ shell.path }}">Предложить правку</a>
 </div>
+{% if proposed %}
+<div class="banner">Предложение отправлено. Редакторы скоро его рассмотрят.</div>
+{% endif %}
 {% if let Some(old) = old_rev %}
 <div class="banner banner--warn">Старая версия от {{ old.date }}, автор {{ old.author }}. <a href="/{{ shell.lang }}/{{ shell.path }}">Перейти к актуальной</a></div>
 {% endif %}
 {% if missing_translation %}
-<div class="banner banner--warn">Перевода пока нет. <a href="/{{ shell.lang }}/{{ shell.path }}/propose">Предложить?</a></div>
+<div class="banner banner--warn">Перевода пока нет. <a href="/propose/{{ shell.lang }}/{{ shell.path }}">Предложить?</a></div>
 {% endif %}
 <div class="prose">{{ html|safe }}</div>
 {% endblock %}
