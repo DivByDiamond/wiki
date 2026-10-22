@@ -35,6 +35,12 @@ impl AccessRepo for SqliteAccess {
     fn count_active_admins(&self) -> StoreResult<u32> {
         users::count_active_admins(&self.db.lock().unwrap())
     }
+    fn block_keeping_an_admin(&self, id: i64) -> StoreResult<bool> {
+        users::block_keeping_an_admin(&self.db.lock().unwrap(), id)
+    }
+    fn revoke_admin_keeping_one(&self, id: i64) -> StoreResult<bool> {
+        users::revoke_admin_keeping_one(&self.db.lock().unwrap(), id)
+    }
     fn set_blocked(&self, id: i64, blocked: bool) -> StoreResult<()> {
         users::set_blocked(&self.db.lock().unwrap(), id, blocked)
     }

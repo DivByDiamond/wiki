@@ -24,6 +24,10 @@ pub trait AccessRepo: Send + Sync {
     fn list_users(&self) -> StoreResult<Vec<UserRow>>;
     /// Admins that are not blocked (the ones who can still manage the site).
     fn count_active_admins(&self) -> StoreResult<u32>;
+    /// Blocks the user unless that would leave no active admin; `false` when refused.
+    fn block_keeping_an_admin(&self, id: i64) -> StoreResult<bool>;
+    /// Removes admin rights unless that would leave no active admin; `false` when refused.
+    fn revoke_admin_keeping_one(&self, id: i64) -> StoreResult<bool>;
     fn set_blocked(&self, id: i64, blocked: bool) -> StoreResult<()>;
     fn set_admin(&self, id: i64, admin: bool) -> StoreResult<()>;
     fn create_key(

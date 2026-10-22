@@ -1,4 +1,4 @@
-use super::guard::{Change, check};
+use super::guard::{self, Change, check};
 use crate::auth::policy::Actor;
 use crate::error::{AppError, AppResult};
 use crate::http::{
@@ -34,11 +34,20 @@ fn apply(
     let change = Change::parse(action).ok_or(AppError::NotFound)?;
     let target = s.access.user(id)?.ok_or(AppError::NotFound)?;
     check(change, me, &target, s.access.count_active_admins()?)?;
-    match change {
-        Change::Block => s.access.set_blocked(id, true)?,
-        Change::Unblock => s.access.set_blocked(id, false)?,
-        Change::GrantAdmin => s.access.set_admin(id, true)?,
-        Change::RevokeAdmin => s.access.set_admin(id, false)?,
+    let done = match change {
+        Change::Block => s.access.block_keeping_an_admin(id)?,
+        Change::Unblock => {
+            s.access.set_blocked(id, false)?;
+            true
+        }
+        Change::GrantAdmin => {
+            s.access.set_admin(id, true)?;
+            true
+        }
+        Change::RevokeAdmin => s.access.revoke_admin_keeping_one(id)?,
+    };
+    if !done {
+        return Err(guard::last_admin());
     }
     Ok(Redirect::to("/admin/users").into_response())
 }

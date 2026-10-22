@@ -43,11 +43,14 @@ pub(super) fn check(
         ));
     }
     if target.admin && !target.blocked && active_admins <= 1 {
-        return Err(AppError::Conflict(
-            "The last active admin cannot be blocked or demoted.".into(),
-        ));
+        return Err(last_admin());
     }
     Ok(())
+}
+
+/// Also the answer when the store's atomic guard refuses (a concurrent change won).
+pub(super) fn last_admin() -> AppError {
+    AppError::Conflict("The last active admin cannot be blocked or demoted.".into())
 }
 
 #[cfg(test)]
