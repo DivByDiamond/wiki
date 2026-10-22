@@ -2,7 +2,7 @@
 {% block content %}
 <div class="page-actions">
   <a href="/{{ shell.lang }}/{{ shell.path }}?history">История</a>
-  <a href="/propose/{{ shell.lang }}/{{ shell.path }}">Предложить правку</a>
+  {% if !missing_translation %}<a href="/propose/{{ shell.lang }}/{{ shell.path }}">Предложить правку</a>{% endif %}
 </div>
 {% if proposed %}
 <div class="banner">Предложение отправлено. Редакторы скоро его рассмотрят.</div>
@@ -11,7 +11,7 @@
 <div class="banner banner--warn">Старая версия от {{ old.date }}, автор {{ old.author }}. <a href="/{{ shell.lang }}/{{ shell.path }}">Перейти к актуальной</a></div>
 {% endif %}
 {% if missing_translation %}
-<div class="banner banner--warn">Перевода пока нет. <a href="/propose/{{ shell.lang }}/{{ shell.path }}">Предложить?</a></div>
+<div class="banner banner--warn">Перевода пока нет.</div>
 {% endif %}
 <div class="prose">{{ html|safe }}</div>
 {% endblock %}

@@ -6,7 +6,10 @@ pub use date::format_utc;
 
 use crate::domain::page::Lang;
 use crate::error::AppResult;
-use crate::http::state::AppState;
+use crate::http::{
+    middleware::{SignedIn, Viewer},
+    state::AppState,
+};
 
 pub struct NavItem {
     pub slug: String,
@@ -27,9 +30,17 @@ pub struct Shell {
     pub path: String,
     pub query: String,
     pub sections: Vec<Section>,
+    /// Who is signed in, for the header; `None` when anonymous.
+    pub user: Option<SignedIn>,
 }
 
 impl Shell {
+    /// Shows the signed-in user in the header.
+    pub fn for_viewer(mut self, viewer: Viewer) -> Shell {
+        self.user = viewer.0;
+        self
+    }
+
     /// Shell without a sidebar (error pages).
     pub fn bare(lang: Lang, title: &str, path: &str) -> Shell {
         Shell {
@@ -38,6 +49,7 @@ impl Shell {
             path: path.into(),
             query: String::new(),
             sections: Vec::new(),
+            user: None,
         }
     }
 

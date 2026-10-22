@@ -3,7 +3,7 @@ use crate::auth::{policy::Actor, tokens::api_key};
 use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
 use crate::http::{
-    middleware::Auth,
+    middleware::{Auth, Viewer},
     reader::{self, view::Shell},
     state::AppState,
     user::check_origin,
@@ -50,7 +50,7 @@ pub struct KeyForm {
     export: Option<String>,
 }
 
-fn page(s: &AppState, new_key: Option<String>) -> AppResult<Response> {
+fn page(s: &AppState, viewer: Viewer, new_key: Option<String>) -> AppResult<Response> {
     let keys = s
         .access
         .list_keys()?
@@ -68,16 +68,16 @@ fn page(s: &AppState, new_key: Option<String>) -> AppResult<Response> {
         })
         .collect();
     reader::html(&Keys {
-        shell: Shell::bare(Lang::En, "API keys", "start"),
+        shell: Shell::bare(Lang::En, "API keys", "start").for_viewer(viewer),
         keys,
         new_key,
     })
 }
 
-async fn list(State(s): State<AppState>, Auth(actor): Auth) -> Response {
+async fn list(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
     let run = || -> AppResult<Response> {
         admin_only(&actor)?;
-        page(&s, None)
+        page(&s, viewer, None)
     };
     run().unwrap_or_else(fail)
 }
@@ -85,13 +85,20 @@ async fn list(State(s): State<AppState>, Auth(actor): Auth) -> Response {
 async fn create(
     State(s): State<AppState>,
     Auth(actor): Auth,
+    viewer: Viewer,
     headers: HeaderMap,
     Form(f): Form<KeyForm>,
 ) -> Response {
-    make(&s, &actor, &headers, f).unwrap_or_else(fail)
+    make(&s, &actor, viewer, &headers, f).unwrap_or_else(fail)
 }
 
-fn make(s: &AppState, actor: &Actor, headers: &HeaderMap, f: KeyForm) -> AppResult<Response> {
+fn make(
+    s: &AppState,
+    actor: &Actor,
+    viewer: Viewer,
+    headers: &HeaderMap,
+    f: KeyForm,
+) -> AppResult<Response> {
     check_origin(headers, &s.config)?;
     admin_only(actor)?;
     let name = f.name.trim();
@@ -106,7 +113,7 @@ fn make(s: &AppState, actor: &Actor, headers: &HeaderMap, f: KeyForm) -> AppResu
     }
     let (key, hash) = api_key::generate();
     s.access.create_key(name, &hash, read, write, export)?;
-    page(s, Some(key))
+    page(s, viewer, Some(key))
 }
 
 async fn revoke(

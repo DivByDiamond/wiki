@@ -19,6 +19,18 @@ pub fn set_cookie(name: &str, value: &str, max_age: u64, secure: bool) -> String
     format!("{name}={value}; Max-Age={max_age}; Path=/; HttpOnly; SameSite=Lax{flag}")
 }
 
+/// A post-sign-in redirect target that stays on this site: one leading `/`,
+/// no `//`, no backslash, no scheme, no control or cookie-breaking characters.
+pub fn safe_next(raw: &str) -> Option<&str> {
+    let ok = raw.starts_with('/')
+        && !raw.starts_with("//")
+        && raw.len() <= 200
+        && !raw
+            .chars()
+            .any(|c| c.is_control() || c.is_whitespace() || matches!(c, '\\' | ';' | ',' | '"'));
+    ok.then_some(raw)
+}
+
 /// `scheme://host[:port]` of a URL, lowercased.
 fn origin_of(url: &str) -> String {
     let (scheme, rest) = url.split_once("://").unwrap_or(("", url));
@@ -62,6 +74,28 @@ mod tests {
         for bad in ["https://evil.example", "http://wiki.example", "null"] {
             assert!(check_origin(&with_origin(bad), &c).is_err(), "{bad}");
         }
+    }
+
+    #[test]
+    fn next_accepts_local_paths_only() {
+        assert_eq!(safe_next("/en/start?x=1"), Some("/en/start?x=1"));
+        assert_eq!(safe_next("/"), Some("/"));
+        let long = format!("/{}", "a".repeat(200));
+        for bad in [
+            "//evil.com",
+            "https://evil.com",
+            "/\\evil",
+            "",
+            "evil",
+            long.as_str(),
+            "/a\r\nSet-Cookie: x=1",
+            "/a\0b",
+            "/a;b",
+            "/a b",
+        ] {
+            assert_eq!(safe_next(bad), None, "{bad:?}");
+        }
+        assert!(safe_next(&long[..200]).is_some());
     }
 
     #[test]

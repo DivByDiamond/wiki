@@ -79,6 +79,10 @@ async fn missing_translation_falls_back_to_english_with_notice() {
     let (status, body) = page(&app, "/ru/a").await;
     assert_eq!(status, 200);
     assert!(body.contains("english text") && body.contains("Перевода пока нет"));
+    assert!(
+        !body.contains("/propose/"),
+        "no link to a form that would 404"
+    );
     assert!(!page(&app, "/en/a").await.1.contains("Перевода пока нет"));
 }
 

@@ -8,7 +8,7 @@ use crate::auth::policy::Actor;
 use crate::domain::{page::Lang, ports::access::UserRow};
 use crate::error::AppResult;
 use crate::http::{
-    middleware::Auth,
+    middleware::{Auth, Viewer},
     reader::{self, view::Shell},
     state::AppState,
 };
@@ -34,18 +34,18 @@ struct Users {
     users: Vec<UserRow>,
 }
 
-async fn list(State(s): State<AppState>, Auth(actor): Auth) -> Response {
-    show(&s, &actor).unwrap_or_else(fail)
+async fn list(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
+    show(&s, &actor, viewer).unwrap_or_else(fail)
 }
 
-fn show(s: &AppState, actor: &Actor) -> AppResult<Response> {
+fn show(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
     admin_only(actor)?;
     let me = match actor {
         Actor::User { id, .. } => *id,
         _ => 0,
     };
     reader::html(&Users {
-        shell: Shell::bare(Lang::En, "Users", "start"),
+        shell: Shell::bare(Lang::En, "Users", "start").for_viewer(viewer),
         me,
         users: s.access.list_users()?,
     })

@@ -1,6 +1,6 @@
 use super::{
     fail,
-    guard::{check_origin, ct_eq, set_cookie},
+    guard::{check_origin, ct_eq, safe_next, set_cookie},
     notice,
 };
 use crate::auth::tokens::session::{ABSOLUTE_SECS, random_token};
@@ -19,7 +19,13 @@ use axum::{
 use serde::Deserialize;
 
 const STATE_COOKIE: &str = "oauth_state";
+const NEXT_COOKIE: &str = "oauth_next";
 const STATE_TTL_SECS: u64 = 600;
+
+#[derive(Deserialize)]
+pub struct StartQuery {
+    next: Option<String>,
+}
 
 #[derive(Deserialize)]
 pub struct CallbackQuery {
@@ -42,7 +48,11 @@ fn guard(s: &AppState, ip: &str) -> AppResult<()> {
 }
 
 /// `GET /auth/github`: remember a random `state` in a cookie, go to GitHub.
-pub async fn start(State(s): State<AppState>, ClientIp(ip): ClientIp) -> Response {
+pub async fn start(
+    State(s): State<AppState>,
+    ClientIp(ip): ClientIp,
+    Query(q): Query<StartQuery>,
+) -> Response {
     if !s.config.github_configured() {
         return not_configured();
     }
@@ -50,14 +60,13 @@ pub async fn start(State(s): State<AppState>, ClientIp(ip): ClientIp) -> Respons
         return fail(Lang::En, e);
     }
     let state = random_token();
-    let cookie = set_cookie(
-        STATE_COOKIE,
-        &state,
-        STATE_TTL_SECS,
-        s.config.secure_cookies(),
-    );
+    let secure = s.config.secure_cookies();
+    let mut cookies = vec![set_cookie(STATE_COOKIE, &state, STATE_TTL_SECS, secure)];
+    if let Some(next) = q.next.as_deref().and_then(safe_next) {
+        cookies.push(set_cookie(NEXT_COOKIE, next, STATE_TTL_SECS, secure));
+    }
     (
-        AppendHeaders([(SET_COOKIE, cookie)]),
+        AppendHeaders(cookies.into_iter().map(|c| (SET_COOKIE, c))),
         Redirect::to(&s.github.authorize_url(&state)),
     )
         .into_response()
@@ -124,9 +133,17 @@ fn finish(s: &AppState, headers: &HeaderMap, github_id: i64, login: &str) -> App
     let secure = s.config.secure_cookies();
     let sid = set_cookie("sid", &s.sessions.create(user.id), ABSOLUTE_SECS, secure);
     let clear = set_cookie(STATE_COOKIE, "", 0, secure);
+    let clear_next = set_cookie(NEXT_COOKIE, "", 0, secure);
+    let target = cookie(headers, NEXT_COOKIE)
+        .and_then(safe_next)
+        .unwrap_or("/");
     Ok((
-        AppendHeaders([(SET_COOKIE, sid), (SET_COOKIE, clear)]),
-        Redirect::to("/"),
+        AppendHeaders([
+            (SET_COOKIE, sid),
+            (SET_COOKIE, clear),
+            (SET_COOKIE, clear_next),
+        ]),
+        Redirect::to(target),
     )
         .into_response())
 }

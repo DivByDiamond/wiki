@@ -8,7 +8,7 @@ use crate::domain::{
 use crate::error::{AppError, AppResult};
 use crate::http::{
     admin::{admin_only, fail},
-    middleware::Auth,
+    middleware::{Auth, Viewer},
     reader::{self, view::Shell},
     state::AppState,
 };
@@ -83,11 +83,11 @@ fn diff_view(old: &str, new: &str) -> Option<Vec<DiffLine>> {
     )
 }
 
-pub(super) async fn list(State(s): State<AppState>, Auth(actor): Auth) -> Response {
-    show_list(&s, &actor).unwrap_or_else(fail)
+pub(super) async fn list(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
+    show_list(&s, &actor, viewer).unwrap_or_else(fail)
 }
 
-fn show_list(s: &AppState, actor: &Actor) -> AppResult<Response> {
+fn show_list(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
     admin_only(actor)?;
     let mut rows = Vec::new();
     for p in s.proposals.list(Status::Open)? {
@@ -104,7 +104,7 @@ fn show_list(s: &AppState, actor: &Actor) -> AppResult<Response> {
         });
     }
     reader::html(&ListPage {
-        shell: Shell::bare(Lang::En, "Suggestions", "start"),
+        shell: Shell::bare(Lang::En, "Suggestions", "start").for_viewer(viewer),
         rows,
     })
 }
@@ -112,12 +112,13 @@ fn show_list(s: &AppState, actor: &Actor) -> AppResult<Response> {
 pub(super) async fn detail(
     State(s): State<AppState>,
     Auth(actor): Auth,
+    viewer: Viewer,
     Path(id): Path<i64>,
 ) -> Response {
-    show_detail(&s, &actor, id).unwrap_or_else(fail)
+    show_detail(&s, &actor, viewer, id).unwrap_or_else(fail)
 }
 
-fn show_detail(s: &AppState, actor: &Actor, id: i64) -> AppResult<Response> {
+fn show_detail(s: &AppState, actor: &Actor, viewer: Viewer, id: i64) -> AppResult<Response> {
     admin_only(actor)?;
     let p = load(s, id)?;
     let page = s.pages.find_by_id(p.page_id)?.ok_or(AppError::NotFound)?;
@@ -127,7 +128,7 @@ fn show_detail(s: &AppState, actor: &Actor, id: i64) -> AppResult<Response> {
         .ok_or(AppError::NotFound)?;
     let conflict = is_conflict(p.base_rev_id, page.current.id);
     reader::html(&DetailPage {
-        shell: Shell::bare(Lang::En, "Suggestion", "start"),
+        shell: Shell::bare(Lang::En, "Suggestion", "start").for_viewer(viewer),
         id: p.id,
         lang: page.lang.code(),
         slug: page.slug.as_str().to_owned(),

@@ -6,7 +6,7 @@ use crate::domain::{
 };
 use crate::error::{AppError, AppResult};
 use crate::http::{
-    middleware::Auth,
+    middleware::{Auth, Viewer},
     reader::{self, view::Shell},
     state::AppState,
     user::check_origin,
@@ -101,14 +101,14 @@ pub(super) fn target(lang: &str, slug: &str) -> AppResult<(Lang, Slug)> {
     Ok((lang, slug))
 }
 
-async fn dashboard(State(s): State<AppState>, Auth(actor): Auth) -> Response {
-    show_dashboard(&s, &actor).unwrap_or_else(fail)
+async fn dashboard(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
+    show_dashboard(&s, &actor, viewer).unwrap_or_else(fail)
 }
 
-fn show_dashboard(s: &AppState, actor: &Actor) -> AppResult<Response> {
+fn show_dashboard(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
     admin_only(actor)?;
     reader::html(&Dashboard {
-        shell: Shell::bare(Lang::En, "Admin", "start"),
+        shell: Shell::bare(Lang::En, "Admin", "start").for_viewer(viewer),
         pages: rows(s.pages.list()?),
         deleted: rows(s.pages.list_deleted()?),
     })
@@ -117,15 +117,17 @@ fn show_dashboard(s: &AppState, actor: &Actor) -> AppResult<Response> {
 async fn edit_form(
     State(s): State<AppState>,
     Auth(actor): Auth,
+    viewer: Viewer,
     Path((lang, slug)): Path<(String, String)>,
     Query(q): Query<EditQuery>,
 ) -> Response {
-    show_editor(&s, &actor, &lang, &slug, q.same.is_some()).unwrap_or_else(fail)
+    show_editor(&s, &actor, viewer, &lang, &slug, q.same.is_some()).unwrap_or_else(fail)
 }
 
 fn show_editor(
     s: &AppState,
     actor: &Actor,
+    viewer: Viewer,
     lang: &str,
     slug: &str,
     same: bool,
@@ -150,7 +152,7 @@ fn show_editor(
         None => (String::new(), Vec::new()),
     };
     reader::html(&Editor {
-        shell: Shell::bare(Lang::En, "Edit", "start"),
+        shell: Shell::bare(Lang::En, "Edit", "start").for_viewer(viewer),
         lang: lang.code(),
         slug: slug.as_str().to_owned(),
         body,

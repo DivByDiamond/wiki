@@ -196,3 +196,58 @@ async fn login_is_rate_limited_per_client_ip() {
     }
     assert_eq!(last.as_u16(), 429);
 }
+
+async fn sign_in_with_next(app: &Router, next: &str) -> Response {
+    let start = get(app, &format!("/auth/github?next={next}"), None).await;
+    let state = cookie_value(&start, "oauth_state").unwrap();
+    let mut cookie = format!("oauth_state={state}");
+    if let Some(n) = cookie_value(&start, "oauth_next") {
+        cookie.push_str(&format!("; oauth_next={n}"));
+    }
+    get(
+        app,
+        &format!("/auth/github/callback?code=abc&state={state}"),
+        Some(&cookie),
+    )
+    .await
+}
+
+#[tokio::test]
+async fn callback_redirects_to_a_valid_next() {
+    let (app, _) = staff_app(gh(1, "a"), &[]);
+    let start = get(&app, "/auth/github?next=/ru/start", None).await;
+    let c = set_cookies(&start)
+        .into_iter()
+        .find(|c| c.starts_with("oauth_next="))
+        .unwrap();
+    for flag in ["HttpOnly", "SameSite=Lax", "Max-Age=600"] {
+        assert!(c.contains(flag), "{c}");
+    }
+    let res = sign_in_with_next(&app, "/ru/start").await;
+    assert_eq!(res.status(), 303);
+    assert_eq!(res.headers()["location"], "/ru/start");
+    assert!(
+        set_cookies(&res)
+            .iter()
+            .any(|c| c.starts_with("oauth_next=;") && c.contains("Max-Age=0"))
+    );
+}
+
+#[tokio::test]
+async fn callback_ignores_an_invalid_next() {
+    let (app, _) = staff_app(gh(1, "a"), &[]);
+    for bad in ["//evil.com", "https://evil.com", "/%5Cevil"] {
+        let start = get(&app, &format!("/auth/github?next={bad}"), None).await;
+        assert!(cookie_value(&start, "oauth_next").is_none(), "{bad}");
+    }
+    // A forged cookie is revalidated in the callback.
+    let start = get(&app, "/auth/github", None).await;
+    let state = cookie_value(&start, "oauth_state").unwrap();
+    let res = get(
+        &app,
+        &format!("/auth/github/callback?code=abc&state={state}"),
+        Some(&format!("oauth_state={state}; oauth_next=//evil.com")),
+    )
+    .await;
+    assert_eq!(res.headers()["location"], "/");
+}

@@ -1,5 +1,6 @@
 use super::state::AppState;
 use crate::auth::{policy::Actor, tokens::api_key};
+use crate::domain::ports::access::UserRow;
 use axum::{
     extract::FromRequestParts,
     http::{HeaderMap, request::Parts},
@@ -7,6 +8,38 @@ use axum::{
 use std::convert::Infallible;
 
 pub struct Auth(pub Actor);
+
+/// The signed-in user shown in the page header.
+#[derive(Clone)]
+pub struct SignedIn {
+    pub login: String,
+    pub admin: bool,
+}
+
+/// Header identity for HTML pages: one session lookup, `None` when anonymous
+/// or blocked. Independent of `Auth` so API-key requests never pay for it.
+pub struct Viewer(pub Option<SignedIn>);
+
+fn session_user(parts: &Parts, state: &AppState) -> Option<UserRow> {
+    cookie(&parts.headers, "sid")
+        .and_then(|t| state.sessions.user_id(t))
+        .and_then(|id| state.access.user(id).ok().flatten())
+}
+
+impl FromRequestParts<AppState> for Viewer {
+    type Rejection = Infallible;
+
+    async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Infallible> {
+        Ok(Viewer(
+            session_user(parts, state)
+                .filter(|u| !u.blocked)
+                .map(|u| SignedIn {
+                    login: u.login,
+                    admin: u.admin,
+                }),
+        ))
+    }
+}
 
 /// Value of cookie `name` from a request's `Cookie` header.
 pub fn cookie<'a>(headers: &'a HeaderMap, name: &str) -> Option<&'a str> {
@@ -41,10 +74,7 @@ impl FromRequestParts<AppState> for Auth {
                 _ => Actor::Anonymous,
             }));
         }
-        let user = cookie(&parts.headers, "sid")
-            .and_then(|t| state.sessions.user_id(t))
-            .and_then(|id| state.access.user(id).ok().flatten());
-        Ok(Auth(match user {
+        Ok(Auth(match session_user(parts, state) {
             Some(u) => Actor::User {
                 id: u.id,
                 admin: u.admin,

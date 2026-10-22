@@ -4,7 +4,7 @@ use crate::domain::page::{Lang, Slug};
 use crate::error::{AppError, AppResult};
 use crate::http::{
     limit::enforce,
-    middleware::Auth,
+    middleware::{Auth, Viewer},
     reader::{self, view::Shell},
     require,
     state::AppState,
@@ -78,19 +78,26 @@ fn parse_target(lang: &str, slug: &str) -> Result<(Lang, Slug), Box<Response>> {
 async fn form(
     State(s): State<AppState>,
     Auth(actor): Auth,
+    viewer: Viewer,
     Path((lang, slug)): Path<(String, String)>,
 ) -> Response {
     let (lang, slug) = match parse_target(&lang, &slug) {
         Ok(t) => t,
         Err(res) => return *res,
     };
-    show(&s, &actor, lang, &slug).unwrap_or_else(|e| fail(lang, e))
+    show(&s, &actor, viewer, lang, &slug).unwrap_or_else(|e| fail(lang, e))
 }
 
-fn show(s: &AppState, actor: &Actor, lang: Lang, slug: &Slug) -> AppResult<Response> {
+fn show(
+    s: &AppState,
+    actor: &Actor,
+    viewer: Viewer,
+    lang: Lang,
+    slug: &Slug,
+) -> AppResult<Response> {
     require(actor, Action::Propose)?;
     let page = s.pages.find(slug, lang)?.ok_or(AppError::NotFound)?;
-    let shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?;
+    let shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?.for_viewer(viewer);
     reader::html(&ProposePage {
         shell,
         base_rev: page.current.id,

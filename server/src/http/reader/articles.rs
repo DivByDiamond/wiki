@@ -6,6 +6,7 @@ use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
 use crate::http::{
     limit::{client_ip::ClientIp, enforce},
+    middleware::Viewer,
     state::AppState,
 };
 use crate::render;
@@ -42,21 +43,29 @@ struct ArticlePage {
 pub async fn article(
     State(s): State<AppState>,
     ClientIp(ip): ClientIp,
+    viewer: Viewer,
     Path((lang, slug)): Path<(String, String)>,
     Query(q): Query<ArticleQuery>,
 ) -> Response {
     let Some(lang) = Lang::parse(&lang) else {
         return unknown_lang();
     };
-    handle(&s, &ip, lang, &slug, &q).unwrap_or_else(|e| match e {
-        AppError::NotFound => {
-            notfound::render(&s, lang, &slug).unwrap_or_else(|e| error_page(lang, e))
-        }
+    let signed_in = viewer.0.clone();
+    handle(&s, &ip, lang, &slug, &q, viewer).unwrap_or_else(|e| match e {
+        AppError::NotFound => notfound::render(&s, lang, &slug, Viewer(signed_in))
+            .unwrap_or_else(|e| error_page(lang, e)),
         e => error_page(lang, e),
     })
 }
 
-fn handle(s: &AppState, ip: &str, lang: Lang, slug: &str, q: &ArticleQuery) -> AppResult<Response> {
+fn handle(
+    s: &AppState,
+    ip: &str,
+    lang: Lang,
+    slug: &str,
+    q: &ArticleQuery,
+    viewer: Viewer,
+) -> AppResult<Response> {
     let slug = parse_slug(slug)?;
     let (page, missing_translation) = match s.pages.find(&slug, lang)? {
         Some(p) => (p, false),
@@ -66,7 +75,7 @@ fn handle(s: &AppState, ip: &str, lang: Lang, slug: &str, q: &ArticleQuery) -> A
         ),
         None => return Err(AppError::NotFound),
     };
-    let shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?;
+    let shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?.for_viewer(viewer);
     if q.history.is_some() {
         enforce(s, "history", ip)?;
         return history::history(s, shell, &page);

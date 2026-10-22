@@ -3,6 +3,7 @@ use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
 use crate::http::{
     limit::{client_ip::ClientIp, enforce},
+    middleware::Viewer,
     state::AppState,
 };
 use askama::Template;
@@ -40,6 +41,7 @@ struct Fragment<'a> {
 pub async fn search(
     State(s): State<AppState>,
     ClientIp(ip): ClientIp,
+    viewer: Viewer,
     Path(lang): Path<String>,
     Query(q): Query<SearchQuery>,
 ) -> Response {
@@ -59,7 +61,7 @@ pub async fn search(
             })
             .collect();
         let page = SearchPage {
-            shell: Shell::build(&s, lang, "Поиск", "search", text)?,
+            shell: Shell::build(&s, lang, "Поиск", "search", text)?.for_viewer(viewer),
             hits,
         };
         if q.fragment.is_some() {

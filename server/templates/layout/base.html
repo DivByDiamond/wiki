@@ -29,6 +29,15 @@ try {
   <nav class="lang-switch">
     {% for l in ["en", "ru", "zh"] %}<a href="/{{ l }}/{{ shell.path }}"{% if *l == shell.lang %} aria-current="true"{% endif %}>{{ l }}</a> {% endfor %}
   </nav>
+  <div class="account">
+    {% match shell.user %}{% when Some with (u) %}
+    <span class="account-login">{{ u.login }}</span>
+    {% if u.admin %}<a href="/admin">Админка</a>{% endif %}
+    <form method="post" action="/auth/logout"><button type="submit">Выйти</button></form>
+    {% when None %}
+    <a href="/auth/github?next=/{{ shell.lang }}/{{ shell.path }}">Войти</a>
+    {% endmatch %}
+  </div>
   <button id="settings-toggle" type="button" aria-controls="settings-panel" aria-expanded="false">&#9881;</button>
 </header>
 <div class="layout">
