@@ -81,10 +81,22 @@ Sign in as an admin, open `/admin/keys`, create a key with the scopes you need a
 ### Deploy
 
 Ready-made files are in [`deploy/`](deploy):
-- `nginx-wiki.conf` - nginx vhost: HTTP to HTTPS redirect, certbot certificate, proxy to `127.0.0.1:8091`, real client IP from `CF-Connecting-IP`
+- `nginx-wiki.conf` - nginx vhost: HTTP to HTTPS redirect, certbot certificate, proxy to `127.0.0.1:8091`, real client IP from `CF-Connecting-IP` (trusted only from Cloudflare ranges)
 - `down.html` - fallback page that nginx serves with status 503 when the app is down
 - `systemd/` - unit `oc2r-wiki.service` (reads `/etc/oc2r-wiki.env`) and the weekly backup `oc2r-wiki-backup.service` / `.timer`
-- `backup.sh` - SQLite backup, keeps 60 days
+- `backup.sh` - SQLite backup to `/var/lib/oc2r-wiki/backups`, keeps 60 days
+
+Checklist (skipping an item breaks the live site):
+
+- DNS: an `A`/`AAAA` record `wiki.loki-code.dev` -> the VPS, proxied (orange cloud) in Cloudflare.
+- Cloudflare SSL/TLS mode **Full (strict)**; with Flexible the 80-to-443 redirect loops.
+- `sqlite3` installed (`apt install sqlite3`); the backup script needs the CLI.
+- `/var/lib/oc2r-wiki` owned by `wiki:wiki` (database, working dir and backups).
+- `/etc/oc2r-wiki.env` (root, mode 600) with `WIKI_BIND=127.0.0.1:8091`, the absolute public `PUBLIC_URL=https://wiki.loki-code.dev` (a wrong value makes every admin POST 403 and points the OAuth callback at loopback), `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `ADMIN_GITHUB_IDS=<numeric id>`.
+- Copy `deploy/down.html` to `/var/www/oc2r-wiki/down.html`.
+- Units: `cp deploy/systemd/* /etc/systemd/system/ && systemctl daemon-reload`, then `systemctl enable --now oc2r-wiki oc2r-wiki-backup.timer`.
+- nginx: copy `deploy/nginx-wiki.conf` to `/etc/nginx/sites-available/wiki.loki-code.dev`, link it into `sites-enabled`, run `certbot --nginx -d wiki.loki-code.dev`, then `nginx -t && systemctl reload nginx`.
+- Firewall: allow 80/443 only from Cloudflare ranges so the origin is not reachable directly (belt and braces with the nginx `real_ip` config).
 
 ### API example
 
@@ -167,10 +179,22 @@ cd .. && cargo build --release -p oc2r-wiki
 ### Деплой
 
 Готовые файлы лежат в [`deploy/`](deploy):
-- `nginx-wiki.conf` - vhost nginx: редирект с HTTP на HTTPS, сертификат certbot, проксирование на `127.0.0.1:8091`, реальный IP клиента из `CF-Connecting-IP`
+- `nginx-wiki.conf` - vhost nginx: редирект с HTTP на HTTPS, сертификат certbot, проксирование на `127.0.0.1:8091`, реальный IP клиента из `CF-Connecting-IP` (доверяется только диапазонам Cloudflare)
 - `down.html` - страница-заглушка, которую nginx отдаёт со статусом 503, когда приложение недоступно
 - `systemd/` - unit `oc2r-wiki.service` (читает `/etc/oc2r-wiki.env`) и еженедельная копия `oc2r-wiki-backup.service` / `.timer`
-- `backup.sh` - копия SQLite, хранится 60 дней
+- `backup.sh` - копия SQLite в `/var/lib/oc2r-wiki/backups`, хранится 60 дней
+
+Чеклист (пропуск любого пункта ломает живой сайт):
+
+- DNS: запись `A`/`AAAA` `wiki.loki-code.dev` -> VPS, проксируется (оранжевое облако) в Cloudflare.
+- Режим SSL/TLS в Cloudflare **Full (strict)**; при Flexible редирект с 80 на 443 зацикливается.
+- Установлен `sqlite3` (`apt install sqlite3`); он нужен скрипту копии.
+- Каталог `/var/lib/oc2r-wiki` принадлежит `wiki:wiki` (база, рабочий каталог и копии).
+- `/etc/oc2r-wiki.env` (root, режим 600) с `WIKI_BIND=127.0.0.1:8091`, абсолютным публичным `PUBLIC_URL=https://wiki.loki-code.dev` (неверное значение делает каждый admin POST 403 и уводит callback OAuth на loopback), `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `ADMIN_GITHUB_IDS=<числовой id>`.
+- Скопировать `deploy/down.html` в `/var/www/oc2r-wiki/down.html`.
+- Unit-файлы: `cp deploy/systemd/* /etc/systemd/system/ && systemctl daemon-reload`, затем `systemctl enable --now oc2r-wiki oc2r-wiki-backup.timer`.
+- nginx: скопировать `deploy/nginx-wiki.conf` в `/etc/nginx/sites-available/wiki.loki-code.dev`, слинковать в `sites-enabled`, выполнить `certbot --nginx -d wiki.loki-code.dev`, затем `nginx -t && systemctl reload nginx`.
+- Фаервол: разрешить 80/443 только диапазонам Cloudflare, чтобы origin нельзя было открыть напрямую (подстраховка к `real_ip` в nginx).
 
 ### Пример API
 

@@ -4,6 +4,9 @@ use std::{
     time::{Duration, Instant},
 };
 
+/// Map size that triggers a sweep of expired windows.
+const SWEEP_AT: usize = 1024;
+
 pub struct RateLimiter {
     max: u32,
     per: Duration,
@@ -23,6 +26,10 @@ impl RateLimiter {
     pub fn check(&self, key: &str) -> Result<(), u64> {
         let mut hits = self.hits.lock().unwrap();
         let now = Instant::now();
+        if hits.len() >= SWEEP_AT {
+            let per = self.per;
+            hits.retain(|_, (start, _)| now.duration_since(*start) < per);
+        }
         let entry = hits.entry(key.to_owned()).or_insert((now, 0));
         if now.duration_since(entry.0) >= self.per {
             *entry = (now, 0);
@@ -32,6 +39,11 @@ impl RateLimiter {
         }
         entry.1 += 1;
         Ok(())
+    }
+
+    #[cfg(test)]
+    fn len(&self) -> usize {
+        self.hits.lock().unwrap().len()
     }
 }
 
@@ -48,5 +60,17 @@ mod tests {
         let retry = l.check("ip").unwrap_err();
         assert!((1..=60).contains(&retry));
         assert!(l.check("other").is_ok());
+    }
+
+    #[test]
+    fn expired_windows_are_evicted_when_the_map_grows() {
+        let l = RateLimiter::new(1, Duration::from_millis(20));
+        for i in 0..SWEEP_AT {
+            l.check(&format!("ip{i}")).unwrap();
+        }
+        assert_eq!(l.len(), SWEEP_AT);
+        std::thread::sleep(Duration::from_millis(30));
+        l.check("fresh").unwrap();
+        assert_eq!(l.len(), 1, "only the live window is kept");
     }
 }

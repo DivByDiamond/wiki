@@ -51,12 +51,32 @@ pub(crate) fn error_page(lang: Lang, err: AppError) -> Response {
             m.clone(),
         ),
         AppError::Conflict(m) => (StatusCode::CONFLICT, "Conflict", m.clone()),
+        AppError::Unauthorized => (
+            StatusCode::UNAUTHORIZED,
+            "Нужен вход",
+            "Войдите и попробуйте снова.".to_string(),
+        ),
+        AppError::Forbidden => (
+            StatusCode::FORBIDDEN,
+            "Недостаточно прав",
+            "У вас нет доступа к этой странице.".to_string(),
+        ),
+        AppError::TooLarge => (
+            StatusCode::PAYLOAD_TOO_LARGE,
+            "Запрос слишком большой",
+            "Тело запроса больше допустимого.".to_string(),
+        ),
         AppError::RateLimited(_) => (
             StatusCode::TOO_MANY_REQUESTS,
             "Слишком много запросов",
             "Подождите немного и повторите.".to_string(),
         ),
-        _ => return err.into_response(),
+        // Reader pages always answer with HTML, even when the store fails.
+        AppError::Internal(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Ошибка сервера",
+            "Что-то пошло не так. Попробуйте позже.".to_string(),
+        ),
     };
     let page = ErrorPage {
         shell: Shell::bare(lang, heading, "start"),

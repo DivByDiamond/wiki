@@ -1,9 +1,15 @@
 use oc2r_wiki::{config::Config, http::state::AppState, router, store::db};
+use std::io::IsTerminal;
 use std::net::SocketAddr;
+use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+    tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .with_ansi(std::io::stdout().is_terminal())
+        .init();
     let cfg = match Config::from_env() {
         Ok(c) => c,
         Err(e) => {
