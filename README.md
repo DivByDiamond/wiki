@@ -50,7 +50,7 @@ Admins and API keys edit pages directly. Everyone else signs in with GitHub and 
 
 ### Build
 
-The frontend must be built **before** `cargo build`: the server embeds the assets from `web/dist` into the binary.
+The frontend must be built **before** `cargo build`: the server embeds the assets from `web/dist` into the binary. Build web/ first: a release build fails when `web/dist/app.js` or `app.css` is missing, a debug build only warns, and `cargo test` needs the build too.
 
 ```bash
 cd web && bun install --frozen-lockfile && bun run build
@@ -136,7 +136,7 @@ OC2R Wiki - сайт документации мода [OC2R] на `wiki.loki-co
 
 ### Сборка
 
-Фронтенд нужно собрать **до** `cargo build`: сервер встраивает ассеты из `web/dist` в бинарник.
+Фронтенд нужно собрать **до** `cargo build`: сервер встраивает ассеты из `web/dist` в бинарник. Сначала соберите web/: релизная сборка падает, если нет `web/dist/app.js` или `app.css`, отладочная только предупреждает, а `cargo test` тоже требует сборки.
 
 ```bash
 cd web && bun install --frozen-lockfile && bun run build
