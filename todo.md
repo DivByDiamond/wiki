@@ -2705,7 +2705,7 @@ git commit -m "Add frontend settings, search, editor and styles"
 ### Task 14: деплой, README и сквозной тест
 
 **Files:**
-- Create: `deploy/Caddyfile`, `deploy/oc2r-wiki.service`, `deploy/backup.sh`
+- Create: `deploy/Caddyfile`, `deploy/oc2r-wiki.service`, `deploy/backup.sh` (в продакшене вместо Caddy работает nginx: `deploy/nginx-wiki.conf`, unit в `deploy/systemd/`)
 - Create: `README.md`
 - Create: `server/tests/e2e.rs`
 
@@ -2727,7 +2727,7 @@ async fn propose_accept_history_rollback() { /* шаги 1–5; после ка�
 
 - [ ] **Step 3: Деплой-файлы**
 
-`deploy/Caddyfile`:
+`deploy/Caddyfile` (исходный план; в продакшене используется nginx, см. `deploy/nginx-wiki.conf`):
 ```
 wiki.loki-code.dev {
     encode zstd gzip

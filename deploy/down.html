@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>OC2R Wiki</title>
+<style>
+  :root { --bg:#f6f7f9; --fg:#1b1f24; --muted:#5b6370; --line:#1a1a1a; --accent:#2f8f2f; --card:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e1116; --fg:#e8eaed; --muted:#9aa3ae; --line:#000; --accent:#5ac05a; --card:#171b22; } }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:16px; background:var(--bg); color:var(--fg);
+         font:16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { width:100%; max-width:520px; background:var(--card); border:3px solid var(--line); box-shadow:4px 4px 0 var(--line); padding:28px; }
+  h1 { margin:0 0 4px; font:700 28px/1.2 "Courier New", monospace; }
+  h1 span { color:var(--accent); }
+  p { margin:10px 0 0; color:var(--muted); }
+  .slots { display:inline-grid; grid-template-columns:repeat(3,28px); gap:3px; margin:18px 0 6px; padding:4px; background:#8b8b8b; border:3px solid var(--line); }
+  .slots i { height:28px; background:#c6c6c6; box-shadow:inset 2px 2px #8b8b8b, inset -2px -2px #fff; }
+  .slots i:nth-child(5) { background:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1><span>▣</span> OC2R Wiki</h1>
+  <div class="slots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <p><b>Вики скоро откроется.</b> Сервер готовится к запуску, зайдите чуть позже.</p>
+  <p>The wiki is starting up. Please check back soon.</p>
+</main>
+</body>
+</html>

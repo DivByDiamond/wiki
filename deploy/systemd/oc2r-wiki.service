@@ -4,12 +4,15 @@ After=network.target
 
 [Service]
 User=wiki
+Group=wiki
 WorkingDirectory=/var/lib/oc2r-wiki
 EnvironmentFile=/etc/oc2r-wiki.env
 ExecStart=/usr/local/bin/oc2r-wiki
 Restart=on-failure
 NoNewPrivileges=true
 ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
 ReadWritePaths=/var/lib/oc2r-wiki
 
 [Install]

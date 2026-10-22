@@ -31,13 +31,13 @@
 ## Архитектура
 
 ```
-Браузер ──HTTP──► Caddy ──► oc2r-wiki (axum)
-                              ├─ http   маршруты, extractors, middleware
-                              ├─ auth   GitHub OAuth, сессии, ключи, политика прав
-                              ├─ domain типы и правила, порты (trait)
-                              ├─ render Markdown → безопасный HTML
-                              ├─ diff   сравнение текстов
-                              └─ store  SQLite, реализует порты
+Браузер ──HTTPS──► Cloudflare ──► nginx ──► oc2r-wiki (axum, 127.0.0.1:8091)
+                                            ├─ http   маршруты, extractors, middleware
+                                            ├─ auth   GitHub OAuth, сессии, ключи, политика прав
+                                            ├─ domain типы и правила, порты (trait)
+                                            ├─ render Markdown → безопасный HTML
+                                            ├─ diff   сравнение текстов
+                                            └─ store  SQLite, реализует порты
 ```
 
 Зависимости направлены внутрь: `http` и `store` знают про `domain`, `domain` не знает ни про кого.
@@ -75,9 +75,16 @@ revisions_fts  FTS5 по body и slug, обновляется триггерам
 ## Деплой
 
 - Один бинарник и файл базы. Статика фронтенда встраивается в бинарник при сборке.
-- Caddy терминирует TLS для `wiki.loki-code.dev`. Конфиг и unit-файл systemd лежат в `deploy/`.
-- Резервная копия: `sqlite3 .backup` раз в неделю и перед обновлением. Частота мала намеренно,
-  потому что история правок уже защищает от ошибок в тексте.
+- Cloudflare стоит перед сайтом и отдаёт TLS посетителям. nginx на сервере держит сертификат
+  Let's Encrypt от certbot (плагин nginx) для `wiki.loki-code.dev`, отправляет HTTP на HTTPS и проксирует
+  на `127.0.0.1:8091` (порт 8080 занят другим контейнером). Конфиг лежит в `deploy/nginx-wiki.conf`.
+- Реальный IP клиента приходит в `CF-Connecting-IP`, nginx кладёт его в `X-Real-IP` и `X-Forwarded-For`.
+  Приложение доверяет `X-Real-IP` только потому, что слушает loopback.
+- Если приложение недоступно, nginx отдаёт заглушку `deploy/down.html` со статусом 503.
+- Unit-файлы systemd лежат в `deploy/systemd/`: сервис `oc2r-wiki` (читает `/etc/oc2r-wiki.env`) и таймер
+  резервной копии. Сам скрипт - `deploy/backup.sh`.
+- Резервная копия: `sqlite3 .backup` раз в неделю (`oc2r-wiki-backup.timer`) и перед обновлением, копии
+  старше 60 дней удаляются. Частота мала намеренно, потому что история правок уже защищает от ошибок в тексте.
 - Экспорт всех страниц в Markdown через `GET /api/export` служит вторым способом копии.
 
 ## Вне объёма

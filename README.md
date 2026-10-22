@@ -46,7 +46,7 @@ Admins and API keys edit pages directly. Everyone else signs in with GitHub and 
 
 - **Backend:** Rust (edition 2024), axum, SQLite (rusqlite), pulldown-cmark, ammonia
 - **Frontend:** TypeScript without runtime libraries, built with Bun
-- **Deploy:** one binary and one database file behind Caddy
+- **Deploy:** one binary and one database file behind nginx, Cloudflare in front
 
 ### Build
 
@@ -66,6 +66,9 @@ cd .. && cargo build --release -p oc2r-wiki
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub login credentials |
 | `PUBLIC_URL` | Public site URL, used for the login callback |
 | `ADMIN_GITHUB_IDS` | Comma-separated numeric GitHub user ids that become admins on sign-in |
+| `RUST_LOG` | Log level, for example `info` |
+
+On the production server all variables are read from `/etc/oc2r-wiki.env` (root, mode 600), with `WIKI_BIND=127.0.0.1:8091` and `PUBLIC_URL=https://wiki.loki-code.dev`. Port 8080 is taken there by another container.
 
 ### GitHub OAuth app
 
@@ -77,7 +80,11 @@ Sign in as an admin, open `/admin/keys`, create a key with the scopes you need a
 
 ### Deploy
 
-Ready-made files are in [`deploy/`](deploy): `Caddyfile`, systemd unit `oc2r-wiki.service` (reads `/etc/oc2r-wiki.env`) and `backup.sh` (SQLite backup).
+Ready-made files are in [`deploy/`](deploy):
+- `nginx-wiki.conf` - nginx vhost: HTTP to HTTPS redirect, certbot certificate, proxy to `127.0.0.1:8091`, real client IP from `CF-Connecting-IP`
+- `down.html` - fallback page that nginx serves with status 503 when the app is down
+- `systemd/` - unit `oc2r-wiki.service` (reads `/etc/oc2r-wiki.env`) and the weekly backup `oc2r-wiki-backup.service` / `.timer`
+- `backup.sh` - SQLite backup, keeps 60 days
 
 ### API example
 
@@ -125,7 +132,7 @@ OC2R Wiki - сайт документации мода [OC2R] на `wiki.loki-co
 
 - **Бэкенд:** Rust (edition 2024), axum, SQLite (rusqlite), pulldown-cmark, ammonia
 - **Фронтенд:** TypeScript без рантайм-библиотек, сборка через Bun
-- **Деплой:** один бинарник и один файл базы за Caddy
+- **Деплой:** один бинарник и один файл базы за nginx, спереди Cloudflare
 
 ### Сборка
 
@@ -145,6 +152,9 @@ cd .. && cargo build --release -p oc2r-wiki
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Данные приложения GitHub для входа |
 | `PUBLIC_URL` | Публичный адрес сайта, нужен для callback входа |
 | `ADMIN_GITHUB_IDS` | Числовые id пользователей GitHub через запятую, которые становятся админами при входе |
+| `RUST_LOG` | Уровень логов, например `info` |
+
+На продакшен-сервере все переменные читаются из `/etc/oc2r-wiki.env` (root, режим 600), там `WIKI_BIND=127.0.0.1:8091` и `PUBLIC_URL=https://wiki.loki-code.dev`. Порт 8080 там занят другим контейнером.
 
 ### OAuth-приложение GitHub
 
@@ -156,7 +166,11 @@ cd .. && cargo build --release -p oc2r-wiki
 
 ### Деплой
 
-Готовые файлы лежат в [`deploy/`](deploy): `Caddyfile`, unit systemd `oc2r-wiki.service` (читает `/etc/oc2r-wiki.env`) и `backup.sh` (копия SQLite).
+Готовые файлы лежат в [`deploy/`](deploy):
+- `nginx-wiki.conf` - vhost nginx: редирект с HTTP на HTTPS, сертификат certbot, проксирование на `127.0.0.1:8091`, реальный IP клиента из `CF-Connecting-IP`
+- `down.html` - страница-заглушка, которую nginx отдаёт со статусом 503, когда приложение недоступно
+- `systemd/` - unit `oc2r-wiki.service` (читает `/etc/oc2r-wiki.env`) и еженедельная копия `oc2r-wiki-backup.service` / `.timer`
+- `backup.sh` - копия SQLite, хранится 60 дней
 
 ### Пример API
 

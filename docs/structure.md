@@ -25,7 +25,8 @@ todo.md           план работ
 docs/             design.md  workflows.md  reader.md  structure.md
 server/           Rust-крейт
 web/              TypeScript, без библиотек
-deploy/           Caddyfile  oc2r-wiki.service  backup.sh
+deploy/           nginx-wiki.conf  down.html  backup.sh
+deploy/systemd/   oc2r-wiki.service  oc2r-wiki-backup.service  oc2r-wiki-backup.timer
 ```
 
 ## server/

@@ -1,0 +1,8 @@
+[Unit]
+Description=OC2R Wiki database backup
+
+[Service]
+Type=oneshot
+User=wiki
+Group=wiki
+ExecStart=/usr/local/bin/oc2r-wiki-backup
