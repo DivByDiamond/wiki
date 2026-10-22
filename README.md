@@ -17,7 +17,7 @@ Rust backend, TypeScript frontend, one binary, one SQLite file.
 
 ---
 
-> **Status:** design and implementation plan are written, code is not started yet. See [`docs/`](docs) and [`todo.md`](todo.md).
+> **Status:** in development. See [`docs/`](docs) and [`todo.md`](todo.md).
 
 ---
 
@@ -50,7 +50,7 @@ Admins and API keys edit pages directly. Everyone else signs in with GitHub and 
 
 ### Build
 
-Planned commands, they will work once the first tasks of [`todo.md`](todo.md) are done:
+The frontend must be built **before** `cargo build`: the server embeds the assets from `web/dist` into the binary.
 
 ```bash
 cd web && bun install --frozen-lockfile && bun run build
@@ -65,7 +65,19 @@ cd .. && cargo build --release -p oc2r-wiki
 | `WIKI_DB` | Path to the SQLite file, default `wiki.db` |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub login credentials |
 | `PUBLIC_URL` | Public site URL, used for the login callback |
-| `ADMIN_LOGINS` | Comma-separated GitHub logins that become admins |
+| `ADMIN_GITHUB_IDS` | Comma-separated numeric GitHub user ids that become admins on sign-in |
+
+### GitHub OAuth app
+
+Create one at GitHub: Settings, Developer settings, OAuth Apps, New. Set the callback URL to `<PUBLIC_URL>/auth/github/callback`, then put the client id and secret into `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`. Find your numeric id at `https://api.github.com/users/<login>` and list it in `ADMIN_GITHUB_IDS`.
+
+### API keys
+
+Sign in as an admin, open `/admin/keys`, create a key with the scopes you need and copy it: it is shown once.
+
+### Deploy
+
+Ready-made files are in [`deploy/`](deploy): `Caddyfile`, systemd unit `oc2r-wiki.service` (reads `/etc/oc2r-wiki.env`) and `backup.sh` (SQLite backup).
 
 ### API example
 
@@ -117,7 +129,7 @@ OC2R Wiki - сайт документации мода [OC2R] на `wiki.loki-co
 
 ### Сборка
 
-Планируемые команды, заработают после первых задач из [`todo.md`](todo.md):
+Фронтенд нужно собрать **до** `cargo build`: сервер встраивает ассеты из `web/dist` в бинарник.
 
 ```bash
 cd web && bun install --frozen-lockfile && bun run build
@@ -132,7 +144,19 @@ cd .. && cargo build --release -p oc2r-wiki
 | `WIKI_DB` | Путь к файлу SQLite, по умолчанию `wiki.db` |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | Данные приложения GitHub для входа |
 | `PUBLIC_URL` | Публичный адрес сайта, нужен для callback входа |
-| `ADMIN_LOGINS` | Логины GitHub через запятую, которые становятся админами |
+| `ADMIN_GITHUB_IDS` | Числовые id пользователей GitHub через запятую, которые становятся админами при входе |
+
+### OAuth-приложение GitHub
+
+Создайте его в GitHub: Settings, Developer settings, OAuth Apps, New. Callback URL: `<PUBLIC_URL>/auth/github/callback`. Client id и secret положите в `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`. Числовой id узнать можно на `https://api.github.com/users/<login>`, его нужно указать в `ADMIN_GITHUB_IDS`.
+
+### Ключи API
+
+Войдите админом, откройте `/admin/keys`, создайте ключ с нужными правами и скопируйте его: он показывается один раз.
+
+### Деплой
+
+Готовые файлы лежат в [`deploy/`](deploy): `Caddyfile`, unit systemd `oc2r-wiki.service` (читает `/etc/oc2r-wiki.env`) и `backup.sh` (копия SQLite).
 
 ### Пример API
 
