@@ -1,9 +1,7 @@
 mod dashboard;
-
 use super::{MAX_BODY, MAX_FORM, admin_login, admin_only, fail, target};
 use crate::auth::policy::Actor;
 use crate::domain::{
-    page::Lang,
     ports::pages::Navigation,
     revision::{Author, NewRevision, Revision, rollback_to},
 };
@@ -26,7 +24,6 @@ use axum::{
 use serde::Deserialize;
 
 const MAX_SUMMARY: usize = 200;
-
 pub fn routes() -> Router<AppState> {
     Router::new()
         .merge(dashboard::routes())
@@ -74,13 +71,11 @@ pub struct EditForm {
 struct EditQuery {
     same: Option<String>,
 }
-
 #[derive(Deserialize)]
 pub struct RollbackForm {
     #[serde(default)]
     rev: String,
 }
-
 async fn edit_form(
     State(s): State<AppState>,
     Auth(actor): Auth,
@@ -88,7 +83,9 @@ async fn edit_form(
     Path((lang, slug)): Path<(String, String)>,
     Query(q): Query<EditQuery>,
 ) -> Response {
-    show_editor(&s, &actor, viewer, &lang, &slug, q.same.is_some()).unwrap_or_else(fail)
+    let language = viewer.lang();
+    show_editor(&s, &actor, viewer, &lang, &slug, q.same.is_some())
+        .unwrap_or_else(|e| fail(language, e))
 }
 
 fn show_editor(
@@ -119,7 +116,7 @@ fn show_editor(
         None => (String::new(), Vec::new()),
     };
     reader::html(&Editor {
-        shell: Shell::bare(Lang::En, "Edit", "start").for_viewer(viewer),
+        shell: Shell::admin(viewer, "admin_edit_page"),
         lang: lang.code(),
         slug: slug.as_str().to_owned(),
         body,
@@ -140,7 +137,8 @@ async fn edit_save(
     Path((lang, slug)): Path<(String, String)>,
     Form(f): Form<EditForm>,
 ) -> Response {
-    save_edit(&s, &actor, &headers, &lang, &slug, f).unwrap_or_else(fail)
+    save_edit(&s, &actor, &headers, &lang, &slug, f)
+        .unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
 
 fn save_edit(
@@ -215,7 +213,8 @@ async fn rollback(
     Path((lang, slug)): Path<(String, String)>,
     Form(f): Form<RollbackForm>,
 ) -> Response {
-    roll_back(&s, &actor, &headers, &lang, &slug, &f.rev).unwrap_or_else(fail)
+    roll_back(&s, &actor, &headers, &lang, &slug, &f.rev)
+        .unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
 
 /// Rollback appends a new revision with the old text; history is never rewritten.

@@ -22,9 +22,14 @@ pub fn set_cookie(name: &str, value: &str, max_age: u64, secure: bool) -> String
 /// A post-sign-in redirect target that stays on this site: one leading `/`,
 /// no `//`, no backslash, no scheme, no control or cookie-breaking characters.
 pub fn safe_next(raw: &str) -> Option<&str> {
+    safe_local_redirect(raw, 200)
+}
+
+/// Same local-only checks with a caller-specific transport bound.
+pub fn safe_local_redirect(raw: &str, max_bytes: usize) -> Option<&str> {
     let ok = raw.starts_with('/')
         && !raw.starts_with("//")
-        && raw.len() <= 200
+        && raw.len() <= max_bytes
         && !raw
             .chars()
             .any(|c| c.is_control() || c.is_whitespace() || matches!(c, '\\' | ';' | ',' | '"'));

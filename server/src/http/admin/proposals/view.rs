@@ -1,10 +1,7 @@
 use super::{load, login_of};
 use crate::auth::policy::Actor;
 use crate::diff::{Line, MAX_DIFF_CELLS, diff_lines_bounded};
-use crate::domain::{
-    page::Lang,
-    proposal::{Status, is_conflict},
-};
+use crate::domain::proposal::{Status, is_conflict};
 use crate::error::{AppError, AppResult};
 use crate::http::{
     admin::{admin_only, fail},
@@ -83,7 +80,8 @@ fn diff_view(old: &str, new: &str) -> Option<Vec<DiffLine>> {
 }
 
 pub(super) async fn list(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
-    show_list(&s, &actor, viewer).unwrap_or_else(fail)
+    let language = viewer.lang();
+    show_list(&s, &actor, viewer).unwrap_or_else(|e| fail(language, e))
 }
 
 fn show_list(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
@@ -103,7 +101,7 @@ fn show_list(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response>
         });
     }
     reader::html(&ListPage {
-        shell: Shell::bare(Lang::En, "Suggestions", "start").for_viewer(viewer),
+        shell: Shell::admin(viewer, "admin_suggestions"),
         rows,
     })
 }
@@ -114,7 +112,8 @@ pub(super) async fn detail(
     viewer: Viewer,
     Path(id): Path<i64>,
 ) -> Response {
-    show_detail(&s, &actor, viewer, id).unwrap_or_else(fail)
+    let language = viewer.lang();
+    show_detail(&s, &actor, viewer, id).unwrap_or_else(|e| fail(language, e))
 }
 
 fn show_detail(s: &AppState, actor: &Actor, viewer: Viewer, id: i64) -> AppResult<Response> {
@@ -127,7 +126,7 @@ fn show_detail(s: &AppState, actor: &Actor, viewer: Viewer, id: i64) -> AppResul
         .ok_or(AppError::NotFound)?;
     let conflict = is_conflict(p.base_rev_id, page.current.id);
     reader::html(&DetailPage {
-        shell: Shell::bare(Lang::En, "Suggestion", "start").for_viewer(viewer),
+        shell: Shell::admin(viewer, "admin_suggestions"),
         id: p.id,
         lang: page.lang.code(),
         slug: page.slug.as_str().to_owned(),

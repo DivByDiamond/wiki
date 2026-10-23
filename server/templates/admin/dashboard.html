@@ -1,45 +1,43 @@
 {% extends "layout/base.html" %}
 {% block content %}
-<h1>Admin</h1>
-<p>
-  <a class="btn" href="/admin/proposals">Suggestions</a>
-  <a class="btn" href="/admin/keys">API keys</a>
-  <a class="btn" href="/admin/users">Users</a>
-</p>
-<h2>Create a page</h2>
-<form class="card" method="get" action="/admin/create">
-  <label for="new-lang">Language</label>
-  <select id="new-lang" name="lang"><option value="en">English</option><option value="ru">Русский</option><option value="zh">中文</option></select>
-  <label for="new-slug">Address</label>
-  <input id="new-slug" name="slug" placeholder="blocks/my-page" maxlength="100" required pattern="[a-z0-9_\-]+(/[a-z0-9_\-]+)*">
-  <button class="btn" type="submit">Open editor</button>
+<section class="admin-workspace">
+{% let admin_current = "pages" %}
+{% include "admin/components/nav.html" %}
+<header class="admin-heading">
+  <div><h1>{{ shell.text("admin_pages") }}</h1><p>{{ shell.text("admin_intro") }}</p></div>
+  <a class="btn" href="#create-page">{{ shell.text("admin_create") }}</a>
+</header>
+<form class="admin-filters" method="get" action="/admin">
+  <div class="field admin-search"><label for="page-query">{{ shell.text("admin_search") }}</label><input id="page-query" type="search" name="q" value="{{ filters.q }}" placeholder="{{ shell.text("admin_search_hint") }}"></div>
+  <div class="field"><label for="page-language">{{ shell.text("admin_language") }}</label><select id="page-language" name="lang"><option value="">{{ shell.text("admin_all_languages") }}</option>{% for code in ["en", "ru", "zh"] %}<option value="{{ code }}"{% if filters.lang == *code %} selected{% endif %}>{% if *code == "en" %}English{% else if *code == "ru" %}Русский{% else %}中文{% endif %}</option>{% endfor %}</select></div>
+  <div class="field"><label for="page-section">{{ shell.text("admin_section") }}</label><select id="page-section" name="section"><option value="">{{ shell.text("admin_all_sections") }}</option>{% for section in sections %}<option value="{{ section.key }}"{% if filters.section == section.key %} selected{% endif %}>{{ section.label }}</option>{% endfor %}</select></div>
+  <button class="btn btn--primary" type="submit">{{ shell.text("admin_filter") }}</button>
+  {% if !filters.q.is_empty() || !filters.lang.is_empty() || !filters.section.is_empty() %}<a href="/admin">{{ shell.text("admin_clear") }}</a>{% endif %}
 </form>
-<h2>Pages</h2>
-{% for group in groups %}
-<h3>{% if group.section.is_empty() %}Uncategorized{% else %}{{ group.section }}{% endif %}</h3>
-<ul>
-  {% for p in group.pages %}
-  <li>
-    <a href="/{{ p.lang }}/{{ p.slug }}">{{ p.title }} ({{ p.lang }}/{{ p.slug }})</a>
-    <a href="/admin/edit/{{ p.lang }}/{{ p.slug }}">Edit</a>
-    <form method="post" action="/admin/delete/{{ p.lang }}/{{ p.slug }}" style="display: inline">
-      <button class="btn" type="submit">Delete</button>
-    </form>
-  </li>
-  {% endfor %}
-</ul>
-{% endfor %}
-{% if !deleted.is_empty() %}
-<h2>Deleted pages</h2>
-<ul>
-  {% for p in deleted %}
-  <li>
-    {{ p.lang }}/{{ p.slug }}
-    <form method="post" action="/admin/restore/{{ p.lang }}/{{ p.slug }}" style="display: inline">
-      <button class="btn" type="submit">Restore</button>
-    </form>
-  </li>
-  {% endfor %}
-</ul>
+<p class="admin-count" role="status">{{ shell.text("admin_results") }}: {{ pages.len() }} / {{ total }}</p>
+{% if pages.is_empty() %}<p class="admin-empty">{{ shell.text("admin_no_results") }}</p>{% else %}
+<div class="admin-table-scroll">
+<table class="admin-table">
+  <thead><tr><th scope="col">{{ shell.text("admin_title") }}</th><th scope="col">{{ shell.text("admin_language") }}</th><th scope="col">{{ shell.text("admin_section") }}</th><th scope="col">{{ shell.text("admin_actions") }}</th></tr></thead>
+  <tbody>{% for p in pages %}<tr>
+    <td class="admin-page-title"><a href="/admin/edit/{{ p.lang }}/{{ p.slug }}">{{ p.title }}</a><small>/{{ p.lang }}/{{ p.slug }}</small></td>
+    <td><span class="admin-lang" lang="{{ p.lang }}">{% if p.lang == "en" %}English{% else if p.lang == "ru" %}Русский{% else %}中文{% endif %}</span></td>
+    <td>{{ p.section }}</td>
+    <td><div class="admin-row-actions"><a href="/admin/edit/{{ p.lang }}/{{ p.slug }}">{{ shell.text("admin_edit") }}</a><a href="/{{ p.lang }}/{{ p.slug }}">{{ shell.text("admin_view") }}</a><details class="admin-more"><summary>{{ shell.text("admin_more") }}<span class="sr-only">: {{ p.title }}</span></summary><form method="post" action="/admin/delete/{{ p.lang }}/{{ p.slug }}"><p>{{ shell.text("admin_delete_hint") }}</p><label><input type="checkbox" required> {{ shell.text("admin_confirm_delete") }}</label><button class="btn" type="submit">{{ shell.text("admin_delete") }}</button></form></details></div></td>
+  </tr>{% endfor %}</tbody>
+</table>
+</div>
 {% endif %}
+<section id="create-page" class="admin-create" aria-labelledby="create-heading">
+  <div><h2 id="create-heading">{{ shell.text("admin_create") }}</h2><p>{{ shell.text("admin_create_hint") }}</p></div>
+  <form method="get" action="/admin/create">
+    <div class="field"><label for="new-lang">{{ shell.text("admin_language") }}</label><select id="new-lang" name="lang">{% for code in ["en", "ru", "zh"] %}<option value="{{ code }}"{% if filters.lang == *code || (filters.lang.is_empty() && shell.lang == *code) %} selected{% endif %}>{% if *code == "en" %}English{% else if *code == "ru" %}Русский{% else %}中文{% endif %}</option>{% endfor %}</select></div>
+    <div class="field"><label for="new-slug">{{ shell.text("admin_address") }}</label><input id="new-slug" name="slug" placeholder="blocks/my-page" maxlength="100" required pattern="[a-z0-9_\-]+(/[a-z0-9_\-]+)*" aria-describedby="address-hint"><small id="address-hint">{{ shell.text("admin_address_hint") }}</small></div>
+    <button class="btn btn--primary" type="submit">{{ shell.text("admin_open_editor") }}</button>
+  </form>
+</section>
+{% if !deleted.is_empty() %}
+<details class="admin-deleted"><summary>{{ shell.text("admin_deleted") }} ({{ deleted.len() }})</summary><ul>{% for p in deleted %}<li><span>{{ p.title }} <small>/{{ p.lang }}/{{ p.slug }}</small></span><form method="post" action="/admin/restore/{{ p.lang }}/{{ p.slug }}"><button class="btn" type="submit">{{ shell.text("admin_restore") }}</button></form></li>{% endfor %}</ul></details>
+{% endif %}
+</section>
 {% endblock %}

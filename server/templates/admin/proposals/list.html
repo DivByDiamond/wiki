@@ -1,17 +1,21 @@
 {% extends "layout/base.html" %}
 {% block content %}
-<h1>Suggestions</h1>
+<section class="admin-workspace">
+{% let admin_current = "proposals" %}
+{% include "admin/components/nav.html" %}
+<h1>{{ shell.text("admin_suggestions") }}</h1>
 {% if rows.is_empty() %}
-<p>No open suggestions.</p>
+<p>{{ shell.text("admin_no_suggestions") }}</p>
 {% else %}
 <ul>
   {% for r in rows %}
   <li>
     <a href="/admin/proposals/{{ r.id }}">{{ r.lang }}/{{ r.slug }}</a>
-    - {{ r.author }} - {{ r.summary }}{% if r.conflict %} (conflict){% endif %}
+    - {{ r.author }} - {{ r.summary }}{% if r.conflict %} {{ shell.text("admin_conflict") }}{% endif %}
   </li>
   {% endfor %}
 </ul>
 {% endif %}
-<p><a class="btn" href="/admin">Back</a></p>
+
+</section>
 {% endblock %}

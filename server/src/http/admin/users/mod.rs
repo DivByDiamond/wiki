@@ -5,7 +5,7 @@ mod guard;
 
 use super::{admin_only, fail};
 use crate::auth::policy::Actor;
-use crate::domain::{page::Lang, ports::access::UserRow};
+use crate::domain::ports::access::UserRow;
 use crate::error::AppResult;
 use crate::http::{
     middleware::{Auth, Viewer},
@@ -35,7 +35,8 @@ struct Users {
 }
 
 async fn list(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
-    show(&s, &actor, viewer).unwrap_or_else(fail)
+    let language = viewer.lang();
+    show(&s, &actor, viewer).unwrap_or_else(|e| fail(language, e))
 }
 
 fn show(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
@@ -45,7 +46,7 @@ fn show(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
         _ => 0,
     };
     reader::html(&Users {
-        shell: Shell::bare(Lang::En, "Users", "start").for_viewer(viewer),
+        shell: Shell::admin(viewer, "admin_users"),
         me,
         users: s.access.list_users()?,
     })

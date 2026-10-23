@@ -25,7 +25,8 @@ pub(super) async fn accept(
     Path(id): Path<i64>,
     Form(f): Form<DecideForm>,
 ) -> Response {
-    accept_proposal(&s, &actor, &headers, id, f).unwrap_or_else(fail)
+    accept_proposal(&s, &actor, &headers, id, f)
+        .unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
 
 fn accept_proposal(
@@ -78,7 +79,8 @@ pub(super) async fn reject(
     Path(id): Path<i64>,
     Form(f): Form<DecideForm>,
 ) -> Response {
-    reject_proposal(&s, &actor, &headers, id, &f.note).unwrap_or_else(fail)
+    reject_proposal(&s, &actor, &headers, id, &f.note)
+        .unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
 
 fn reject_proposal(

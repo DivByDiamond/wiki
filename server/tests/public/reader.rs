@@ -41,7 +41,8 @@ async fn article_renders_markdown_in_layout() {
     assert!(body.contains("<h1>Hello</h1>"));
     assert!(body.contains(r#"<html lang="en""#));
     assert!(body.contains("oc2r-wiki-settings"));
-    assert!(body.contains("/static/app.css") && body.contains("/static/app.js"));
+    assert!(body.contains("/static/app.css?v=") && body.contains("/static/app.js?v="));
+    assert!(body.contains("/static/favicon.svg?v="));
     assert!(body.contains(r#"id="search-form""#) && body.contains(r#"id="search-input""#));
     assert!(body.contains(r#"id="settings-toggle""#) && body.contains(r#"id="search-results""#));
     assert!(body.contains(r#"aria-current="page""#));

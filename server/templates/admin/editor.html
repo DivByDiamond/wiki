@@ -1,14 +1,19 @@
 {% extends "layout/base.html" %}
 {% block content %}
+<section class="admin-workspace">
+{% let admin_current = "pages" %}
+{% include "admin/components/nav.html" %}
 {% if same %}
-<div class="banner">That is already the current revision, so nothing was rolled back.</div>
+<div class="banner">{{ shell.text("admin_already_current") }}</div>
 {% endif %}
-<h1>{% if is_new %}Create{% else %}Edit{% endif %}: {{ lang }}/{{ slug }}</h1>
-<form class="card" method="post" action="/admin/edit/{{ lang }}/{{ slug }}">
+<header class="admin-heading"><div><h1>{% if is_new %}{{ shell.text("admin_create") }}{% else %}{{ shell.text("admin_edit_page") }}{% endif %}</h1><p>/{{ lang }}/{{ slug }}</p></div>{% if !is_new %}<a href="/{{ lang }}/{{ slug }}">{{ shell.text("admin_view") }}</a>{% endif %}</header>
+<div class="admin-editor-layout">
+<form class="admin-editor" method="post" action="/admin/edit/{{ lang }}/{{ slug }}">
+  <div class="admin-editor-meta">
   <div class="field">
-    <label for="section">Navigation section</label>
+    <label for="section">{{ shell.text("admin_section") }}</label>
     <select id="section" name="section">
-      <option value=""{% if section.is_empty() %} selected{% endif %}>Uncategorized</option>
+      <option value=""{% if section.is_empty() %} selected{% endif %}>{{ shell.text("admin_uncategorized") }}</option>
       {% for key in ["start", "hardware", "networking", "robotics", "systems", "scripting", "project"] %}
       <option value="{{ key }}"{% if section == *key %} selected{% endif %}>{{ shell.text(key) }}</option>
       {% endfor %}
@@ -18,36 +23,43 @@
     </select>
   </div>
   <div class="field">
-    <label for="position">Position in section</label>
-    <input id="position" name="position" type="number" min="0" max="1000000" value="{{ position }}" required>
+    <label for="position">{{ shell.text("admin_position") }}</label>
+    <small id="position-hint">{{ shell.text("admin_position_hint") }}</small>
+    <input aria-describedby="position-hint" id="position" name="position" type="number" min="0" max="1000000" value="{{ position }}" required>
+  </div>
   </div>
   <div id="editor-toolbar"></div>
   <div class="field">
-    <label for="editor">Text (Markdown)</label>
+    <label for="editor">{{ shell.text("admin_markdown") }}</label>
     <textarea id="editor" name="body" rows="24" required>{{ body }}</textarea>
   </div>
   <div class="field">
-    <label for="summary">What did you change?</label>
+    <label for="summary">{{ shell.text("admin_summary") }}</label>
     <input id="summary" name="summary" maxlength="200">
   </div>
-  <button class="btn btn--primary" type="submit">Save</button>
-  <a class="btn" href="/admin">Back</a>
+  <div class="admin-editor-actions"><button class="btn btn--primary" type="submit">{{ shell.text("admin_save_view") }}</button>
+  <a href="/admin">{{ shell.text("admin_back_pages") }}</a></div>
 </form>
+<section class="admin-preview-pane" aria-labelledby="preview-heading">
+<h2 class="admin-subheading" id="preview-heading">{{ shell.text("admin_preview") }}</h2>
 <div id="editor-preview"></div>
+</section>
+</div>
 {% if !history.is_empty() %}
-<h2>History</h2>
+<details class="admin-history"><summary>{{ shell.text("history") }} ({{ history.len() }})</summary>
 <ul>
   {% for h in history %}
   <li>
-    #{{ h.id }} {{ h.summary }} ({{ h.author }})
-    {% if h.current %}current{% else %}
+    <span>#{{ h.id }} {{ h.summary }}<small>{{ h.author }}</small></span>
+    {% if h.current %}{{ shell.text("admin_current_revision") }}{% else %}
     <form method="post" action="/admin/rollback/{{ lang }}/{{ slug }}" style="display: inline">
       <input type="hidden" name="rev" value="{{ h.id }}">
-      <button class="btn" type="submit">Roll back to this</button>
+      <button class="btn" type="submit">{{ shell.text("admin_restore_revision") }}</button>
     </form>
     {% endif %}
   </li>
   {% endfor %}
-</ul>
+</ul></details>
 {% endif %}
+</section>
 {% endblock %}

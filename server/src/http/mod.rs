@@ -2,6 +2,7 @@ pub mod admin;
 pub mod api;
 pub mod assets;
 pub mod limit;
+pub mod locale;
 pub mod middleware;
 pub mod reader;
 pub mod state;

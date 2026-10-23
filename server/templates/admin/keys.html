@@ -1,32 +1,36 @@
 {% extends "layout/base.html" %}
 {% block content %}
-<h1>API keys</h1>
-<p><a href="/admin">Back to admin</a></p>
+<section class="admin-workspace">
+{% let admin_current = "keys" %}
+{% include "admin/components/nav.html" %}
+<h1>{{ shell.text("admin_keys") }}</h1>
+
 {% if let Some(k) = new_key %}
 <div class="notice">
-  <p>Copy this key now. It is shown only once and cannot be recovered.</p>
+  <p>{{ shell.text("admin_copy_key") }}</p>
   <p><code>{{ k }}</code></p>
 </div>
 {% endif %}
-<h2>Active keys</h2>
+<h2>{{ shell.text("admin_active_keys") }}</h2>
 <ul>
   {% for k in keys %}
   <li>
     {{ k.name }} ({{ k.perms }})
     <form method="post" action="/admin/keys/{{ k.id }}/revoke" style="display: inline">
-      <button class="btn" type="submit">Revoke</button>
+      <button class="btn" type="submit">{{ shell.text("admin_revoke") }}</button>
     </form>
   </li>
   {% endfor %}
 </ul>
-<h2>Create a key</h2>
+<h2>{{ shell.text("admin_create_key") }}</h2>
 <form method="post" action="/admin/keys">
-  <p><label>Name <input name="name" maxlength="100" required></label></p>
+  <p><label>{{ shell.text("admin_name") }} <input name="name" maxlength="100" required></label></p>
   <p>
-    <label><input type="checkbox" name="read" value="1" checked> read</label>
-    <label><input type="checkbox" name="write" value="1"> write</label>
-    <label><input type="checkbox" name="export" value="1"> export</label>
+    <label><input type="checkbox" name="read" value="1" checked> {{ shell.text("admin_perm_read") }}</label>
+    <label><input type="checkbox" name="write" value="1"> {{ shell.text("admin_perm_write") }}</label>
+    <label><input type="checkbox" name="export" value="1"> {{ shell.text("admin_perm_export") }}</label>
   </p>
-  <button class="btn" type="submit">Create</button>
+  <button class="btn" type="submit">{{ shell.text("admin_create_action") }}</button>
 </form>
+</section>
 {% endblock %}

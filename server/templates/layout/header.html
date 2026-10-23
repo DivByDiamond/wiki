@@ -22,7 +22,7 @@
         <div class="header-dropdown language-dropdown">
           <nav aria-label="{{ shell.text("language") }}">
             {% for l in ["en", "ru", "zh"] %}
-            <a class="menu-item" lang="{{ l }}" hreflang="{{ l }}" href="/{{ l }}/{{ shell.path }}{% if shell.path == "search" %}?q={{ shell.query|urlencode }}{% endif %}"{% if *l == shell.lang %} aria-current="true"{% endif %}>
+            <a class="menu-item" lang="{{ l }}" hreflang="{{ l }}" href="{{ shell.language_url(l) }}"{% if *l == shell.lang %} aria-current="true"{% endif %}>
               <span class="language-name">{% if *l == "en" %}English{% else if *l == "ru" %}Русский{% else %}中文{% endif %}</span>
               <span class="language-code" aria-hidden="true">{{ l }}</span>
             </a>
@@ -45,10 +45,10 @@
           </div>
         </details>
         {% when None %}
-        <a class="header-control signin-link" aria-label="{{ shell.text("signin") }}" href="/auth/github?next=/{{ shell.lang }}/{{ shell.path }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M5 21v-2a7 7 0 0 1 14 0v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>{{ shell.text("signin") }}</span></a>
+        <a class="header-control signin-link" aria-label="{{ shell.text("signin") }}" href="/auth/github?next={{ shell.current_url()|urlencode }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M5 21v-2a7 7 0 0 1 14 0v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>{{ shell.text("signin") }}</span></a>
         {% endmatch %}
       </div>
-      <button class="header-control icon-control" id="settings-toggle" aria-label="{{ shell.text("settings") }}" title="{{ shell.text("settings") }}" type="button" aria-controls="settings-panel" aria-expanded="false"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 3-1 3-3 1-2 3 2 2-1 3 2 3 3-1 3 2 3-2 3 1 2-3-1-3 2-2-2-3-3-1-1-3H9Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="11.5" r="3" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="header-control icon-control" id="settings-toggle" aria-label="{{ shell.text("settings") }}" title="{{ shell.text("settings") }}" type="button" aria-controls="settings-panel" aria-expanded="false"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h4m4 0h10M3 12h10m4 0h4M3 18h2m4 0h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="6" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="15" cy="12" r="2" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="1.6"/></svg></button>
     </div>
   </div>
 </header>

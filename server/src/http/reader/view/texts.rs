@@ -1,5 +1,8 @@
 //! Reader chrome translated independently from article content.
 pub fn text(lang: &str, key: &str) -> &'static str {
+    if let Some(text) = super::admin_texts::text(lang, key) {
+        return text;
+    }
     let (en, ru, zh) = match key {
         "start" => ("Getting started", "Начало", "入门"),
         "hardware" => ("Blocks and items", "Блоки и предметы", "方块与物品"),

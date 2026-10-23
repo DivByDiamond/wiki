@@ -12,7 +12,11 @@ export function wrap(open: string, text: string): string {
 }
 
 export function mountToolbar(bar: HTMLElement, area: HTMLTextAreaElement): void {
-  for (const [label, open] of BLOCKS) {
+  const lang = typeof document === "undefined" ? "en" : document.documentElement.lang;
+  const labels = lang === "ru" ? ["Подсказка", "Предупреждение", "Рецепт", "Версия"]
+    : lang === "zh" ? ["提示", "警告", "合成配方", "版本"] : BLOCKS.map(([label]) => label);
+  for (const [index, [, open]] of BLOCKS.entries()) {
+    const label = labels[index]!;
     const b = el("button", { type: "button", class: "btn" }, label);
     b.addEventListener("click", () => {
       const { selectionStart: a, selectionEnd: z, value } = area;

@@ -12,10 +12,22 @@ use axum::{
     routing::get,
 };
 use rust_embed::RustEmbed;
+use sha2::{Digest, Sha256};
 
 #[derive(RustEmbed)]
 #[folder = "../web/dist"]
 struct Assets;
+
+/// A changed bundle gets a new URL, even when an intermediary retained old CSS.
+pub fn version() -> String {
+    let mut hash = Sha256::new();
+    for name in ["app.css", "app.js", "favicon.svg"] {
+        if let Some(file) = Assets::get(name) {
+            hash.update(file.metadata.sha256_hash());
+        }
+    }
+    format!("{:x}", hash.finalize())[..16].to_owned()
+}
 
 pub fn routes() -> Router<AppState> {
     Router::new().route("/static/{*path}", get(serve))

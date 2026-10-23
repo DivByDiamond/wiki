@@ -18,6 +18,10 @@ pub fn router(state: AppState) -> Router {
         .merge(http::admin::routes())
         .merge(http::user::routes())
         .merge(http::reader::routes())
+        .layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            http::locale::remember,
+        ))
         .with_state(state)
 }
 

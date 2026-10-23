@@ -29,7 +29,7 @@ async fn dashboard_creates_nested_pages_without_javascript() {
             .unwrap()
             .unwrap();
     assert_eq!((page.section.as_str(), page.position), ("Blocks", 4));
-    assert!(e.get_text("/admin").await.contains("<h3>Blocks</h3>"));
+    assert!(e.get_text("/admin").await.contains("<td>Blocks</td>"));
 }
 
 #[tokio::test]
@@ -136,4 +136,43 @@ async fn invalid_navigation_never_partially_saves_text() {
         403
     );
     assert_eq!(e.page("a").section, "");
+}
+
+#[tokio::test]
+async fn dashboard_filters_language_section_title_and_address_without_javascript() {
+    let e = env();
+    for (url, body) in [
+        (
+            "/admin/edit/en/blocks/computer",
+            "body=%23+Computer&section=hardware",
+        ),
+        (
+            "/admin/edit/ru/blocks/computer",
+            "body=%23+Komputer&section=hardware",
+        ),
+        (
+            "/admin/edit/en/guides/network",
+            "body=%23+Network&section=networking",
+        ),
+    ] {
+        assert_eq!(e.post(url, body).await.status(), 303);
+    }
+    let filtered = e
+        .get_text("/admin?lang=en&section=hardware&q=computer")
+        .await;
+    assert!(filtered.contains("href=\"/admin/edit/en/blocks/computer\""));
+    assert!(!filtered.contains("href=\"/admin/edit/ru/blocks/computer\""));
+    assert!(!filtered.contains("href=\"/admin/edit/en/guides/network\""));
+    assert!(filtered.contains("Blocks and items"));
+    assert!(filtered.contains("Pages shown: 1 / 4"));
+    assert!(filtered.contains("value=\"hardware\" selected"));
+    let by_address = e.get_text("/admin?q=guides%2Fnetwork").await;
+    assert!(by_address.contains("href=\"/admin/edit/en/guides/network\""));
+    assert!(!by_address.contains("href=\"/admin/edit/en/blocks/computer\""));
+    let full_address = e.get_text("/admin?q=%2Fen%2Fguides%2Fnetwork").await;
+    assert!(full_address.contains("Pages shown: 1 / 4"));
+    assert!(full_address.contains("href=\"/admin/edit/en/guides/network\""));
+    let empty = e.get_text("/admin?q=unfindable").await;
+    assert!(empty.contains("No pages match these filters"));
+    assert!(empty.contains("Clear filters"));
 }

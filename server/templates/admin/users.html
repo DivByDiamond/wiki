@@ -1,10 +1,13 @@
 {% extends "layout/base.html" %}
 {% block content %}
-<h1>Users</h1>
-<p><a href="/admin">Back to admin</a></p>
-<table>
+<section class="admin-workspace">
+{% let admin_current = "users" %}
+{% include "admin/components/nav.html" %}
+<h1>{{ shell.text("admin_users") }}</h1>
+
+<div class="admin-table-scroll"><table class="admin-table">
   <thead>
-    <tr><th>ID</th><th>GitHub ID</th><th>Login</th><th>Admin</th><th>Blocked</th><th></th></tr>
+    <tr><th>{{ shell.text("admin_id") }}</th><th>{{ shell.text("admin_github_id") }}</th><th>{{ shell.text("admin_login") }}</th><th>{{ shell.text("admin_role") }}</th><th>{{ shell.text("admin_blocked") }}</th><th>{{ shell.text("admin_actions") }}</th></tr>
   </thead>
   <tbody>
     {% for u in users %}
@@ -12,22 +15,23 @@
       <td>{{ u.id }}</td>
       <td>{{ u.github_id }}</td>
       <td>{{ u.login }}</td>
-      <td>{% if u.admin %}Admin{% else %}-{% endif %}</td>
-      <td>{% if u.blocked %}Blocked{% else %}-{% endif %}</td>
+      <td>{% if u.admin %}{{ shell.text("admin_role") }}{% else %}-{% endif %}</td>
+      <td>{% if u.blocked %}{{ shell.text("admin_blocked") }}{% else %}-{% endif %}</td>
       <td>
         {% if u.id == me %}
-        (you)
+        {{ shell.text("admin_you") }}
         {% else %}
         <form method="post" action="/admin/users/{{ u.id }}/{% if u.blocked %}unblock{% else %}block{% endif %}" style="display: inline">
-          <button class="btn" type="submit">{% if u.blocked %}Unblock{% else %}Block{% endif %}</button>
+          <button class="btn" type="submit">{% if u.blocked %}{{ shell.text("admin_unblock") }}{% else %}{{ shell.text("admin_block") }}{% endif %}</button>
         </form>
         <form method="post" action="/admin/users/{{ u.id }}/{% if u.admin %}revoke-admin{% else %}grant-admin{% endif %}" style="display: inline">
-          <button class="btn" type="submit">{% if u.admin %}Revoke admin{% else %}Make admin{% endif %}</button>
+          <button class="btn" type="submit">{% if u.admin %}{{ shell.text("admin_revoke_admin") }}{% else %}{{ shell.text("admin_make_admin") }}{% endif %}</button>
         </form>
         {% endif %}
       </td>
     </tr>
     {% endfor %}
   </tbody>
-</table>
+</table></div>
+</section>
 {% endblock %}

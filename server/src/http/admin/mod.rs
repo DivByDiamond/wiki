@@ -72,8 +72,8 @@ pub(super) fn target(lang: &str, slug: &str) -> AppResult<(Lang, Slug)> {
 }
 
 /// HTML error page for admin routes.
-pub(super) fn fail(e: AppError) -> Response {
-    user::fail(Lang::En, e)
+pub(super) fn fail(lang: Lang, e: AppError) -> Response {
+    user::fail(lang, e)
 }
 
 async fn delete(
@@ -82,7 +82,8 @@ async fn delete(
     headers: HeaderMap,
     Path((lang, slug)): Path<(String, String)>,
 ) -> Response {
-    set_deleted(&s, &actor, &headers, &lang, &slug, true).unwrap_or_else(fail)
+    set_deleted(&s, &actor, &headers, &lang, &slug, true)
+        .unwrap_or_else(|e| fail(super::locale::preferred(&headers), e))
 }
 
 async fn restore(
@@ -91,7 +92,8 @@ async fn restore(
     headers: HeaderMap,
     Path((lang, slug)): Path<(String, String)>,
 ) -> Response {
-    set_deleted(&s, &actor, &headers, &lang, &slug, false).unwrap_or_else(fail)
+    set_deleted(&s, &actor, &headers, &lang, &slug, false)
+        .unwrap_or_else(|e| fail(super::locale::preferred(&headers), e))
 }
 
 fn set_deleted(
@@ -148,5 +150,5 @@ async fn preview(
         super::require(&actor, Action::Propose)?;
         Ok(Html(render::to_html(&body)).into_response())
     };
-    run().unwrap_or_else(fail)
+    run().unwrap_or_else(|e| fail(super::locale::preferred(&headers), e))
 }

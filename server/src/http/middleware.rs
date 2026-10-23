@@ -18,7 +18,14 @@ pub struct SignedIn {
 
 /// Header identity for HTML pages: one session lookup, `None` when anonymous
 /// or blocked. Independent of `Auth` so API-key requests never pay for it.
-pub struct Viewer(pub Option<SignedIn>);
+#[derive(Clone)]
+pub struct Viewer(pub Option<SignedIn>, pub super::locale::Locale);
+
+impl Viewer {
+    pub fn lang(&self) -> crate::domain::page::Lang {
+        self.1.lang
+    }
+}
 
 fn session_user(parts: &Parts, state: &AppState) -> Option<UserRow> {
     cookie(&parts.headers, "sid")
@@ -37,6 +44,7 @@ impl FromRequestParts<AppState> for Viewer {
                     login: u.login,
                     admin: u.admin,
                 }),
+            super::locale::Locale::resolve(&parts.headers, &parts.uri),
         ))
     }
 }

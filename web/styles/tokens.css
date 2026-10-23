@@ -2,6 +2,7 @@
 @import "./components.css";
 @import "./pixel.css";
 @import "./pages/notfound.css";
+@import "./pages/admin.css";
 @import "./components/header.css";
 
 :root {

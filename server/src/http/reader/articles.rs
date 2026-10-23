@@ -50,9 +50,9 @@ pub async fn article(
     let Some(lang) = Lang::parse(&lang) else {
         return unknown_lang();
     };
-    let signed_in = viewer.0.clone();
+    let fallback_viewer = viewer.clone();
     handle(&s, &ip, lang, &slug, &q, viewer).unwrap_or_else(|e| match e {
-        AppError::NotFound => notfound::render(&s, lang, &slug, Viewer(signed_in))
+        AppError::NotFound => notfound::render(&s, lang, &slug, fallback_viewer)
             .unwrap_or_else(|e| error_page(lang, e)),
         e => error_page(lang, e),
     })

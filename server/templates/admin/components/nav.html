@@ -1,0 +1,6 @@
+<nav class="admin-nav" aria-label="{{ shell.text("admin") }}">
+  <a href="/admin"{% if admin_current == "pages" %} aria-current="page"{% endif %}>{{ shell.text("admin_pages") }}</a>
+  <a href="/admin/proposals"{% if admin_current == "proposals" %} aria-current="page"{% endif %}>{{ shell.text("admin_suggestions") }}</a>
+  <a href="/admin/users"{% if admin_current == "users" %} aria-current="page"{% endif %}>{{ shell.text("admin_users") }}</a>
+  <a href="/admin/keys"{% if admin_current == "keys" %} aria-current="page"{% endif %}>{{ shell.text("admin_keys") }}</a>
+</nav>

@@ -39,7 +39,7 @@ Admins and API keys edit pages directly. Everyone else signs in with GitHub and 
 | Admin panel | Markdown editor with live preview, suggestion queue, history and rollback, key management |
 | Server-side rendering | Markdown is rendered and sanitized on the server, pages work without JavaScript |
 | Search | Full-text search (SQLite FTS5) |
-| Languages | English, Russian, Chinese, with fallback to English |
+| Languages | English, Russian, Chinese; browser detection, remembered choice, English fallback |
 | Reader settings | Light or dark theme, accent color, font size, optional pixel borders, stored in the browser |
 
 ### Tech stack
@@ -149,7 +149,7 @@ OC2R Wiki - сайт документации мода [OC2R] на `wiki.loki-co
 | Админка | Markdown-редактор с живым превью, очередь предложений, история и откат, управление ключами |
 | Рендер на сервере | Markdown рендерится и очищается на сервере, страницы работают без JavaScript |
 | Поиск | Полнотекстовый поиск (SQLite FTS5) |
-| Языки | Английский, русский, китайский, с откатом на английский |
+| Языки | Английский, русский, китайский; выбор по браузеру, сохранение языка, откат на английский |
 | Настройки читателя | Светлая или тёмная тема, акцентный цвет, размер шрифта, пиксель-рамки по желанию, хранятся в браузере |
 
 ### Технологии

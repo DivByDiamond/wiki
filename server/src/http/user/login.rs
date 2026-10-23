@@ -33,10 +33,10 @@ pub struct CallbackQuery {
     state: Option<String>,
 }
 
-fn not_configured() -> Response {
+fn not_configured(lang: Lang) -> Response {
     notice(
         StatusCode::SERVICE_UNAVAILABLE,
-        Lang::En,
+        lang,
         "Sign-in is not configured",
         "This site has no GitHub credentials yet, so sign-in is unavailable.",
         None,
@@ -52,12 +52,14 @@ pub async fn start(
     State(s): State<AppState>,
     ClientIp(ip): ClientIp,
     Query(q): Query<StartQuery>,
+    headers: HeaderMap,
 ) -> Response {
+    let lang = crate::http::locale::preferred(&headers);
     if !s.config.github_configured() {
-        return not_configured();
+        return not_configured(lang);
     }
     if let Err(e) = guard(&s, &ip) {
-        return fail(Lang::En, e);
+        return fail(lang, e);
     }
     let state = random_token();
     let secure = s.config.secure_cookies();
@@ -72,10 +74,10 @@ pub async fn start(
         .into_response()
 }
 
-fn bad_state() -> Response {
+fn bad_state(lang: Lang) -> Response {
     notice(
         StatusCode::BAD_REQUEST,
-        Lang::En,
+        lang,
         "Sign-in failed",
         "The sign-in request is invalid or expired.",
         Some(("/auth/github", "Sign in again")),
@@ -89,17 +91,18 @@ pub async fn callback(
     headers: HeaderMap,
     Query(q): Query<CallbackQuery>,
 ) -> Response {
+    let lang = crate::http::locale::preferred(&headers);
     if !s.config.github_configured() {
-        return not_configured();
+        return not_configured(lang);
     }
     if let Err(e) = guard(&s, &ip) {
-        return fail(Lang::En, e);
+        return fail(lang, e);
     }
     let expected = cookie(&headers, STATE_COOKIE).unwrap_or_default();
     let given = q.state.as_deref().unwrap_or_default();
     let code = q.code.as_deref().unwrap_or_default();
     if expected.is_empty() || code.is_empty() || !ct_eq(expected, given) {
-        return bad_state();
+        return bad_state(lang);
     }
     let user = match s.github.exchange(code).await {
         Ok(u) => u,
@@ -107,14 +110,14 @@ pub async fn callback(
             tracing::warn!("github sign-in failed: {e}");
             return notice(
                 StatusCode::BAD_GATEWAY,
-                Lang::En,
+                lang,
                 "GitHub did not answer",
                 "Could not complete the sign-in with GitHub.",
                 Some(("/auth/github", "Sign in again")),
             );
         }
     };
-    finish(&s, &headers, user.id, &user.login).unwrap_or_else(|e| fail(Lang::En, e))
+    finish(&s, &headers, user.id, &user.login).unwrap_or_else(|e| fail(lang, e))
 }
 
 fn finish(s: &AppState, headers: &HeaderMap, github_id: i64, login: &str) -> AppResult<Response> {
@@ -150,8 +153,9 @@ fn finish(s: &AppState, headers: &HeaderMap, github_id: i64, login: &str) -> App
 
 /// `POST /auth/logout`: destroy the session, clear the cookie, go home.
 pub async fn logout(State(s): State<AppState>, headers: HeaderMap) -> Response {
+    let lang = crate::http::locale::preferred(&headers);
     if let Err(e) = check_origin(&headers, &s.config) {
-        return fail(Lang::En, e);
+        return fail(lang, e);
     }
     if let Some(token) = cookie(&headers, "sid") {
         s.sessions.destroy(token);

@@ -19,7 +19,8 @@ pub(super) async fn change(
     headers: HeaderMap,
     Path((id, action)): Path<(i64, String)>,
 ) -> Response {
-    apply(&s, &actor, &headers, id, &action).unwrap_or_else(fail)
+    apply(&s, &actor, &headers, id, &action)
+        .unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
 
 fn apply(

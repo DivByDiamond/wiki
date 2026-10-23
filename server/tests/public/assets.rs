@@ -39,6 +39,9 @@ async fn serves_app_js_and_css_with_type_and_no_cache() {
     for (uri, ty) in [
         ("/static/app.js", "text/javascript"),
         ("/static/app.css", "text/css"),
+        ("/static/favicon.svg", "image/svg+xml"),
+        ("/static/favicon-32.png", "image/png"),
+        ("/static/apple-touch-icon.png", "image/png"),
     ] {
         let res = get(&app, uri).await;
         assert_eq!(res.status(), 200, "{uri}");

@@ -1,5 +1,6 @@
 //! Data shared by every reader template: the layout shell and date formatting.
 
+mod admin_texts;
 mod date;
 mod texts;
 
@@ -28,6 +29,7 @@ pub struct Section {
 /// Everything `layout/base.html` needs; embedded in each page template.
 pub struct Shell {
     pub lang: &'static str,
+    request_path: Option<String>,
     pub title: String,
     /// Path after the language prefix, used by the language switcher.
     pub path: String,
@@ -41,20 +43,56 @@ pub struct Shell {
 }
 
 impl Shell {
+    pub fn admin(viewer: Viewer, title_key: &str) -> Self {
+        let mut shell = Self::bare(viewer.lang(), "", "start").for_viewer(viewer);
+        shell.title = shell.text(title_key).into();
+        shell
+    }
+
+    pub fn asset_version(&self) -> String {
+        crate::http::assets::version()
+    }
+
     pub fn text(&self, key: &str) -> &'static str {
         texts::text(self.lang, key)
     }
 
     /// Shows the signed-in user in the header.
     pub fn for_viewer(mut self, viewer: Viewer) -> Shell {
+        if !viewer.1.prefixed {
+            self.lang = viewer.lang().code();
+            self.request_path = Some(viewer.1.path);
+        }
         self.user = viewer.0;
         self
+    }
+
+    /// Keep administrative pages in place when selecting another language.
+    pub fn language_url(&self, lang: &str) -> String {
+        match &self.request_path {
+            Some(path) => format!(
+                "/language/{lang}?next={}",
+                crate::http::locale::encode(path)
+            ),
+            None if self.path == "search" => format!(
+                "/{lang}/search?q={}",
+                crate::http::locale::encode(&self.query)
+            ),
+            None => format!("/{lang}/{}", self.path),
+        }
+    }
+
+    pub fn current_url(&self) -> String {
+        self.request_path
+            .clone()
+            .unwrap_or_else(|| format!("/{}/{}", self.lang, self.path))
     }
 
     /// Shell without a sidebar (error pages).
     pub fn bare(lang: Lang, title: &str, path: &str) -> Shell {
         Shell {
             lang: lang.code(),
+            request_path: None,
             title: title.into(),
             path: path.into(),
             query: String::new(),

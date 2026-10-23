@@ -20,7 +20,8 @@ use view::Shell;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/", get(|| async { Redirect::to("/en/start") }))
+        .route("/", get(crate::http::locale::home))
+        .route("/language/{lang}", get(crate::http::locale::switch))
         .route("/{lang}", get(lang_root))
         .route("/{lang}/search", get(search::search))
         .route("/{lang}/{*slug}", get(articles::article))

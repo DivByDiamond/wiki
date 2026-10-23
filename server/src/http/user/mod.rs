@@ -1,6 +1,6 @@
 //! Sign-in with GitHub and edit suggestions from readers.
 
-mod guard;
+pub(super) mod guard;
 mod login;
 mod propose;
 

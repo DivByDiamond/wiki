@@ -1,6 +1,5 @@
 use super::{admin_only, fail};
 use crate::auth::{policy::Actor, tokens::api_key};
-use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
 use crate::http::{
     middleware::{Auth, Viewer},
@@ -69,7 +68,7 @@ fn page(s: &AppState, viewer: Viewer, new_key: Option<String>) -> AppResult<Resp
         })
         .collect();
     reader::html(&Keys {
-        shell: Shell::bare(Lang::En, "API keys", "start").for_viewer(viewer),
+        shell: Shell::admin(viewer, "admin_keys"),
         keys,
         new_key,
     })
@@ -84,11 +83,12 @@ fn page(s: &AppState, viewer: Viewer, new_key: Option<String>) -> AppResult<Resp
 }
 
 async fn list(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
+    let language = viewer.lang();
     let run = || -> AppResult<Response> {
         admin_only(&actor)?;
         page(&s, viewer, None)
     };
-    run().unwrap_or_else(fail)
+    run().unwrap_or_else(|e| fail(language, e))
 }
 
 async fn create(
@@ -98,7 +98,8 @@ async fn create(
     headers: HeaderMap,
     Form(f): Form<KeyForm>,
 ) -> Response {
-    make(&s, &actor, viewer, &headers, f).unwrap_or_else(fail)
+    make(&s, &actor, viewer, &headers, f)
+        .unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
 
 fn make(
@@ -137,5 +138,5 @@ async fn revoke(
         s.access.revoke_key(id)?;
         Ok(Redirect::to("/admin/keys").into_response())
     };
-    run().unwrap_or_else(fail)
+    run().unwrap_or_else(|e| fail(crate::http::locale::preferred(&headers), e))
 }
