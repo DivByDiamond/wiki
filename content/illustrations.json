@@ -281,9 +281,9 @@
         1024
       ],
       "caption": {
-        "ru": "Фрагмент экрана OC2R Lua Desktop Demo, нарисованного Lua-программой в Linux. Это статическое демо интерфейса, не AssOS и не интерактивный оконный менеджер.",
-        "en": "An OC2R Lua Desktop Demo screen excerpt drawn by a Lua program in Linux. This is a static UI demonstration, not AssOS or an interactive window manager.",
-        "zh": "Linux 中 Lua 程序绘制的 OC2R Lua Desktop Demo 屏幕局部。这是静态界面演示，并非 AssOS 或交互式窗口管理器。"
+        "ru": "Фрагмент экрана OC2R Lua Desktop Demo. Демонстрационный интерфейс нарисован Lua-программой в Linux.",
+        "en": "An OC2R Lua Desktop Demo screen excerpt. The demonstration interface is drawn by a Lua program in Linux.",
+        "zh": "OC2R Lua Desktop Demo 屏幕局部，由 Linux 中的 Lua 程序绘制。"
       },
       "file": "lua-desktop-demo-4f4ce635eb.webp",
       "width": 950,
