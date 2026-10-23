@@ -80,11 +80,13 @@ CSRF: cookie с SameSite=Lax, и сверх того каждый POST (`/auth/l
 
 | Метод и путь | Права | Назначение |
 |---|---|---|
-| `GET /api/pages` | read | Список страниц с актуальной ревизией |
-| `GET /api/pages/{slug}?lang=ru` | read | Страница и метаданные |
+| `GET /api/pages` | публично | Список страниц с актуальной ревизией |
+| `GET /api/pages/{slug}?lang=ru` | публично | Страница и метаданные |
 | `PUT /api/pages/{slug}?lang=ru&summary=...` | write | Создать или обновить, тело запроса — Markdown; ответ `{"outcome": "created"\|"updated"\|"unchanged", "revision": id}` (без `revision` при `unchanged`) |
-| `GET /api/revisions/{slug}?lang=ru` | read | История |
-| `GET /api/export` | export | Все страницы архивом Markdown |
+| `GET /api/revisions/{slug}?lang=ru` | публично | История |
+| `GET /api/export` | export | Все страницы одним JSON-документом |
+
+Чтение страниц, истории и поиск (в HTML и через `GET /api/pages`, `/api/pages/{slug}`, `/api/revisions/{slug}`) публичны и ключа не требуют. Право `read` принимается при создании ключа, но нигде не проверяется; действуют только `write` и `export`.
 
 Запись через ключ создаёт обычную ревизию с автором «ключ: название». Если тело совпадает
 с текущей ревизией, новая ревизия не создаётся (повторная заливка из CI безвредна).
