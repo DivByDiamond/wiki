@@ -1,0 +1,417 @@
+{
+  "capture": {
+    "minecraft": "26.1.2",
+    "loader": "NeoForge 26.1.2.114",
+    "oc2r": "0.1.1+fe96a9f",
+    "source_commit": "fe96a9fcc5f81eedadfea415d8ae3aa0c907088a"
+  },
+  "photos": {
+    "laboratory-overview": {
+      "source": "laboratory-overview.png",
+      "crop": [
+        0,
+        55,
+        1896,
+        1024
+      ],
+      "caption": {
+        "ru": "Лаборатория с компьютерами, дисплеями и проектором.",
+        "en": "The demonstration laboratory with computers, displays and a projector.",
+        "zh": "演示实验室中的计算机、显示器和投影仪。"
+      },
+      "file": "laboratory-overview-3bb659aa5b.webp",
+      "width": 1896,
+      "height": 969,
+      "source_sha256": "02f5514aef547094d340bfc4813101198b42b550dd37ba6c7e78efb3f68d2319",
+      "sha256": "3bb659aa5bd3c4aba4a8575427523038025786eb141fc28daeb47e61e89a973b"
+    },
+    "computer-powered-monitor": {
+      "source": "computer-powered-monitor.png",
+      "crop": [
+        480,
+        115,
+        1810,
+        950
+      ],
+      "caption": {
+        "ru": "Компьютер с питанием и подключённым монитором. В демонстрации запущена OnyxOS.",
+        "en": "A powered computer with a connected monitor, running OnyxOS in this demonstration.",
+        "zh": "已供电并连接显示器的计算机；本演示运行 OnyxOS。"
+      },
+      "file": "computer-powered-monitor-dc1723d306.webp",
+      "width": 1330,
+      "height": 835,
+      "source_sha256": "e8c6a4bd2b6bdd2e73338dbab59be57a5c094b82fc0b44f21e98dfe9bf016f70",
+      "sha256": "dc1723d30681be507b0c9d70f2b8ad062842b55c40db03e75e0786f200ec8c19"
+    },
+    "computer-components": {
+      "source": "computer-components.png",
+      "crop": [
+        615,
+        195,
+        1230,
+        825
+      ],
+      "caption": {
+        "ru": "Инвентарь демонстрационного ПК: четыре модуля по 16 МиБ, видеокарта и прошивка OnyxOS. Это пример комплектации, не минимальные требования.",
+        "en": "The demonstration computer inventory: four 16 MiB memory modules, a GPU and OnyxOS firmware. This is an example configuration, not a minimum requirement.",
+        "zh": "演示计算机的组件：四条 16 MiB 内存、显卡和 OnyxOS 固件。这是示例配置，并非最低要求。"
+      },
+      "file": "computer-components-cf74224f0d.webp",
+      "width": 615,
+      "height": 630,
+      "source_sha256": "256487bb68fcd67c567f7a26936fe5e0b26af376c7b8a417d049aa0ffa9de499",
+      "sha256": "cf74224f0d9743a831aef654b13f0267845f22e5995288a7815eeb2fc1d33d49"
+    },
+    "linux-terminal": {
+      "source": "linux-terminal.png",
+      "crop": [
+        440,
+        195,
+        1458,
+        405
+      ],
+      "caption": {
+        "ru": "Фрагмент терминала Linux: ядро 6.6.32 и Lua 5.4.6 в гостевой системе OC2R.",
+        "en": "A Linux terminal excerpt showing kernel 6.6.32 and Lua 5.4.6 inside the OC2R guest.",
+        "zh": "Linux 终端局部：OC2R 客户机中的内核 6.6.32 和 Lua 5.4.6。"
+      },
+      "file": "linux-terminal-22bde70bee.webp",
+      "width": 1018,
+      "height": 210,
+      "source_sha256": "6907bb7f3e6a0a71853fe7dcd87bf0cdbd861ad804596645477fbfdc3f4f4b4e",
+      "sha256": "22bde70beedca7749f44dc3da2fe886056713a050b449af037f875209d004f5d"
+    },
+    "onyxos-terminal": {
+      "source": "onyxos-terminal.png",
+      "crop": [
+        440,
+        450,
+        1458,
+        705
+      ],
+      "caption": {
+        "ru": "Фрагмент настоящего входа в OnyxOS: Login OK и приглашение OnyxShell. Это отдельная от Linux гостевая ОС.",
+        "en": "A real OnyxOS login excerpt: Login OK and the OnyxShell prompt. This guest OS is separate from Linux.",
+        "zh": "真实 OnyxOS 登录画面局部：Login OK 与 OnyxShell 提示符。这是与 Linux 不同的客户机操作系统。"
+      },
+      "file": "onyxos-terminal-47bf5af9b2.webp",
+      "width": 1018,
+      "height": 255,
+      "source_sha256": "5cfea7b53cedf2ce074c3232878bbcdb9b631dcf7fdb28108db96ea99b094e97",
+      "sha256": "47bf5af9b24ae680185df122c91d4dd1b4e78cd65570e1707ed2e4f25e9ba5ae"
+    },
+    "multi-monitor-independent": {
+      "source": "multi-monitor-independent.png",
+      "crop": [
+        90,
+        75,
+        1810,
+        980
+      ],
+      "caption": {
+        "ru": "Два отдельных монитора одного компьютера одновременно показывают разные framebuffer: телеметрию и надпись ONYX OS.",
+        "en": "Two separate monitors attached to one computer show independent framebuffers at the same time: telemetry and the ONYX OS display.",
+        "zh": "同一台计算机的两台独立显示器同时显示不同帧缓冲区：遥测信息与 ONYX OS 标识。"
+      },
+      "file": "multi-monitor-independent-aa46f7698d.webp",
+      "width": 1720,
+      "height": 905,
+      "source_sha256": "d57a1fbe3aa266cc94de5ca1522994608ba71ee269152d9caa9f9c9e6cf93c54",
+      "sha256": "aa46f7698d89ce391bd95a29eafeadfbb29eb8b7088e29c03a6bd6bfb73918eb"
+    },
+    "monitor-multiblock": {
+      "source": "monitor-multiblock.png",
+      "crop": [
+        360,
+        90,
+        1660,
+        940
+      ],
+      "caption": {
+        "ru": "Многоблочный монитор 3×2 с консолью OnyxOS. Это один большой экран, а не несколько независимых дисплеев.",
+        "en": "A 3×2 multiblock monitor displaying the OnyxOS console. This is one large screen, not several independent displays.",
+        "zh": "显示 OnyxOS 控制台的 3×2 多方块显示器：这是一个大屏幕，并非多台独立显示器。"
+      },
+      "file": "monitor-multiblock-3bc544a0b6.webp",
+      "width": 1300,
+      "height": 850,
+      "source_sha256": "d9f3dfd17d62257ca4ec118ed39321e332cbfe051bd63eded2bdb1a0b82f1028",
+      "sha256": "3bc544a0b64171c34ddfbe5d300dcbb034cc968929afc1bd88799dad5b0089af"
+    },
+    "projector-working": {
+      "source": "projector-working.png",
+      "crop": [
+        80,
+        55,
+        1860,
+        1024
+      ],
+      "caption": {
+        "ru": "Работающий проектор справа и его реальная проекция слева. Изображение выводит гостевая программа OnyxOS в framebuffer 640×480.",
+        "en": "The working projector on the right and its real projection on the left. An OnyxOS guest program writes the 640×480 framebuffer.",
+        "zh": "右侧是工作中的投影仪，左侧是真实投影；OnyxOS 客户机程序向 640×480 帧缓冲区输出图像。"
+      },
+      "file": "projector-working-d8b722d01e.webp",
+      "width": 1780,
+      "height": 969,
+      "source_sha256": "068f45555e19704bbf58dbfbe458e8bc53a5ba55be4f6b1edb6196db5f036783",
+      "sha256": "d8b722d01e6639b05b5c97ce52bb68f558223bed501810f16df2e207cd63697d"
+    },
+    "network-two-computers": {
+      "source": "network-two-computers.png",
+      "crop": [
+        0,
+        130,
+        1896,
+        1015
+      ],
+      "caption": {
+        "ru": "Два компьютера OnyxOS соединены синим сетевым кабелем. Для этого локального TCP-примера интернет не используется.",
+        "en": "Two OnyxOS computers connected by a blue network cable. This local TCP example does not use the Internet.",
+        "zh": "两台 OnyxOS 计算机通过蓝色网线相连。此本地 TCP 示例不使用互联网。"
+      },
+      "file": "network-two-computers-b9370a076c.webp",
+      "width": 1896,
+      "height": 885,
+      "source_sha256": "7814ab6a5ff2af20c2671290d3dec6f803513eccff9ba19adeb9ae025a8c90bc",
+      "sha256": "b9370a076c61f350fbf2078135be0a81c7b1051a2b41e2de78f049ea05dd0d49"
+    },
+    "network-exchange-client": {
+      "source": "network-exchange-client.png",
+      "crop": [
+        440,
+        195,
+        1458,
+        395
+      ],
+      "caption": {
+        "ru": "Фрагмент терминала: клиент получил ONYX-TCP-ECHO от второго компьютера по локальной сети.",
+        "en": "A terminal excerpt: the client received ONYX-TCP-ECHO from the second computer over the local network.",
+        "zh": "终端局部：客户端通过本地网络收到另一台计算机返回的 ONYX-TCP-ECHO。"
+      },
+      "file": "network-exchange-client-952eff1a65.webp",
+      "width": 1018,
+      "height": 200,
+      "source_sha256": "3f25b1e7acfd4fdc8442ca092731fb4490a85205f834bf409e310229cb8f561a",
+      "sha256": "952eff1a65d7bb71e5f45fcf7596d316eeb2ba7d44af4f0fb376922c5739ee50"
+    },
+    "robot-workstation": {
+      "source": "robot-workstation.png",
+      "crop": [
+        620,
+        100,
+        1740,
+        1024
+      ],
+      "caption": {
+        "ru": "Робот на заряднике и сундук над ним в демонстрационной лаборатории.",
+        "en": "The demonstration robot on its charger, with a chest above it.",
+        "zh": "演示实验室中位于充电器上的机器人，其上方放置了箱子。"
+      },
+      "file": "robot-workstation-e92d63799a.webp",
+      "width": 1120,
+      "height": 924,
+      "source_sha256": "cb466a475fe6c2183ee485815c2bd39ed3fae131d59ce771c6cfbfbcc252b18c",
+      "sha256": "e92d63799ab22bb74737db171bb84447f93bd38b0b01cd9bb47301dd1e6f134e"
+    },
+    "robot-action-confirmed": {
+      "source": "robot-action-confirmed.png",
+      "crop": [
+        440,
+        195,
+        1458,
+        525
+      ],
+      "caption": {
+        "ru": "Фрагмент вывода oc2ctl robot-demo: каждое поставленное в очередь действие завершилось SUCCESS.",
+        "en": "An oc2ctl robot-demo output excerpt: every queued action completed with SUCCESS.",
+        "zh": "oc2ctl robot-demo 输出局部：所有排队动作均以 SUCCESS 完成。"
+      },
+      "file": "robot-action-confirmed-c36d739cf8.webp",
+      "width": 1018,
+      "height": 330,
+      "source_sha256": "4c5e27b2ef5f6ede3637213616bbc66370b7a901ff3c85c3f40e5cdfb2983f6c",
+      "sha256": "c36d739cf8f8fc23142a0ddfe5a896dff583cc383786213405f38dbe45bd8a55"
+    },
+    "lua-redstone-off": {
+      "source": "lua-redstone-off.png",
+      "crop": [
+        250,
+        170,
+        1500,
+        970
+      ],
+      "caption": {
+        "ru": "Пример Lua-управления редстоуном: лампа выключена.",
+        "en": "The Lua redstone-control example with the lamp switched off.",
+        "zh": "Lua 红石控制示例：灯已关闭。"
+      },
+      "file": "lua-redstone-off-c6e155b166.webp",
+      "width": 1250,
+      "height": 800,
+      "source_sha256": "124b895d0241c3ee175c3fd16be28bfc31bae32e85b266852e3d8d57f6e4dc01",
+      "sha256": "c6e155b166d20f11910ecd29ffe43808ff5866a7269aa94b684ecb7e265cb586"
+    },
+    "lua-redstone-on": {
+      "source": "lua-redstone-on.png",
+      "crop": [
+        250,
+        170,
+        1500,
+        970
+      ],
+      "caption": {
+        "ru": "Та же сцена после запуска Lua-команды: лампа включена.",
+        "en": "The same scene after the Lua command switches the lamp on.",
+        "zh": "同一场景中执行 Lua 命令后，灯已点亮。"
+      },
+      "file": "lua-redstone-on-15f6b227dc.webp",
+      "width": 1250,
+      "height": 800,
+      "source_sha256": "3a663b0edf29167d28519dd990fe3c775165069f5708f195616c052a3c2b6770",
+      "sha256": "15f6b227dcccae0bdc40e9a3517ea12565d523972253cd47534bbcf64d7e84b9"
+    },
+    "lua-desktop-demo": {
+      "source": "lua-desktop-demo.png",
+      "crop": [
+        480,
+        240,
+        1430,
+        1024
+      ],
+      "caption": {
+        "ru": "Фрагмент экрана OC2R Lua Desktop Demo, нарисованного Lua-программой в Linux. Это статическое демо интерфейса, не AssOS и не интерактивный оконный менеджер.",
+        "en": "An OC2R Lua Desktop Demo screen excerpt drawn by a Lua program in Linux. This is a static UI demonstration, not AssOS or an interactive window manager.",
+        "zh": "Linux 中 Lua 程序绘制的 OC2R Lua Desktop Demo 屏幕局部。这是静态界面演示，并非 AssOS 或交互式窗口管理器。"
+      },
+      "file": "lua-desktop-demo-4f4ce635eb.webp",
+      "width": 950,
+      "height": 784,
+      "source_sha256": "92174058d7c24acb24ab587cfbd02a3ff4257f2b557e16f612829cf32834c0de",
+      "sha256": "4f4ce635eba73914e9ab17fef4d51ed297a561faeb985bf3d0a99188ec8fa800"
+    },
+    "onyxos-ascii-computer": {
+      "source": "onyxos-ascii-computer.png",
+      "crop": [
+        280,
+        85,
+        1720,
+        1080
+      ],
+      "caption": {
+        "ru": "Компьютер с OnyxOS и ASCII-надписью ONYX OS на настоящем игровом мониторе.",
+        "en": "An OnyxOS computer with ONYX OS ASCII lettering on the actual in-game monitor.",
+        "zh": "运行 OnyxOS 的计算机，真实游戏显示器上显示 ONYX OS ASCII 字样。"
+      },
+      "file": "onyxos-ascii-computer-2774e3cb84.webp",
+      "width": 1440,
+      "height": 995,
+      "source_sha256": "3f0db5e2fd7b9143b21ab147c3f5eb895ed7f2e31e12059c04daa31b1df280cd",
+      "sha256": "2774e3cb84da459a90249ffe1ada776913420d079309fc054b6165bda2d3163a"
+    },
+    "onyxos-ascii-screen": {
+      "source": "onyxos-ascii-screen.png",
+      "crop": [
+        565,
+        315,
+        1380,
+        1080
+      ],
+      "caption": {
+        "ru": "Крупный фрагмент монитора: надпись ONYX OS вывела программа внутри гостевой системы.",
+        "en": "A monitor close-up: the ONYX OS lettering is drawn by a program inside the guest system.",
+        "zh": "显示器局部特写：ONYX OS 字样由客户机内部程序绘制。"
+      },
+      "file": "onyxos-ascii-screen-f298de258a.webp",
+      "width": 815,
+      "height": 765,
+      "source_sha256": "7f99bab5330dbe0712afcda46edd9693d608f85491b7729ad0078a075a383ee4",
+      "sha256": "f298de258aa7707c3ceb1520723ba4705a6a15e11594114175c16a143d60f8ce"
+    }
+  },
+  "pages": {
+    "start": {
+      "lead": "laboratory-overview"
+    },
+    "getting_started": {
+      "gallery": [
+        "linux-terminal"
+      ]
+    },
+    "block/computer": {
+      "lead": "computer-powered-monitor",
+      "gallery": [
+        "computer-components"
+      ]
+    },
+    "block/monitor": {
+      "lead": "multi-monitor-independent",
+      "gallery": [
+        "monitor-multiblock"
+      ]
+    },
+    "item/gpu": {
+      "lead": "multi-monitor-independent"
+    },
+    "block/projector": {
+      "lead": "projector-working"
+    },
+    "networking": {
+      "lead": "network-two-computers",
+      "gallery": [
+        "network-exchange-client"
+      ]
+    },
+    "robotics": {
+      "lead": "robot-workstation",
+      "gallery": [
+        "robot-action-confirmed"
+      ]
+    },
+    "item/robot": {
+      "lead": "robot-workstation"
+    },
+    "scripting": {
+      "lead": "lua-desktop-demo",
+      "gallery": [
+        "lua-redstone-off",
+        "lua-redstone-on"
+      ]
+    },
+    "systems/overview": {
+      "lead": "onyxos-ascii-computer",
+      "gallery": [
+        "linux-terminal"
+      ]
+    },
+    "systems/onyxos": {
+      "lead": "onyxos-ascii-computer",
+      "gallery": [
+        "onyxos-terminal"
+      ]
+    },
+    "systems/onyxos-reference": {
+      "gallery": [
+        "onyxos-ascii-screen",
+        "onyxos-terminal"
+      ]
+    },
+    "systems/buildroot": {
+      "gallery": [
+        "linux-terminal"
+      ]
+    },
+    "reference/onyx-rpc": {
+      "gallery": [
+        "robot-action-confirmed"
+      ]
+    }
+  },
+  "not_published": {
+    "projector-close": "Similar to the selected projector-working view.",
+    "network-exchange-server": "The selected client excerpt already shows the successful exchange.",
+    "lua-redstone-confirmed": "A diagnostic source-code transcript; off/on world views explain the example more clearly.",
+    "lua-desktop-workstation": "Similar workstation views already appear in the redstone example."
+  }
+}

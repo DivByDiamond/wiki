@@ -133,6 +133,22 @@ mod tests {
     }
 
     #[test]
+    fn screenshot_dimensions_and_loading_survive_sanitizing() {
+        let doc = render(
+            "<a href=\"/static/photos/example.webp\"><img src=\"/static/photos/example.webp\" alt=\"Real display\" width=\"1018\" height=\"255\" loading=\"lazy\" decoding=\"async\" onerror=\"evil()\"></a>",
+        );
+        for attribute in [
+            "width=\"1018\"",
+            "height=\"255\"",
+            "loading=\"lazy\"",
+            "decoding=\"async\"",
+        ] {
+            assert!(doc.html.contains(attribute), "{attribute}");
+        }
+        assert!(!doc.html.contains("onerror"));
+    }
+
+    #[test]
     fn titles_strip_formatting_and_code_fences_do_not_create_headings() {
         assert_eq!(title("# A **computer**"), Some("A computer".into()));
         assert!(render("```md\n## Example\n```").headings.is_empty());

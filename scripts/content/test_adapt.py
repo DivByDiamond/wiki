@@ -20,5 +20,28 @@ class ConversionTest(unittest.TestCase):
             convert('[x](missing.md)', 'index.md', 'en', set())
 
 
+class PhotoAttachmentTest(unittest.TestCase):
+    def plan(self):
+        return {'capture': {'minecraft': '26.1.2'},
+                'photos': {'screen': {'file': 'screen-abcd.webp', 'width': 800, 'height': 450,
+                                      'caption': {'en': 'A real screen', 'ru': 'Настоящий экран'}}},
+                'pages': {'page': {'lead': 'screen', 'gallery': ['screen']}}}
+
+    def test_photos_are_idempotent_and_source_stays_last(self):
+        from photos import attach
+        source = '# Page\n\nIntro.\n\n## Detail\n\nText.\n\n---\n\n[OC2R source](https://github.com/DivByDiamond/OC2R/blob/abc/file.md) · `abc`\n'
+        once = attach(source, 'ru', 'page', self.plan())
+        self.assertEqual(attach(once, 'ru', 'page', self.plan()), once)
+        self.assertIn('Настоящий экран', once)
+        self.assertIn('width="800" height="450" loading="lazy"', once)
+        self.assertTrue(once.endswith(source[source.rfind('\n---'):]))
+        self.assertIn('## Detail\n\nText.', once)
+
+    def test_unillustrated_pages_are_untouched(self):
+        from photos import attach
+        source = '# Other\n\nEditor text.\n'
+        self.assertEqual(attach(source, 'en', 'other', self.plan()), source)
+
+
 if __name__ == '__main__':
     unittest.main()

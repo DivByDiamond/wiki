@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 from adapt import LOCALES, convert, section_for, slug_for
+from photos import attach
 
 ROOT = Path(__file__).resolve().parents[2]
 TECHNICAL = {
@@ -73,6 +74,9 @@ def main():
     preferred = ["start", "getting_started", "basics", "block/index", "item/index", "networking", "robotics", "systems/overview", "systems/onyxos", "scripting"]
     for page in pages.values():
         page["position"] = preferred.index(page["slug"]) if page["slug"] in preferred else 100
+    illustrations = json.loads((ROOT / "content/illustrations.json").read_text())
+    for page in pages.values():
+        page["body"] = attach(page["body"], page["lang"], page["slug"], illustrations)
     output = dict(source_revision=revision, source_dirty=dirty, pages=sorted(pages.values(), key=lambda p: (p["lang"], p["slug"])))
     (ROOT / "content/catalog.json").write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n")
     for path in (manual / "img").glob("*.png"):

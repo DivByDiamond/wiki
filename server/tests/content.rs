@@ -37,6 +37,14 @@ async fn all_bundled_articles_and_local_links_are_readable() {
             }
         }
     }
+    let photos: serde_json::Value =
+        serde_json::from_str(include_str!("../../content/illustrations.json")).unwrap();
+    for photo in photos["photos"].as_object().unwrap().values() {
+        targets.insert(format!(
+            "/static/photos/{}",
+            photo["file"].as_str().unwrap()
+        ));
+    }
     for target in targets {
         let response = app
             .clone()

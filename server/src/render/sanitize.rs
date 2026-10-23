@@ -10,6 +10,7 @@ pub fn clean(html: &str) -> String {
     for tag in ["h2", "h3", "h4", "h5", "h6"] {
         b.add_tag_attributes(tag, ["id"]);
     }
+    b.add_tag_attributes("img", ["loading", "decoding"]);
     // Article IDs live outside the shell namespace, including raw HTML headings.
     b.id_prefix(Some("section-"));
     b.attribute_filter(|_, attribute, value| {
