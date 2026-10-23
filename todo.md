@@ -17,7 +17,7 @@ Current implementation status is tracked here:
 - [x] Task 14 local validation: 235 Rust tests, 8 frontend tests, 3 converter tests, TypeScript, clippy with warnings denied, release build, code structure and browser acceptance passed.
 - [x] Content migration beyond the original plan: 134 pages from a pinned OC2R revision, images, converted links and safe transactional synchronization.
 - [x] Reader search results highlight matching text with escaped snippets.
-- [ ] Deployment-environment verification: actual GitHub callback, production nginx/Cloudflare and backup timer, with configured credentials/server.
+- [x] Deployment-environment verification: deployed on VPS behind nginx/Cloudflare; HTTPS checks pass, real GitHub sign-in and admin role confirmed, backup unit succeeded and weekly timer is enabled.
 
 Media upload UI and a reader's own proposal list remain explicitly deferred in
 “Вне этого плана” below. See [docs/content.md](docs/content.md) for content maintenance

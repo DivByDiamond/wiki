@@ -28,8 +28,6 @@
 
 .card { padding: 1rem; background: var(--bg-alt); border: 1px solid var(--line); border-radius: 3px; }
 
-#settings-toggle { font-size: 1.1rem; line-height: 1; padding: 0.4rem 0.6rem; }
-
 #settings-panel {
   position: fixed;
   top: 3.6rem;

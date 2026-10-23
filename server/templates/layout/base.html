@@ -19,28 +19,7 @@ try {
 </head>
 <body>
 <a class="skip-link" href="#article">{{ shell.text("skip") }}</a>
-<header class="site-header">
-  <a class="logo" href="/{{ shell.lang }}/start">OC2R Wiki</a>
-  <div style="position: relative">
-    <form id="search-form" action="/{{ shell.lang }}/search" method="get" role="search">
-      <input id="search-input" name="q" type="search" value="{{ shell.query }}" placeholder="{{ shell.text("search") }}" aria-label="{{ shell.text("search") }}" autocomplete="off">
-    </form>
-    <div id="search-results"></div>
-  </div>
-  <nav class="lang-switch" aria-label="{{ shell.text("language") }}">
-    {% for l in ["en", "ru", "zh"] %}<a href="/{{ l }}/{{ shell.path }}{% if shell.path == "search" %}?q={{ shell.query|urlencode }}{% endif %}"{% if *l == shell.lang %} aria-current="true"{% endif %}>{{ l }}</a> {% endfor %}
-  </nav>
-  <div class="account">
-    {% match shell.user %}{% when Some with (u) %}
-    <span class="account-login">{{ u.login }}</span>
-    {% if u.admin %}<a href="/admin">{{ shell.text("admin") }}</a>{% endif %}
-    <form method="post" action="/auth/logout"><button type="submit">{{ shell.text("signout") }}</button></form>
-    {% when None %}
-    <a href="/auth/github?next=/{{ shell.lang }}/{{ shell.path }}">{{ shell.text("signin") }}</a>
-    {% endmatch %}
-  </div>
-  <button id="settings-toggle" aria-label="{{ shell.text("settings") }}" type="button" aria-controls="settings-panel" aria-expanded="false">&#9881;</button>
-</header>
+{% include "layout/header.html" %}
 <div class="layout">
   <nav class="sidebar" aria-label="{{ shell.text("navigation") }}">
     <details class="navigation" open>

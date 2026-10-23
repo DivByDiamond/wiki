@@ -14,6 +14,7 @@ pub fn text(lang: &str, key: &str) -> &'static str {
         "language" => ("Language", "Язык", "语言"),
         "settings" => ("Reading settings", "Настройки чтения", "阅读设置"),
         "skip" => ("Skip to article", "Перейти к статье", "跳转到正文"),
+        "account" => ("Account", "Аккаунт", "账户"),
         "signin" => ("Sign in", "Войти", "登录"),
         "signout" => ("Sign out", "Выйти", "退出"),
         "admin" => ("Admin", "Админка", "管理"),

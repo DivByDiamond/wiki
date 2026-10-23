@@ -1,6 +1,5 @@
 /* Minecraft-flavored details; [data-pixel="0"] makes them thin and flat via the tokens. */
 
-.site-header { border-bottom: var(--pixel-border); }
 .sidebar { padding-right: 0.5rem; }
 
 @media (min-width: 720px) {
@@ -69,4 +68,3 @@
 :root[data-pixel="1"] .choice { border-radius: 0; }
 :root[data-pixel="1"] .btn { border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); }
 :root[data-pixel="1"] .btn:active { transform: translate(2px, 2px); box-shadow: none; }
-:root[data-pixel="1"] #settings-panel { border: var(--pixel-border); box-shadow: var(--pixel-shadow); }

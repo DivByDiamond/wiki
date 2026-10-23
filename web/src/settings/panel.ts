@@ -55,6 +55,10 @@ export function mountPanel(get: () => Settings, set: (s: Settings) => void): voi
   };
   toggle.setAttribute("aria-expanded", "false");
   toggle.addEventListener("click", () => setOpen(panel.hidden));
+  document.addEventListener("click", (event) => {
+    const path = event.composedPath();
+    if (!panel.hidden && !path.includes(panel) && !path.includes(toggle)) setOpen(false);
+  });
   onEscape(() => { if (!panel.hidden) { setOpen(false); toggle.focus(); } });
   render();
 }

@@ -2,6 +2,7 @@ import { mountSearch } from "./search/ui.ts";
 import { mountPanel } from "./settings/panel.ts";
 import { apply } from "./settings/theme.ts";
 import { load, save, type Settings } from "./settings/store.ts";
+import { mountHeader } from "./shared/header.ts";
 
 function storage(): Storage | null {
   try { return window.localStorage; } catch { return null; }
@@ -16,6 +17,7 @@ refresh();
 dark.addEventListener("change", refresh);
 
 function start(): void {
+  mountHeader();
   mountPanel(() => current, (s) => {
     current = s;
     if (store) save(store, s);
