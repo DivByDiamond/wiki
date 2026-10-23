@@ -5,6 +5,22 @@
 {% endif %}
 <h1>{% if is_new %}Create{% else %}Edit{% endif %}: {{ lang }}/{{ slug }}</h1>
 <form class="card" method="post" action="/admin/edit/{{ lang }}/{{ slug }}">
+  <div class="field">
+    <label for="section">Navigation section</label>
+    <select id="section" name="section">
+      <option value=""{% if section.is_empty() %} selected{% endif %}>Uncategorized</option>
+      {% for key in ["start", "hardware", "networking", "robotics", "systems", "scripting", "project"] %}
+      <option value="{{ key }}"{% if section == *key %} selected{% endif %}>{{ shell.text(key) }}</option>
+      {% endfor %}
+      {% if !section.is_empty() && section != "start" && section != "hardware" && section != "networking" && section != "robotics" && section != "systems" && section != "scripting" && section != "project" %}
+      <option value="{{ section }}" selected>{{ section }}</option>
+      {% endif %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="position">Position in section</label>
+    <input id="position" name="position" type="number" min="0" max="1000000" value="{{ position }}" required>
+  </div>
   <div id="editor-toolbar"></div>
   <div class="field">
     <label for="editor">Text (Markdown)</label>

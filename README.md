@@ -9,7 +9,7 @@ Rust backend, TypeScript frontend, one binary, one SQLite file.
 ![TypeScript](https://img.shields.io/badge/TypeScript-Bun-3178c6?style=flat-square&logo=typescript&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-FTS5-003b57?style=flat-square&logo=sqlite&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square&logo=gnu&logoColor=white)
-![Status](https://img.shields.io/badge/status-in%20development-yellow?style=flat-square)
+![Content](https://img.shields.io/badge/content-134%20pages-green?style=flat-square)
 
 [English](#english) | [Русский](#русский)
 
@@ -17,7 +17,7 @@ Rust backend, TypeScript frontend, one binary, one SQLite file.
 
 ---
 
-> **Status:** in development. See [`docs/`](docs) and [`todo.md`](todo.md).
+> **Status:** local wiki with bundled OC2R documentation. See [content and import guide](docs/content.md) for startup, sources, and safe updates. Hosting and GitHub sign-in require deployment configuration.
 
 ---
 
@@ -56,6 +56,16 @@ The frontend must be built **before** `cargo build`: the server embeds the asset
 cd web && bun install --frozen-lockfile && bun run build
 cd .. && cargo build --release -p oc2r-wiki
 ```
+
+### Read locally
+
+An empty database is populated automatically with 134 pages from OC2R (English, Russian, Chinese). After building the frontend, run:
+
+```bash
+cargo run -p oc2r-wiki
+```
+
+Open `http://127.0.0.1:8080/en/start`. Existing databases are left untouched on startup; use `WIKI_DB=/path/wiki.db ./target/release/oc2r-wiki --sync-content` to import/update bundle-owned pages while preserving editor changes. See [content sources and updates](docs/content.md).
 
 ### Configuration
 
@@ -156,6 +166,16 @@ OC2R Wiki - сайт документации мода [OC2R] на `wiki.loki-co
 cd web && bun install --frozen-lockfile && bun run build
 cd .. && cargo build --release -p oc2r-wiki
 ```
+
+### Локальный запуск
+
+В пустую базу автоматически загружаются 134 страницы из OC2R на русском, английском и китайском. После сборки фронтенда:
+
+```bash
+cargo run -p oc2r-wiki
+```
+
+Открыть `http://127.0.0.1:8080/ru/start`. Существующая база при запуске не меняется. Импорт и обновление страниц пакета с сохранением ручных правок: `WIKI_DB=/path/wiki.db ./target/release/oc2r-wiki --sync-content`. Подробнее: [источники, наполнение и обновление](docs/content.md).
 
 ### Настройка
 

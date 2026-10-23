@@ -25,7 +25,7 @@ async fn anonymous_sees_sign_in_link_with_next() {
         body.contains("href=\"/auth/github?next=/en/start\""),
         "{body}"
     );
-    assert!(body.contains("Войти"));
+    assert!(body.contains("Sign in"));
     assert!(!body.contains("/auth/logout") && !body.contains("href=\"/admin\""));
 }
 
@@ -41,7 +41,7 @@ async fn signed_in_user_sees_login_and_logout_form_but_no_admin_link() {
         "{body}"
     );
     assert!(!body.contains("al<ice"));
-    assert!(!body.contains("Войти") && !body.contains("href=\"/admin\""));
+    assert!(!body.contains("Sign in") && !body.contains("href=\"/admin\""));
 }
 
 #[tokio::test]

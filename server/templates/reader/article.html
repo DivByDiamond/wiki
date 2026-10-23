@@ -1,17 +1,17 @@
 {% extends "layout/base.html" %}
 {% block content %}
-<div class="page-actions">
-  <a href="/{{ shell.lang }}/{{ shell.path }}?history">История</a>
-  {% if !missing_translation %}<a href="/propose/{{ shell.lang }}/{{ shell.path }}">Предложить правку</a>{% endif %}
-</div>
-{% if proposed %}
-<div class="banner">Предложение отправлено. Редакторы скоро его рассмотрят.</div>
-{% endif %}
+{% if proposed %}<div class="banner">{{ shell.text("submitted") }}</div>{% endif %}
 {% if let Some(old) = old_rev %}
-<div class="banner banner--warn">Старая версия от {{ old.date }}, автор {{ old.author }}. <a href="/{{ shell.lang }}/{{ shell.path }}">Перейти к актуальной</a></div>
+<div class="banner banner--warn">{{ shell.text("old") }}: {{ old.date }}, {{ old.author }}. <a href="/{{ shell.lang }}/{{ shell.path }}">{{ shell.text("latest") }}</a></div>
 {% endif %}
-{% if missing_translation %}
-<div class="banner banner--warn">Перевода пока нет.</div>
-{% endif %}
-<div class="prose">{{ html|safe }}</div>
+{% if missing_translation %}<div class="banner banner--warn">{{ shell.text("missing") }}</div>{% endif %}
+<div class="prose"{% if missing_translation %} lang="en"{% endif %}>{{ html|safe }}</div>
+<div class="page-actions">
+  <a href="/{{ shell.lang }}/{{ shell.path }}?history">{{ shell.text("history") }}</a>
+  {% if !missing_translation %}<a href="/propose/{{ shell.lang }}/{{ shell.path }}">{{ shell.text("edit") }}</a>{% endif %}
+</div>
+<nav class="pager" aria-label="{{ shell.text("navigation") }}">
+  <div>{% if let Some(p) = shell.previous %}<a rel="prev" href="/{{ shell.lang }}/{{ p.slug }}"><small>{{ shell.text("previous") }}</small>{{ p.title }}</a>{% endif %}</div>
+  <div>{% if let Some(p) = shell.next %}<a rel="next" href="/{{ shell.lang }}/{{ p.slug }}"><small>{{ shell.text("next") }}</small>{{ p.title }}</a>{% endif %}</div>
+</nav>
 {% endblock %}

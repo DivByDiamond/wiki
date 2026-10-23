@@ -1,5 +1,29 @@
 # OC2R Wiki Implementation Plan
 
+> Historical implementation plan; unchecked boxes below are not a current status report.
+> The implementation is present. Bundled content, reader completion and verification are documented in [docs/content.md](docs/content.md) and [docs/verification.md](docs/verification.md).
+
+## Current completion audit (2026-10-23)
+
+The historical step checkboxes below include test-first and commit instructions;
+they are preserved as the original plan rather than claimed execution records.
+Current implementation status is tracked here:
+
+- [x] Tasks 0–9: workspace/health, errors, domain/ports, bounded diff, sanitized Markdown, policy/keys, SQLite migrations, revisions/FTS, sessions and API/export.
+- [x] Task 10: server-rendered articles, English fallback, history/diff/old revisions, navigation, table of contents, previous/next links and reader 404.
+- [x] Task 11: GitHub OAuth flow and edit proposals, including quotas and permission checks; integration tests use a fake provider.
+- [x] Task 12 final admin usability: grouped dashboard, discoverable page creation and validated section/order controls; navigation-only edits are recorded and protected from imports.
+- [x] Task 13: built assets, persisted reader settings, localized controls, search, editor/merge UI; editor preview request race fixed with a regression test.
+- [x] Task 14 local validation: 235 Rust tests, 8 frontend tests, 3 converter tests, TypeScript, clippy with warnings denied, release build, code structure and browser acceptance passed.
+- [x] Content migration beyond the original plan: 134 pages from a pinned OC2R revision, images, converted links and safe transactional synchronization.
+- [x] Reader search results highlight matching text with escaped snippets.
+- [ ] Deployment-environment verification: actual GitHub callback, production nginx/Cloudflare and backup timer, with configured credentials/server.
+
+Media upload UI and a reader's own proposal list remain explicitly deferred in
+“Вне этого плана” below. See [docs/content.md](docs/content.md) for content maintenance
+and [docs/verification.md](docs/verification.md) for checks and verification limits.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Вики для мода OC2R на `wiki.loki-code.dev`: история ревизий, очередь предложений правок, админка и запись по API-ключу.

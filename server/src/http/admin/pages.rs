@@ -1,7 +1,10 @@
+mod dashboard;
+
 use super::{MAX_BODY, MAX_FORM, admin_login, admin_only, fail, target};
 use crate::auth::policy::Actor;
 use crate::domain::{
     page::Lang,
+    ports::pages::Navigation,
     revision::{Author, NewRevision, Revision, rollback_to},
 };
 use crate::error::{AppError, AppResult};
@@ -26,7 +29,7 @@ const MAX_SUMMARY: usize = 200;
 
 pub fn routes() -> Router<AppState> {
     Router::new()
-        .route("/admin", get(dashboard))
+        .merge(dashboard::routes())
         .route(
             "/admin/edit/{lang}/{*slug}",
             get(edit_form)
@@ -34,19 +37,6 @@ pub fn routes() -> Router<AppState> {
                 .layer(DefaultBodyLimit::max(MAX_FORM)),
         )
         .route("/admin/rollback/{lang}/{*slug}", post(rollback))
-}
-
-struct Row {
-    lang: &'static str,
-    slug: String,
-}
-
-#[derive(Template)]
-#[template(path = "admin/dashboard.html")]
-struct Dashboard {
-    shell: Shell,
-    pages: Vec<Row>,
-    deleted: Vec<Row>,
 }
 
 struct HistoryRow {
@@ -63,6 +53,8 @@ struct Editor {
     lang: &'static str,
     slug: String,
     body: String,
+    section: String,
+    position: i64,
     is_new: bool,
     same: bool,
     history: Vec<HistoryRow>,
@@ -70,6 +62,8 @@ struct Editor {
 
 #[derive(Deserialize)]
 pub struct EditForm {
+    section: Option<String>,
+    position: Option<i64>,
     #[serde(default)]
     body: String,
     #[serde(default)]
@@ -85,28 +79,6 @@ struct EditQuery {
 pub struct RollbackForm {
     #[serde(default)]
     rev: String,
-}
-
-fn rows(list: Vec<crate::domain::ports::pages::PageSummary>) -> Vec<Row> {
-    list.into_iter()
-        .map(|p| Row {
-            lang: p.lang.code(),
-            slug: p.slug.as_str().to_owned(),
-        })
-        .collect()
-}
-
-async fn dashboard(State(s): State<AppState>, Auth(actor): Auth, viewer: Viewer) -> Response {
-    show_dashboard(&s, &actor, viewer).unwrap_or_else(fail)
-}
-
-fn show_dashboard(s: &AppState, actor: &Actor, viewer: Viewer) -> AppResult<Response> {
-    admin_only(actor)?;
-    reader::html(&Dashboard {
-        shell: Shell::bare(Lang::En, "Admin", "start").for_viewer(viewer),
-        pages: rows(s.pages.list()?),
-        deleted: rows(s.pages.list_deleted()?),
-    })
 }
 
 async fn edit_form(
@@ -151,6 +123,10 @@ fn show_editor(
         lang: lang.code(),
         slug: slug.as_str().to_owned(),
         body,
+        section: page
+            .as_ref()
+            .map_or_else(String::new, |p| p.section.clone()),
+        position: page.as_ref().map_or(0, |p| p.position),
         is_new: page.is_none(),
         same,
         history,
@@ -196,12 +172,39 @@ fn save_edit(
             "The summary is longer than 200 characters.".into(),
         ));
     }
+    let page = s.pages.find(&slug, lang)?;
+    let section = f
+        .section
+        .as_deref()
+        .map(str::trim)
+        .unwrap_or_else(|| page.as_ref().map_or("", |p| p.section.as_str()));
+    if section.chars().count() > 100 || section.chars().any(char::is_control) {
+        return Err(AppError::Invalid(
+            "Section must be at most 100 characters without control characters.".into(),
+        ));
+    }
+    let position = f
+        .position
+        .unwrap_or_else(|| page.as_ref().map_or(0, |p| p.position));
+    if !(0..=1_000_000).contains(&position) {
+        return Err(AppError::Invalid(
+            "Position must be between 0 and 1000000.".into(),
+        ));
+    }
+    let navigation = Navigation {
+        section: section.into(),
+        position,
+    };
     let rev = NewRevision {
         body,
-        summary: summary.to_owned(),
+        summary: if summary.is_empty() {
+            "Update page and navigation".into()
+        } else {
+            summary.to_owned()
+        },
         author: Author::User(login),
     };
-    s.pages.save(&slug, lang, rev)?;
+    s.pages.save_with_navigation(&slug, lang, rev, navigation)?;
     Ok(Redirect::to(&format!("/{}/{}", lang.code(), slug.as_str())).into_response())
 }
 

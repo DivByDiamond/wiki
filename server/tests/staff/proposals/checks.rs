@@ -89,11 +89,12 @@ async fn article_links_to_the_form_and_shows_the_sent_banner() {
     };
     let plain = text(get("/en/guide").await.unwrap()).await;
     assert!(
-        plain.contains("href=\"/propose/en/guide\"") && !plain.contains("Предложение отправлено")
+        plain.contains("href=\"/propose/en/guide\"")
+            && !plain.contains("Your suggestion has been sent for review")
     );
     assert!(
         text(get("/en/guide?proposed=1").await.unwrap())
             .await
-            .contains("Предложение отправлено")
+            .contains("Your suggestion has been sent for review")
     );
 }

@@ -75,7 +75,7 @@ fn handle(
         ),
         None => return Err(AppError::NotFound),
     };
-    let shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?.for_viewer(viewer);
+    let mut shell = Shell::build(s, lang, slug.as_str(), slug.as_str(), "")?.for_viewer(viewer);
     if q.history.is_some() {
         enforce(s, "history", ip)?;
         return history::history(s, shell, &page);
@@ -96,9 +96,12 @@ fn handle(
         }
         None => (page.current.clone(), None),
     };
+    let document = render::document::render(&revision.body);
+    shell.title = render::document::title(&revision.body).unwrap_or_else(|| slug.as_str().into());
+    shell.headings = document.headings;
     html(&ArticlePage {
         shell,
-        html: render::to_html(&revision.body),
+        html: document.html,
         old_rev,
         missing_translation,
         proposed: q.proposed.is_some(),

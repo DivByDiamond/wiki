@@ -122,3 +122,7 @@ dist
 *.db
 *.db-wal
 *.db-shm
+
+# Python content tooling
+__pycache__/
+*.pyc

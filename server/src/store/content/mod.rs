@@ -1,6 +1,6 @@
 mod pages;
-mod revisions;
-mod search;
+pub(crate) mod revisions;
+pub(crate) mod search;
 
 pub use pages::SqlitePages;
 
@@ -185,7 +185,11 @@ mod tests {
         r.save(&slug("a"), Lang::En, rev("gamma")).unwrap();
         assert!(r.search("alpha", Lang::En).unwrap().is_empty());
         assert_eq!(r.search("gamma", Lang::En).unwrap().len(), 1);
-        assert!(r.search("gamma", Lang::Ru).unwrap().is_empty());
+        assert_eq!(r.search("gamma", Lang::Ru).unwrap()[0].lang, Lang::En);
+        r.save(&slug("a"), Lang::Ru, rev("gamma перевод")).unwrap();
+        let hits = r.search("gamma", Lang::Ru).unwrap();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].lang, Lang::Ru);
         assert!(r.search("   ", Lang::En).unwrap().is_empty());
     }
 

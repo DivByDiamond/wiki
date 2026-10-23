@@ -1,3 +1,5 @@
+mod highlight;
+
 use super::{error_page, html, unknown_lang, view::Shell};
 use crate::domain::page::Lang;
 use crate::error::{AppError, AppResult};
@@ -20,6 +22,8 @@ pub struct SearchQuery {
 }
 
 struct Hit {
+    lang: String,
+    title: String,
     slug: String,
     snippet: String,
 }
@@ -34,7 +38,6 @@ struct SearchPage {
 #[derive(Template)]
 #[template(path = "reader/search.html", block = "results")]
 struct Fragment<'a> {
-    shell: &'a Shell,
     hits: &'a [Hit],
 }
 
@@ -51,13 +54,20 @@ pub async fn search(
     let run = || -> AppResult<Response> {
         enforce(&s, "search", &ip)?;
         let text = q.q.as_deref().unwrap_or("").trim();
+        let titles = s.pages.list()?;
         let hits = s
             .pages
             .search(text, lang)?
             .into_iter()
             .map(|h| Hit {
+                title: titles
+                    .iter()
+                    .find(|p| p.slug == h.slug && p.lang == h.lang)
+                    .map(|p| p.title.clone())
+                    .unwrap_or_else(|| h.slug.as_str().into()),
+                lang: h.lang.code().into(),
                 slug: h.slug.as_str().into(),
-                snippet: h.snippet,
+                snippet: highlight::snippet(&h.snippet, text),
             })
             .collect();
         let page = SearchPage {
@@ -65,12 +75,9 @@ pub async fn search(
             hits,
         };
         if q.fragment.is_some() {
-            let body = Fragment {
-                shell: &page.shell,
-                hits: &page.hits,
-            }
-            .render()
-            .map_err(|e| AppError::Internal(e.to_string()))?;
+            let body = Fragment { hits: &page.hits }
+                .render()
+                .map_err(|e| AppError::Internal(e.to_string()))?;
             return Ok(Html(body).into_response());
         }
         html(&page)

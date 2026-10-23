@@ -4,14 +4,12 @@ use oc2r_wiki::{
     auth::github::GithubUser, config::Config, http::state::AppState, router, store::db::open_memory,
 };
 use tower::ServiceExt;
-
 pub fn gh(id: i64, login: &str) -> Result<GithubUser, String> {
     Ok(GithubUser {
         id,
         login: login.into(),
     })
 }
-
 pub async fn get(app: &Router, uri: &str, cookie: Option<&str>) -> Response {
     let mut req = Request::get(uri);
     if let Some(c) = cookie {
@@ -22,7 +20,6 @@ pub async fn get(app: &Router, uri: &str, cookie: Option<&str>) -> Response {
         .await
         .unwrap()
 }
-
 fn set_cookies(res: &Response) -> Vec<String> {
     res.headers()
         .get_all("set-cookie")

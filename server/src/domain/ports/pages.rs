@@ -11,7 +11,14 @@ pub enum SaveOutcome {
     Unchanged,
 }
 
+/// Navigation belongs to a page; a manual change is recorded as a revision.
+pub struct Navigation {
+    pub section: String,
+    pub position: i64,
+}
+
 pub struct PageSummary {
+    pub title: String,
     pub id: i64,
     pub slug: Slug,
     pub lang: Lang,
@@ -32,6 +39,13 @@ pub trait PageRepo: Send + Sync {
     fn revision(&self, page_id: i64, rev_id: i64) -> StoreResult<Option<Revision>>;
     fn history(&self, page_id: i64) -> StoreResult<Vec<RevisionMeta>>;
     fn save(&self, slug: &Slug, lang: Lang, rev: NewRevision) -> StoreResult<SaveOutcome>;
+    fn save_with_navigation(
+        &self,
+        slug: &Slug,
+        lang: Lang,
+        rev: NewRevision,
+        navigation: Navigation,
+    ) -> StoreResult<SaveOutcome>;
     fn list(&self) -> StoreResult<Vec<PageSummary>>;
     fn list_deleted(&self) -> StoreResult<Vec<PageSummary>>;
     fn set_deleted(&self, page_id: i64, deleted: bool) -> StoreResult<()>;

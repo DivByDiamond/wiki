@@ -57,7 +57,7 @@ async fn old_revision_shows_banner_and_old_text() {
     let first = rev_ids(&st, "a")[0];
     let (status, body) = page(&app, &format!("/en/a?rev={first}")).await;
     assert_eq!(status, 200);
-    assert!(body.contains("one") && body.contains("Старая версия"));
+    assert!(body.contains("one") && body.contains("Old revision"));
     assert!(body.contains("banner--warn"));
     assert!(!body.contains("two"));
 }
@@ -162,12 +162,13 @@ async fn search_full_page_and_fragment() {
     let (status, frag) = page(&app, "/en/search?q=zebra&fragment=1").await;
     assert_eq!(status, 200);
     assert!(frag.starts_with(r#"<ul class="search-results">"#));
+    assert!(frag.contains("<mark>zebra</mark>"));
     assert!(!frag.contains("<html"));
     let (status, frag) = page(&app, "/en/search?q=&fragment=1").await;
     assert_eq!(status, 200);
     assert!(frag.contains(r#"<ul class="search-results">"#) && !frag.contains("<li"));
     assert!(
-        !page(&app, "/ru/search?q=zebra&fragment=1")
+        page(&app, "/ru/search?q=zebra&fragment=1")
             .await
             .1
             .contains("<li")

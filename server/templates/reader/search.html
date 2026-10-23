@@ -1,5 +1,6 @@
 {% extends "layout/base.html" %}
 {% block content %}
-<h1>Поиск</h1>
-{% block results %}<ul class="search-results">{% for h in hits %}<li><a href="/{{ shell.lang }}/{{ h.slug }}">{{ h.slug }}</a> <span>{{ h.snippet }}</span></li>{% endfor %}</ul>{% endblock %}
+<h1>{{ shell.text("search") }}</h1>
+{% if hits.is_empty() && !shell.query.is_empty() %}<p>{{ shell.text("empty") }}</p>{% endif %}
+{% block results %}<ul class="search-results">{% for h in hits %}<li><a href="/{{ h.lang }}/{{ h.slug }}">{{ h.title }}</a> <small>{{ h.lang }}</small><span>{{ h.snippet|safe }}</span></li>{% endfor %}</ul>{% endblock %}
 {% endblock %}

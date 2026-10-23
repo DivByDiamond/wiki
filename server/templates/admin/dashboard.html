@@ -6,11 +6,21 @@
   <a class="btn" href="/admin/keys">API keys</a>
   <a class="btn" href="/admin/users">Users</a>
 </p>
+<h2>Create a page</h2>
+<form class="card" method="get" action="/admin/create">
+  <label for="new-lang">Language</label>
+  <select id="new-lang" name="lang"><option value="en">English</option><option value="ru">Русский</option><option value="zh">中文</option></select>
+  <label for="new-slug">Address</label>
+  <input id="new-slug" name="slug" placeholder="blocks/my-page" maxlength="100" required pattern="[a-z0-9_\-]+(/[a-z0-9_\-]+)*">
+  <button class="btn" type="submit">Open editor</button>
+</form>
 <h2>Pages</h2>
+{% for group in groups %}
+<h3>{% if group.section.is_empty() %}Uncategorized{% else %}{{ group.section }}{% endif %}</h3>
 <ul>
-  {% for p in pages %}
+  {% for p in group.pages %}
   <li>
-    <a href="/{{ p.lang }}/{{ p.slug }}">{{ p.lang }}/{{ p.slug }}</a>
+    <a href="/{{ p.lang }}/{{ p.slug }}">{{ p.title }} ({{ p.lang }}/{{ p.slug }})</a>
     <a href="/admin/edit/{{ p.lang }}/{{ p.slug }}">Edit</a>
     <form method="post" action="/admin/delete/{{ p.lang }}/{{ p.slug }}" style="display: inline">
       <button class="btn" type="submit">Delete</button>
@@ -18,7 +28,7 @@
   </li>
   {% endfor %}
 </ul>
-<p>New pages are created by saving an edit at a new address, for example <code>/admin/edit/en/my-page</code>.</p>
+{% endfor %}
 {% if !deleted.is_empty() %}
 <h2>Deleted pages</h2>
 <ul>

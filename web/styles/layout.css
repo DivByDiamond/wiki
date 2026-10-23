@@ -25,7 +25,8 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "sidebar" "toc" "article";
   gap: 1.5rem;
   max-width: 80rem;
   margin: 0 auto;
@@ -33,8 +34,9 @@
 }
 
 .sidebar, .toc { font-size: 0.9rem; }
-.article { min-width: 0; }
-.toc { order: -1; }
+.article { min-width: 0; grid-area: article; }
+.sidebar { grid-area: sidebar; min-width: 0; }
+.toc { grid-area: toc; min-width: 0; }
 
 .sidebar ul, .toc ul { list-style: none; margin: 0; padding: 0; }
 .sidebar ul ul, .toc ul ul { padding-left: 0.9rem; }
@@ -93,12 +95,51 @@
 .prose blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--line); color: var(--muted); }
 
 @media (min-width: 720px) {
-  .layout { grid-template-columns: 14rem minmax(0, 1fr); }
-  .toc { order: 0; grid-column: 2; }
+  .layout { grid-template-columns: 14rem minmax(0, 1fr); grid-template-areas: "sidebar toc" "sidebar article"; align-items: start; }
+
 }
 
 @media (min-width: 1100px) {
-  .layout { grid-template-columns: 15rem minmax(0, 1fr) 14rem; gap: 2rem; }
-  .toc { grid-column: 3; position: sticky; top: 4.5rem; align-self: start; }
+  .layout { grid-template-columns: 15rem minmax(0, 1fr) 13rem; grid-template-areas: "sidebar article toc"; gap: 2rem; }
+  .toc { position: sticky; top: 4.5rem; align-self: start; }
   .sidebar { position: sticky; top: 4.5rem; align-self: start; max-height: calc(100vh - 5rem); overflow-y: auto; }
+}
+
+/* A compact manual: hardware-green accents and square, quiet navigation. */
+.skip-link { position: fixed; top: -5rem; left: 1rem; z-index: 50; padding: .5rem 1rem; background: var(--bg); }
+.skip-link:focus { top: .5rem; }
+.navigation > summary, .toc summary { font-weight: 650; padding: .5rem 0; cursor: pointer; }
+.nav-section { margin-bottom: .6rem; }
+.nav-section > summary { cursor: pointer; padding: .5rem; font-weight: 650; color: var(--muted); }
+.nav-section ul { padding-bottom: .35rem; }
+.sidebar a { padding: .4rem .65rem; line-height: 1.4; }
+.toc .nested { padding-left: .7rem; }
+.toc { max-height: calc(100dvh - 6rem); overflow-y: auto; }
+.toc a { padding: .3rem 0; line-height: 1.45; }
+.pager > div { max-width: 48%; }
+.pager > div:last-child { text-align: right; }
+.pager a { display: block; text-decoration: none; }
+.pager small { display: block; color: var(--muted); }
+.prose { line-height: 1.75; }
+.prose h2, .prose h3, .prose h4 { scroll-margin-top: 7rem; }
+.prose pre { line-height: 1.6; }
+.prose img { border: 1px solid var(--line); border-radius: 3px; }
+.prose td, .prose th { min-width: 7rem; }
+.site-header > div:first-of-type { flex: 1 1 15rem; max-width: 28rem; }
+.lang-switch { display: flex; gap: .3rem; }
+.lang-switch a { padding: .2rem .3rem; text-decoration: none; }
+.lang-switch a[aria-current] { background: var(--bg-alt); color: var(--fg); font-weight: 700; }
+#search-results { max-height: 65dvh; overflow-y: auto; }
+.search-results span { display: block; color: var(--muted); font-size: .9rem; }
+@media (max-width: 719px) {
+  .site-header { position: relative; gap: .5rem; }
+  .site-header > div:first-of-type { order: 5; flex-basis: 100%; max-width: none; }
+  .site-header form { max-width: none; }
+  .layout { gap: .6rem; padding-top: .5rem; }
+  .sidebar { border-bottom: 1px solid var(--line); padding-bottom: .5rem; }
+  .toc { max-height: 18rem; margin-bottom: 1rem; }
+  .article { padding-top: .5rem; }
+  .prose h1 { font-size: 1.65rem; }
+  .site-header .account { font-size: .85rem; }
+  #search-results:not(:empty) { width: 100%; }
 }

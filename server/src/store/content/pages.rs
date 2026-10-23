@@ -1,11 +1,13 @@
+mod write;
+
 use super::{revisions, search};
 use crate::domain::{
     page::{Lang, Page, Slug},
     ports::{
         StoreError, StoreResult,
-        pages::{PageRepo, PageSummary, SaveOutcome, SearchHit},
+        pages::{Navigation, PageRepo, PageSummary, SaveOutcome, SearchHit},
     },
-    revision::{self, NewRevision, Revision, RevisionMeta},
+    revision::{NewRevision, Revision, RevisionMeta},
 };
 use crate::store::db::{Db, err, now};
 use rusqlite::{Connection, OptionalExtension, params};
@@ -18,21 +20,6 @@ impl SqlitePages {
     pub fn new(db: Db) -> Self {
         Self { db }
     }
-}
-
-/// Live (not deleted) page id and its current revision id.
-fn live_page(
-    conn: &Connection,
-    slug: &Slug,
-    lang: Lang,
-) -> StoreResult<Option<(i64, Option<i64>)>> {
-    conn.query_row(
-        "select id, current_rev_id from pages where slug = ?1 and lang = ?2 and deleted_at is null",
-        params![slug.as_str(), lang.code()],
-        |r| Ok((r.get(0)?, r.get(1)?)),
-    )
-    .optional()
-    .map_err(err)
 }
 
 /// Slug and current body of a page, used to rebuild its search entry.
@@ -61,10 +48,10 @@ fn summaries(db: &Db, deleted: bool) -> StoreResult<Vec<PageSummary>> {
     // restoring then brings back the copy that was removed last.
     let mut stmt = conn
         .prepare(if deleted {
-            "select slug, lang, section, position, id from pages
-             where deleted_at is not null order by deleted_at desc, id desc"
+            "select slug, lang, section, position, p.id, substr(r.body, 1, 1024) from pages p left join revisions r on r.id = p.current_rev_id
+             where deleted_at is not null order by deleted_at desc, p.id desc"
         } else {
-            "select slug, lang, section, position, id from pages
+            "select slug, lang, section, position, p.id, substr(r.body, 1, 1024) from pages p left join revisions r on r.id = p.current_rev_id
              where deleted_at is null order by section, position, slug"
         })
         .map_err(err)?;
@@ -76,14 +63,17 @@ fn summaries(db: &Db, deleted: bool) -> StoreResult<Vec<PageSummary>> {
                 r.get::<_, String>(2)?,
                 r.get::<_, i64>(3)?,
                 r.get::<_, i64>(4)?,
+                r.get::<_, Option<String>>(5)?.unwrap_or_default(),
             ))
         })
         .map_err(err)?;
     let mut out = Vec::new();
     for row in rows {
-        let (slug, lang, section, position, id) = row.map_err(err)?;
+        let (slug, lang, section, position, id, body) = row.map_err(err)?;
         if let (Some(slug), Some(lang)) = (Slug::parse(&slug), Lang::parse(&lang)) {
             out.push(PageSummary {
+                title: crate::render::document::title(&body)
+                    .unwrap_or_else(|| slug.as_str().into()),
                 id,
                 slug,
                 lang,
@@ -178,42 +168,17 @@ impl PageRepo for SqlitePages {
     }
 
     fn save(&self, slug: &Slug, lang: Lang, rev: NewRevision) -> StoreResult<SaveOutcome> {
-        let mut conn = self.db.lock().unwrap();
-        let tx = conn.transaction().map_err(err)?;
-        let (id, created) = match live_page(&tx, slug, lang)? {
-            Some((id, cur)) => {
-                let current = match cur {
-                    Some(c) => revisions::get(&tx, id, c)?,
-                    None => None,
-                };
-                if revision::is_noop(current.as_ref(), &rev.body) {
-                    // nothing was written; dropping the transaction rolls it back
-                    return Ok(SaveOutcome::Unchanged);
-                }
-                (id, false)
-            }
-            None => {
-                tx.execute(
-                    "insert into pages (slug, lang, created_at) values (?1, ?2, ?3)",
-                    params![slug.as_str(), lang.code(), now()],
-                )
-                .map_err(err)?;
-                (tx.last_insert_rowid(), true)
-            }
-        };
-        let rev_id = revisions::insert(&tx, id, &rev)?;
-        tx.execute(
-            "update pages set current_rev_id = ?1 where id = ?2",
-            params![rev_id, id],
-        )
-        .map_err(err)?;
-        search::index(&tx, id, slug, &rev.body)?;
-        tx.commit().map_err(err)?;
-        Ok(if created {
-            SaveOutcome::Created(rev_id)
-        } else {
-            SaveOutcome::Updated(rev_id)
-        })
+        write::save(&self.db, slug, lang, rev, None)
+    }
+
+    fn save_with_navigation(
+        &self,
+        slug: &Slug,
+        lang: Lang,
+        rev: NewRevision,
+        navigation: Navigation,
+    ) -> StoreResult<SaveOutcome> {
+        write::save(&self.db, slug, lang, rev, Some(navigation))
     }
 
     fn list(&self) -> StoreResult<Vec<PageSummary>> {

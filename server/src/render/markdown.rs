@@ -1,13 +1,5 @@
-use super::{extensions, sanitize};
-use pulldown_cmark::{Options, Parser, html};
-
 pub fn to_html(src: &str) -> String {
-    let expanded = extensions::expand(src);
-    let opts =
-        Options::ENABLE_TABLES | Options::ENABLE_STRIKETHROUGH | Options::ENABLE_HEADING_ATTRIBUTES;
-    let mut raw = String::new();
-    html::push_html(&mut raw, Parser::new_ext(&expanded, opts));
-    sanitize::clean(&raw)
+    super::document::render(src).html
 }
 
 #[cfg(test)]

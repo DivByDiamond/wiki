@@ -22,6 +22,8 @@ function start(): void {
     refresh();
   });
   mountSearch();
+  const navigation = document.querySelector<HTMLDetailsElement>(".navigation");
+  if (navigation && window.matchMedia("(max-width: 719px)").matches) navigation.open = false;
   if (document.getElementById("editor") || document.getElementById("merge")) {
     void import("./editor/editor.ts").then((m) => m.mountEditor());
   }

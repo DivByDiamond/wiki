@@ -10,6 +10,18 @@ async fn main() {
         .with_env_filter(filter)
         .with_ansi(std::io::stdout().is_terminal())
         .init();
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.iter().any(|a| a == "--help" || a == "-h") {
+        println!(
+            "oc2r-wiki [--sync-content]\n\nWithout arguments: initialize empty database and serve.\n--sync-content: import bundled content into WIKI_DB and exit; preserve editor changes."
+        );
+        return;
+    }
+    let sync = args.as_slice() == ["--sync-content"];
+    if !args.is_empty() && !sync {
+        eprintln!("unknown arguments; use --help");
+        std::process::exit(1);
+    }
     let cfg = match Config::from_env() {
         Ok(c) => c,
         Err(e) => {
@@ -24,6 +36,18 @@ async fn main() {
             std::process::exit(1);
         }
     };
+    let result = oc2r_wiki::store::catalog::bundled()
+        .and_then(|catalog| oc2r_wiki::store::catalog::import(&db, &catalog, !sync));
+    match result {
+        Ok(report) => tracing::info!(?report, "content bundle"),
+        Err(e) => {
+            eprintln!("cannot import content: {}", e.0);
+            std::process::exit(1);
+        }
+    }
+    if sync {
+        return;
+    }
     let listener = match tokio::net::TcpListener::bind(&cfg.bind).await {
         Ok(l) => l,
         Err(e) => {

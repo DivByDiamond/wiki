@@ -40,8 +40,8 @@ pub fn query(conn: &Connection, q: &str, lang: Lang) -> StoreResult<Vec<SearchHi
         .prepare(
             "select p.slug, p.lang, snippet(revisions_fts, 1, '', '', '…', 12)
              from revisions_fts f join pages p on p.id = f.page_id
-             where revisions_fts match ?1 and p.lang = ?2 and p.deleted_at is null
-             order by rank limit 20",
+             where revisions_fts match ?1 and (p.lang = ?2 or p.lang = 'en') and p.deleted_at is null
+             order by (p.lang = ?2) desc, rank limit 40",
         )
         .map_err(err)?;
     let rows = stmt
@@ -57,6 +57,9 @@ pub fn query(conn: &Connection, q: &str, lang: Lang) -> StoreResult<Vec<SearchHi
     for row in rows {
         let (slug, lang, snippet) = row.map_err(err)?;
         if let (Some(slug), Some(lang)) = (Slug::parse(&slug), Lang::parse(&lang)) {
+            if hits.iter().any(|h: &SearchHit| h.slug == slug) || hits.len() == 20 {
+                continue;
+            }
             hits.push(SearchHit {
                 slug,
                 lang,

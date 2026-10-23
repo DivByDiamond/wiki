@@ -18,43 +18,56 @@ try {
 <script defer src="/static/app.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#article">{{ shell.text("skip") }}</a>
 <header class="site-header">
   <a class="logo" href="/{{ shell.lang }}/start">OC2R Wiki</a>
   <div style="position: relative">
     <form id="search-form" action="/{{ shell.lang }}/search" method="get" role="search">
-      <input id="search-input" name="q" type="search" value="{{ shell.query }}" placeholder="/" autocomplete="off">
+      <input id="search-input" name="q" type="search" value="{{ shell.query }}" placeholder="{{ shell.text("search") }}" aria-label="{{ shell.text("search") }}" autocomplete="off">
     </form>
     <div id="search-results"></div>
   </div>
-  <nav class="lang-switch">
+  <nav class="lang-switch" aria-label="{{ shell.text("language") }}">
     {% for l in ["en", "ru", "zh"] %}<a href="/{{ l }}/{{ shell.path }}{% if shell.path == "search" %}?q={{ shell.query|urlencode }}{% endif %}"{% if *l == shell.lang %} aria-current="true"{% endif %}>{{ l }}</a> {% endfor %}
   </nav>
   <div class="account">
     {% match shell.user %}{% when Some with (u) %}
     <span class="account-login">{{ u.login }}</span>
-    {% if u.admin %}<a href="/admin">Админка</a>{% endif %}
-    <form method="post" action="/auth/logout"><button type="submit">Выйти</button></form>
+    {% if u.admin %}<a href="/admin">{{ shell.text("admin") }}</a>{% endif %}
+    <form method="post" action="/auth/logout"><button type="submit">{{ shell.text("signout") }}</button></form>
     {% when None %}
-    <a href="/auth/github?next=/{{ shell.lang }}/{{ shell.path }}">Войти</a>
+    <a href="/auth/github?next=/{{ shell.lang }}/{{ shell.path }}">{{ shell.text("signin") }}</a>
     {% endmatch %}
   </div>
-  <button id="settings-toggle" type="button" aria-controls="settings-panel" aria-expanded="false">&#9881;</button>
+  <button id="settings-toggle" aria-label="{{ shell.text("settings") }}" type="button" aria-controls="settings-panel" aria-expanded="false">&#9881;</button>
 </header>
 <div class="layout">
-  <nav class="sidebar">
+  <nav class="sidebar" aria-label="{{ shell.text("navigation") }}">
+    <details class="navigation" open>
+    <summary>{{ shell.text("navigation") }}</summary>
     {% for section in shell.sections %}
-    <h3>{{ section.name }}</h3>
+    <details class="nav-section"{% if section.open %} open{% endif %}>
+    <summary>{{ section.name }}</summary>
     <ul>
       {% for item in section.items %}
       <li><a href="/{{ shell.lang }}/{{ item.slug }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
       {% endfor %}
     </ul>
+    </details>
     {% endfor %}
+    </details>
   </nav>
-  <main class="article">
+  <main class="article" id="article" tabindex="-1">
     {% block content %}{% endblock %}
   </main>
-  <aside class="toc"></aside>
+  <aside class="toc">
+    {% if !shell.headings.is_empty() %}
+    <details open><summary>{{ shell.text("toc") }}</summary>
+    <nav aria-label="{{ shell.text("toc") }}"><ul>
+    {% for h in shell.headings %}<li{% if h.nested %} class="nested"{% endif %}><a href="#{{ h.id }}">{{ h.text }}</a></li>{% endfor %}
+    </ul></nav></details>
+    {% endif %}
+  </aside>
 </div>
 </body>
 </html>
