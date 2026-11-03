@@ -80,6 +80,8 @@ def render(recipes, lang, labels, revision):
     ru = lang == 'ru'
     path = Path(__file__).resolve().parents[3] / 'web/public/items/manifest.json'
     manifest = json.loads(path.read_text()) if path.exists() else {}
+    updates_path = Path(__file__).resolve().parents[3] / 'content/recipe-updates.json'
+    updates = json.loads(updates_path.read_text()) if updates_path.exists() else {}
     title = 'Крафты и рецепты' if ru else 'Crafting recipes'
     intro = (
         f'Здесь собраны все {len(recipes)} рецептов из файлов OC2R указанной внизу ревизии. '
@@ -115,6 +117,13 @@ def render(recipes, lang, labels, revision):
             label = 'Очистка прошивки' if ru else 'Clear firmware'
         out.append(f'## {label} {{#recipe-{name}}}')
         kind = recipe['type']
+        if update := updates.get(name):
+            replacement = update['recipe']
+            if replacement['result'] != recipe['result']:
+                raise ValueError(f'Development recipe changes its output: {name}')
+            notice = 'В разработке' if ru else 'In development'
+            out.append(f":::version {notice}\n{update['note'][lang]}\n:::")
+            recipe = replacement
         out.append(visual_recipe(recipe, labels, lang, manifest))
         if kind == 'oc2r:wrench':
             out.append('Ключ, если он указан среди ингредиентов, остаётся после крафта.' if ru else

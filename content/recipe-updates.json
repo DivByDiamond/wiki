@@ -1,0 +1,38 @@
+{
+  "gps_tower": {
+    "recipe": {
+      "type": "minecraft:crafting_shaped",
+      "category": "misc",
+      "key": {
+        "B": {
+          "tag": "c:ingots/iron"
+        },
+        "C": {
+          "item": "oc2r:circuit_board"
+        },
+        "I": {
+          "item": "minecraft:iron_bars"
+        },
+        "R": {
+          "item": "minecraft:copper_ingot"
+        },
+        "P": {
+          "item": "oc2r:cpu_tier_3"
+        }
+      },
+      "pattern": [
+        "IRI",
+        "CPC",
+        "BBB"
+      ],
+      "result": {
+        "count": 1,
+        "id": "oc2r:gps_tower"
+      }
+    },
+    "note": {
+      "ru": "Обновлённый рецепт рабочей версии: процессор III в центре, печатные платы по бокам. В опубликованных сборках может сохраняться прежний рецепт. Ссылка ниже ведёт к базовой ревизии до этого изменения.",
+      "en": "Updated development recipe: a tier III CPU in the center with circuit boards on both sides. Published builds may still use the previous recipe. The source link below points to the baseline before this change."
+    }
+  }
+}

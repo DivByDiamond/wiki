@@ -15,12 +15,12 @@ Edit `config/oc2r-common.toml` on the server or in the single-player instance. K
 ```toml
 [gameplay]
 relative_coordinates = true
-gps_tower_range = 20
+gps_tower_range = 45
 ```
 
 `relative_coordinates` defaults to `false`, preserving the tower's existing world XYZ API. When enabled, `getPosition()` returns an offset from that tower's network reference. Robot positions remain relative to their placement/calibration origin in both modes.
 
-`gps_tower_range` is the maximum straight-line 3D distance between neighboring stations, measured between their base blocks. Its default is 20 blocks; accepted values are 1–1024. A chain can span a greater distance. Obstacles do not attenuate the signal.
+`gps_tower_range` is the maximum straight-line 3D distance between neighboring stations, measured between their base blocks. Its default is 45 blocks; accepted values are 1–1024. A chain can span a greater distance. Obstacles do not attenuate the signal.
 
 Restart after changing the server configuration so every program starts with the intended coordinate mode. Scripts should not retain a coordinate-frame assumption across a mode change.
 
