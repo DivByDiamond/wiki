@@ -18,7 +18,7 @@ Fabric 26.1.2 and 26.2 have been accepted, merged and verified in CI. The earlie
 
 Check the artifacts in [OC2R releases](https://github.com/DivByDiamond/OC2R/releases). An implemented build target does not establish publication on every distribution platform. In the source revision linked below, publication of the new Fabric 26.x targets is a separate step deferred at the owner's request.
 
-NeoForge and Fabric artifacts are not interchangeable. Fabric also requires compatible Fabric API, Team Reborn Energy and Forge Config API Port versions declared for the selected artifact.
+NeoForge and Fabric artifacts are not interchangeable. Install Fabric API separately. Team Reborn Energy and Forge Config API Port are bundled in the OC2R artifacts, with compatible versions selected by the mod build.
 
 ## Reading the acceptance reports
 

@@ -176,23 +176,11 @@ fn save_edit(
         .as_deref()
         .map(str::trim)
         .unwrap_or_else(|| page.as_ref().map_or("", |p| p.section.as_str()));
-    if section.chars().count() > 100 || section.chars().any(char::is_control) {
-        return Err(AppError::Invalid(
-            "Section must be at most 100 characters without control characters.".into(),
-        ));
-    }
     let position = f
         .position
         .unwrap_or_else(|| page.as_ref().map_or(0, |p| p.position));
-    if !(0..=1_000_000).contains(&position) {
-        return Err(AppError::Invalid(
-            "Position must be between 0 and 1000000.".into(),
-        ));
-    }
-    let navigation = Navigation {
-        section: section.into(),
-        position,
-    };
+    let navigation =
+        Navigation::new(section, position).map_err(|message| AppError::Invalid(message.into()))?;
     let rev = NewRevision {
         body,
         summary: if summary.is_empty() {

@@ -1,7 +1,7 @@
 use crate::auth::policy::{Action, Actor};
 use crate::domain::{
     page::{Lang, Slug},
-    ports::pages::SaveOutcome,
+    ports::pages::{Navigation, SaveOutcome},
     revision::{Author, NewRevision},
 };
 use crate::error::{AppError, AppResult};
@@ -24,6 +24,8 @@ use serde_json::{Value, json};
 pub struct PageQuery {
     pub lang: Option<String>,
     pub summary: Option<String>,
+    pub section: Option<String>,
+    pub position: Option<i64>,
 }
 
 fn parse(slug: &str, lang: Option<&str>) -> AppResult<(Slug, Lang)> {
@@ -63,6 +65,8 @@ pub async fn get_page(
         "lang": lang.code(),
         "body": page.current.body,
         "revision": page.current.id,
+        "section": page.section,
+        "position": page.position,
     })))
 }
 
@@ -81,7 +85,8 @@ pub async fn put_page(
     }
     let (slug, lang) = parse(&slug, q.lang.as_deref())?;
     // `search` is a reader route, so a new page there could never be opened.
-    if s.pages.find(&slug, lang)?.is_none() {
+    let current = s.pages.find(&slug, lang)?;
+    if current.is_none() {
         ensure_slug_allowed(slug.as_str())?;
     }
     let body = String::from_utf8(body.to_vec())
@@ -91,7 +96,20 @@ pub async fn put_page(
         summary: q.summary.unwrap_or_default(),
         author: author(&s, &actor),
     };
-    let outcome = s.pages.save(&slug, lang, rev)?;
+    let outcome = if q.section.is_some() || q.position.is_some() {
+        let section = q
+            .section
+            .as_deref()
+            .unwrap_or_else(|| current.as_ref().map_or("", |page| page.section.as_str()));
+        let position = q
+            .position
+            .unwrap_or_else(|| current.as_ref().map_or(0, |page| page.position));
+        let navigation = Navigation::new(section, position)
+            .map_err(|message| AppError::Invalid(message.into()))?;
+        s.pages.save_with_navigation(&slug, lang, rev, navigation)?
+    } else {
+        s.pages.save(&slug, lang, rev)?
+    };
     Ok(Json(match outcome {
         SaveOutcome::Created(id) => json!({ "outcome": "created", "revision": id }),
         SaveOutcome::Updated(id) => json!({ "outcome": "updated", "revision": id }),
@@ -127,7 +145,7 @@ pub async fn list(State(s): State<AppState>) -> AppResult<Json<Value>> {
         .pages
         .list()?
         .iter()
-        .map(|p| json!({ "slug": p.slug.as_str(), "lang": p.lang.code(), "section": p.section }))
+        .map(|p| json!({ "slug": p.slug.as_str(), "lang": p.lang.code(), "section": p.section, "position": p.position }))
         .collect();
     Ok(Json(json!(items)))
 }

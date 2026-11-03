@@ -17,6 +17,22 @@ pub struct Navigation {
     pub position: i64,
 }
 
+impl Navigation {
+    pub fn new(section: &str, position: i64) -> Result<Self, &'static str> {
+        let section = section.trim();
+        if section.chars().count() > 100 || section.chars().any(char::is_control) {
+            return Err("Section must be at most 100 characters without control characters.");
+        }
+        if !(0..=1_000_000).contains(&position) {
+            return Err("Position must be between 0 and 1000000.");
+        }
+        Ok(Self {
+            section: section.into(),
+            position,
+        })
+    }
+}
+
 pub struct PageSummary {
     pub title: String,
     pub id: i64,

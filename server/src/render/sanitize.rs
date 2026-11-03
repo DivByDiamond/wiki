@@ -2,11 +2,28 @@ use ammonia::Builder;
 
 pub fn clean(html: &str) -> String {
     let mut b = Builder::default();
-    b.add_tags(["div"]);
+    b.add_tags(["div", "details", "summary"]);
     b.add_allowed_classes(
         "div",
-        ["callout", "note", "tip", "warn", "version", "recipe", "slot"],
+        [
+            "callout",
+            "note",
+            "tip",
+            "warn",
+            "version",
+            "recipe",
+            "slot",
+            "recipe-card",
+            "recipe-flow",
+            "recipe-grid",
+            "recipe-furnace",
+            "recipe-slot",
+            "recipe-arrow",
+            "recipe-result",
+            "recipe-legend",
+        ],
     );
+    b.add_tag_attributes("div", ["aria-label", "aria-hidden", "role", "title"]);
     b.add_allowed_classes("code", ["language-lua"]);
     for tag in ["h2", "h3", "h4", "h5", "h6"] {
         b.add_tag_attributes(tag, ["id"]);

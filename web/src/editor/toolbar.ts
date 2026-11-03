@@ -9,7 +9,12 @@ export const BLOCKS: [label: string, open: string][] = [
   ["Version", ":::version 26.x"],
 ];
 
-export function wrap(open: string, text: string): string {
+export function wrap(open: string, text: string, lang = "en"): string {
+  if (open === ":::recipe" && !text.trim()) {
+    const item = { id: "minecraft:iron_ingot", name: lang === "ru" ? "Железный слиток" : "Iron Ingot" };
+    text = JSON.stringify({ kind: "shaped", lang, slots: [item, null, item, item, { id: "minecraft:chest", name: lang === "ru" ? "Сундук" : "Chest" }, item, null, item, null],
+      output: { id: "minecraft:hopper", name: lang === "ru" ? "Загрузочная воронка" : "Hopper", count: 1 } }, null, 2);
+  }
   return `${open}\n${text}\n:::\n`;
 }
 
@@ -52,7 +57,7 @@ export function mountToolbar(bar: HTMLElement, area: HTMLTextAreaElement): void 
     const label = labels[index]!;
     bar.append(button(label, t.blockTip + label, () => {
       const { selectionStart: a, selectionEnd: z, value } = area;
-      area.setRangeText(wrap(open, value.slice(a, z)), a, z, "end");
+      area.setRangeText(wrap(open, value.slice(a, z), lang), a, z, "end");
       touch(area);
     }));
   }

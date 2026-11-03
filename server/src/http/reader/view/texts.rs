@@ -14,6 +14,7 @@ pub fn text(lang: &str, key: &str) -> &'static str {
     let (en, ru, zh) = match key {
         "start" => ("Getting started", "Начало", "入门"),
         "hardware" => ("Blocks and items", "Блоки и предметы", "方块与物品"),
+        "recipes" => ("Crafting", "Крафты", "合成"),
         "networking" => ("Networking", "Сети", "网络"),
         "robotics" => ("Robotics", "Роботы", "机器人"),
         "systems" => ("Operating systems", "Системы", "操作系统"),
@@ -63,17 +64,24 @@ pub fn text(lang: &str, key: &str) -> &'static str {
     }
 }
 
+const SECTIONS: [&str; 8] = [
+    "start",
+    "hardware",
+    "recipes",
+    "networking",
+    "robotics",
+    "systems",
+    "scripting",
+    "project",
+];
+
+pub fn is_known_section(section: &str) -> bool {
+    SECTIONS.contains(&section)
+}
+
 pub fn section_rank(section: &str) -> usize {
-    [
-        "start",
-        "hardware",
-        "networking",
-        "robotics",
-        "systems",
-        "scripting",
-        "project",
-    ]
-    .iter()
-    .position(|s| *s == section)
-    .unwrap_or(7)
+    SECTIONS
+        .iter()
+        .position(|s| *s == section)
+        .unwrap_or(SECTIONS.len())
 }

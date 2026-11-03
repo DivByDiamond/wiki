@@ -3,7 +3,7 @@ import posixpath
 import re
 
 LOCALES = {"en_us": "en", "ru_ru": "ru", "zh_cn": "zh"}
-SECTIONS = ["start", "hardware", "networking", "robotics", "systems", "scripting", "project"]
+SECTIONS = ["start", "hardware", "recipes", "networking", "robotics", "systems", "scripting", "project"]
 
 
 def slug_for(path):
@@ -12,7 +12,9 @@ def slug_for(path):
 
 def section_for(slug):
     if slug == "recipes":
-        return "hardware"
+        return "recipes"
+    if slug in ("block/gps_tower", "reference/gps-networks", "reference/networking", "reference/cables"):
+        return "networking"
     if slug.startswith("robotics/"):
         return "robotics"
     if slug.startswith("systems/"):

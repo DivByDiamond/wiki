@@ -20,7 +20,7 @@ pub fn expand(src: &str) -> String {
             "version" => wrap(
                 &mut out,
                 "callout version",
-                Some(&format!("**Только для {arg}**")),
+                Some(&format!("**{arg}**")),
                 &body,
             ),
             "recipe" => recipe(&mut out, &body),
@@ -53,6 +53,10 @@ fn wrap(out: &mut Vec<String>, class: &str, title: Option<&str>, body: &[&str]) 
 }
 
 fn recipe(out: &mut Vec<String>, body: &[&str]) {
+    if let Some(html) = super::recipes::render(&body.join("\n")) {
+        out.push(html);
+        return;
+    }
     out.push("<div class=\"recipe\">".into());
     for i in 0..9 {
         let item = escape_html(body.get(i).map_or("", |s| s.trim()));
@@ -97,7 +101,8 @@ mod tests {
 
     #[test]
     fn sanitizer_keeps_callout_classes_but_not_arbitrary_ones() {
-        let html = crate::render::to_html(":::note\ntext\n:::\n\n<div class=\"callout evil\">x</div>");
+        let html =
+            crate::render::to_html(":::note\ntext\n:::\n\n<div class=\"callout evil\">x</div>");
         assert!(html.contains("class=\"callout note\""), "{html}");
         assert!(!html.contains("evil"), "{html}");
     }
@@ -107,6 +112,17 @@ mod tests {
         let out = expand(":::version 26.x\nТолько тут\n:::");
         assert!(out.contains("callout version"));
         assert!(out.contains("26.x"));
+    }
+
+    #[test]
+    fn version_heading_uses_the_authored_words_without_a_language_prefix() {
+        let html = crate::render::to_html(":::version В разработке\nОписание функции.\n:::");
+        assert!(html.contains("<strong>В разработке</strong>"));
+        assert!(!html.contains("Только для"));
+        let english =
+            crate::render::to_html(":::version In development\nFeature description.\n:::");
+        assert!(english.contains("<strong>In development</strong>"));
+        assert!(!english.contains("Только для"));
     }
 
     #[test]

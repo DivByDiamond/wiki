@@ -9,7 +9,7 @@ pub use date::format_utc;
 
 /// Display name of a page section key, as the sidebar shows it.
 pub fn section_label(lang: &str, key: &str) -> String {
-    if texts::section_rank(key) < 7 || key.is_empty() {
+    if texts::is_known_section(key) || key.is_empty() {
         texts::text(lang, key).into()
     } else {
         key.into()
@@ -161,11 +161,7 @@ impl Shell {
                 current: p.slug.as_str() == path,
             };
             flat.push(item.clone());
-            let name = if texts::section_rank(&p.section) < 7 || p.section.is_empty() {
-                texts::text(lang.code(), &p.section).into()
-            } else {
-                p.section
-            };
+            let name = section_label(lang.code(), &p.section);
             match sections.last_mut() {
                 Some(sec) if sec.name == name => {
                     sec.open |= item.current;
@@ -190,5 +186,22 @@ impl Shell {
             next,
             ..Shell::bare(lang, title, path)
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn built_in_section_names_stay_localized_when_new_sections_are_added() {
+        assert_eq!(super::section_label("ru", "recipes"), "Крафты");
+        assert_eq!(super::section_label("ru", "project"), "Проект и версии");
+        assert_eq!(
+            super::section_label("en", "project"),
+            "Project and versions"
+        );
+        assert_eq!(
+            super::section_label("ru", "Custom section"),
+            "Custom section"
+        );
     }
 }

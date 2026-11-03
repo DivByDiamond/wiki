@@ -31,3 +31,7 @@ Find ingredients, crafting grids and furnace recipes in [all crafting recipes](/
 Browse the sections, search for a device, or use the table of contents on a long page. Switching language keeps the current article. Pages without a translation fall back to English.
 
 Each article links to the OC2R source revision it was imported from. Server settings and build versions can change hardware characteristics. See the [version matrix](/en/project/versions) for the source project's supported targets.
+
+## P. S. About versions
+
+Some features described on this wiki are still in development or available only in OC2R beta builds. Your installed version may not include them. Check the [supported versions](/en/project/versions) and [release notes](https://github.com/DivByDiamond/OC2R/releases). Articles covering local development changes say so in the text.

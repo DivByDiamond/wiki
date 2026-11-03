@@ -1,4 +1,56 @@
-"""Render shaped, shapeless, wrench and furnace recipes without guessing ingredients."""
+"""Render visual recipes with explicit ingredient groups and source provenance."""
+import json
+from pathlib import Path
+
+
+def visual_item(value, labels, lang, manifest):
+    if isinstance(value, list):
+        items = [visual_item(v, labels, lang, manifest) for v in value]
+        first = dict(items[0])
+        first['name'] = ' / '.join(v['name'] for v in items)
+        first['tag'] = ' / '.join(v.get('tag', v.get('id', '')) for v in items)
+        return first
+    if isinstance(value, str):
+        value = {'tag': value[1:]} if value.startswith('#') else {'item': value}
+    if 'tag' in value:
+        tag = value['tag']
+        representative = manifest.get('tags', {}).get(tag)
+        fallback = tag.split(':', 1)[-1].replace('_', ' ').replace('/', ' · ')
+        group = manifest.get('tag_names', {}).get(tag, {}).get(lang) or fallback
+        return {'name': group, 'tag': tag, 'icon': representative or ''}
+    item = value.get('item', value.get('id'))
+    entry = manifest.get('items', {}).get(item, {})
+    name = entry.get('name', {}).get(lang) or item_name(item, labels)
+    return {'id': item, 'name': name, 'count': value.get('count', 1)}
+
+
+def visual_recipe(recipe, labels, lang, manifest):
+    kind = recipe['type']
+    if kind == 'minecraft:crafting_shaped':
+        rows = [row.ljust(3) for row in recipe['pattern']]
+        rows += ['   '] * (3 - len(rows))
+        slots = [None if c == ' ' else visual_item(recipe['key'][c], labels, lang, manifest)
+                 for row in rows for c in row]
+        kind = 'shaped'
+    elif kind in ('minecraft:crafting_shapeless', 'oc2r:wrench'):
+        slots = [visual_item(v, labels, lang, manifest) for v in recipe['ingredients']]
+        slots += [None] * (9 - len(slots))
+        kind = 'shapeless'
+    elif kind == 'minecraft:smelting':
+        slots = [visual_item(recipe['ingredient'], labels, lang, manifest)]
+        kind = 'furnace'
+    else:
+        raise ValueError(f'Unsupported recipe type: {kind}')
+    result = recipe['result']
+    if isinstance(result, str):
+        result = {'id': result}
+    data = {'kind': kind, 'lang': lang, 'slots': slots,
+            'output': visual_item(result, labels, lang, manifest)}
+    if kind == 'furnace':
+        data.update(seconds=recipe.get('cookingtime', 200) / 20,
+                    experience=recipe.get('experience', 0))
+    return ':::recipe\n' + json.dumps(data, ensure_ascii=False) + '\n:::'
+
 
 
 def item_name(item, labels):
@@ -26,24 +78,26 @@ def item_text(item, labels):
 
 def render(recipes, lang, labels, revision):
     ru = lang == 'ru'
+    path = Path(__file__).resolve().parents[3] / 'web/public/items/manifest.json'
+    manifest = json.loads(path.read_text()) if path.exists() else {}
     title = 'Крафты и рецепты' if ru else 'Crafting recipes'
     intro = (
         f'Здесь собраны все {len(recipes)} рецептов из файлов OC2R указанной внизу ревизии. '
-        'Сетка показывает расположение ингредиентов. Точка обозначает пустую ячейку. '
+        'Сетка показывает расположение ингредиентов и результат. '
         'Запись с `#` означает тег: подойдёт любой предмет из этой группы. '
         'Например, `#c:ingots/iron` означает железные слитки, а `#c:chests/wooden` означает деревянные сундуки. '
         'Бесформенные рецепты не требуют определённого расположения. '
         'Рецепты сборки сервера могут отличаться, если их меняет датапак.'
         if ru else
         f'All {len(recipes)} recipes from the OC2R source revision linked below are collected here. '
-        'Dots mark empty crafting slots. A value beginning with `#` is an item tag: any item in that group works. '
+        'The grid shows ingredients and output. A value beginning with `#` is an item tag: any item in that group works. '
         'For example, `#c:ingots/iron` accepts iron ingots and `#c:chests/wooden` accepts wooden chests. '
         'Shapeless ingredients can be placed in any order. Server datapacks can change these recipes.'
     )
     out = [f'# {title}', intro,
            ('Предметы без рецепта, в том числе оборудование только для творческого режима, сюда не включены.'
             if ru else 'Items without a recipe, including creative-only equipment, are not listed.'),
-           '## ' + ('Список рецептов' if ru else 'Recipe index')]
+           '<details>', '<summary>' + ('Список рецептов' if ru else 'Recipe index') + f' · {len(recipes)}</summary>']
     for name, recipe in recipes:
         result = recipe['result']
         item = result if isinstance(result, str) else result['id']
@@ -51,6 +105,7 @@ def render(recipes, lang, labels, revision):
         if name == 'unflash':
             label = 'Очистка прошивки' if ru else 'Clear firmware'
         out.append(f'- [{label}](#recipe-{name})')
+    out.append('</details>')
     for name, recipe in recipes:
         result = recipe['result']
         if isinstance(result, str):
@@ -58,29 +113,12 @@ def render(recipes, lang, labels, revision):
         label = item_name(result['id'], labels)
         if name == 'unflash':
             label = 'Очистка прошивки' if ru else 'Clear firmware'
-        out.extend([f'## {label} {{#recipe-{name}}}',
-                    ('Результат: ' if ru else 'Output: ') +
-                    f'{item_text(result["id"], labels)} × {result.get("count", 1)}.'])
+        out.append(f'## {label} {{#recipe-{name}}}')
         kind = recipe['type']
-        if kind == 'minecraft:crafting_shaped':
-            pattern = recipe['pattern']
-            rows = [row.ljust(3) for row in pattern] + ['   '] * (3 - len(pattern))
-            out.append(('Верстак, сетка 3×3.' if ru else 'Crafting table, 3×3 grid.'))
-            out.append('```text\n' + '\n'.join(' '.join(c if c != ' ' else '.' for c in row) for row in rows) + '\n```')
-            out.append('\n'.join(f'- `{key}`: {ingredient(value, labels)}' for key, value in sorted(recipe['key'].items())))
-        elif kind in ('minecraft:crafting_shapeless', 'oc2r:wrench'):
-            out.append('Бесформенный рецепт.' if ru else 'Shapeless recipe.')
-            out.append('\n'.join('- ' + ingredient(v, labels) for v in recipe['ingredients']))
-            if kind == 'oc2r:wrench':
-                out.append('Ключ, если он указан среди ингредиентов, остаётся после крафта.' if ru else
-                           'A wrench listed as an ingredient is returned after crafting.')
-        elif kind == 'minecraft:smelting':
-            out.append(('Печь. Вход: ' if ru else 'Furnace. Input: ') + ingredient(recipe['ingredient'], labels) + '.')
-            seconds = recipe.get('cookingtime', 200) / 20
-            out.append((f'Время: {seconds:g} с при 20 TPS. Опыт: {recipe.get("experience", 0):g}.' if ru else
-                        f'Time: {seconds:g} s at 20 TPS. Experience: {recipe.get("experience", 0):g}.'))
-        else:
-            raise ValueError(f'Unsupported recipe type: {kind}')
+        out.append(visual_recipe(recipe, labels, lang, manifest))
+        if kind == 'oc2r:wrench':
+            out.append('Ключ, если он указан среди ингредиентов, остаётся после крафта.' if ru else
+                       'A wrench listed as an ingredient is returned after crafting.')
         components = result.get('components', {})
         if components:
             if result['id'] not in ('oc2r:computer', 'oc2r:robot'):

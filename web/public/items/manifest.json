@@ -1,0 +1,752 @@
+{
+  "minecraft_version": "1.21.1",
+  "items": {
+    "minecraft:book": {
+      "path": "minecraft/book.png",
+      "name": {
+        "en": "Book",
+        "ru": "Книга"
+      }
+    },
+    "minecraft:chest": {
+      "path": "minecraft/chest.png",
+      "name": {
+        "en": "Chest",
+        "ru": "Сундук"
+      }
+    },
+    "minecraft:clay_ball": {
+      "path": "minecraft/clay_ball.png",
+      "name": {
+        "en": "Clay Ball",
+        "ru": "Комок глины"
+      }
+    },
+    "minecraft:comparator": {
+      "path": "minecraft/comparator.png",
+      "name": {
+        "en": "Redstone Comparator",
+        "ru": "Редстоуновый компаратор"
+      }
+    },
+    "minecraft:copper_ingot": {
+      "path": "minecraft/copper_ingot.png",
+      "name": {
+        "en": "Copper Ingot",
+        "ru": "Медный слиток"
+      }
+    },
+    "minecraft:crafting_table": {
+      "path": "minecraft/crafting_table.png",
+      "name": {
+        "en": "Crafting Table",
+        "ru": "Верстак"
+      }
+    },
+    "minecraft:diamond": {
+      "path": "minecraft/diamond.png",
+      "name": {
+        "en": "Diamond",
+        "ru": "Алмаз"
+      }
+    },
+    "minecraft:diamond_pickaxe": {
+      "path": "minecraft/diamond_pickaxe.png",
+      "name": {
+        "en": "Diamond Pickaxe",
+        "ru": "Алмазная кирка"
+      }
+    },
+    "minecraft:emerald": {
+      "path": "minecraft/emerald.png",
+      "name": {
+        "en": "Emerald",
+        "ru": "Изумруд"
+      }
+    },
+    "minecraft:ender_eye": {
+      "path": "minecraft/ender_eye.png",
+      "name": {
+        "en": "Eye of Ender",
+        "ru": "Око Эндера"
+      }
+    },
+    "minecraft:ender_pearl": {
+      "path": "minecraft/ender_pearl.png",
+      "name": {
+        "en": "Ender Pearl",
+        "ru": "Эндер-жемчуг"
+      }
+    },
+    "minecraft:glass": {
+      "path": "minecraft/glass.png",
+      "name": {
+        "en": "Glass",
+        "ru": "Стекло"
+      }
+    },
+    "minecraft:gold_ingot": {
+      "path": "minecraft/gold_ingot.png",
+      "name": {
+        "en": "Gold Ingot",
+        "ru": "Золотой слиток"
+      }
+    },
+    "minecraft:hopper": {
+      "path": "minecraft/hopper.png",
+      "name": {
+        "en": "Hopper",
+        "ru": "Воронка"
+      }
+    },
+    "minecraft:iron_bars": {
+      "path": "minecraft/iron_bars.png",
+      "name": {
+        "en": "Iron Bars",
+        "ru": "Железные прутья"
+      }
+    },
+    "minecraft:iron_ingot": {
+      "path": "minecraft/iron_ingot.png",
+      "name": {
+        "en": "Iron Ingot",
+        "ru": "Железный слиток"
+      }
+    },
+    "minecraft:light_weighted_pressure_plate": {
+      "path": "minecraft/light_weighted_pressure_plate.png",
+      "name": {
+        "en": "Light Weighted Pressure Plate",
+        "ru": "Весовая пластина"
+      }
+    },
+    "minecraft:netherite_ingot": {
+      "path": "minecraft/netherite_ingot.png",
+      "name": {
+        "en": "Netherite Ingot",
+        "ru": "Незеритовый слиток"
+      }
+    },
+    "minecraft:note_block": {
+      "path": "minecraft/note_block.png",
+      "name": {
+        "en": "Note Block",
+        "ru": "Нотный блок"
+      }
+    },
+    "minecraft:oak_button": {
+      "path": "minecraft/oak_button.png",
+      "name": {
+        "en": "Oak Button",
+        "ru": "Дубовая кнопка"
+      }
+    },
+    "minecraft:paper": {
+      "path": "minecraft/paper.png",
+      "name": {
+        "en": "Paper",
+        "ru": "Бумага"
+      }
+    },
+    "minecraft:piston": {
+      "path": "minecraft/piston.png",
+      "name": {
+        "en": "Piston",
+        "ru": "Поршень"
+      }
+    },
+    "minecraft:quartz": {
+      "path": "minecraft/quartz.png",
+      "name": {
+        "en": "Nether Quartz",
+        "ru": "Незер-кварц"
+      }
+    },
+    "minecraft:redstone": {
+      "path": "minecraft/redstone.png",
+      "name": {
+        "en": "Redstone Dust",
+        "ru": "Редстоуновая пыль"
+      }
+    },
+    "minecraft:redstone_block": {
+      "path": "minecraft/redstone_block.png",
+      "name": {
+        "en": "Block of Redstone",
+        "ru": "Редстоуновый блок"
+      }
+    },
+    "minecraft:redstone_lamp": {
+      "path": "minecraft/redstone_lamp.png",
+      "name": {
+        "en": "Redstone Lamp",
+        "ru": "Редстоуновый фонарь"
+      }
+    },
+    "minecraft:redstone_torch": {
+      "path": "minecraft/redstone_torch.png",
+      "name": {
+        "en": "Redstone Torch",
+        "ru": "Редстоуновый факел"
+      }
+    },
+    "minecraft:sand": {
+      "path": "minecraft/sand.png",
+      "name": {
+        "en": "Sand",
+        "ru": "Песок"
+      }
+    },
+    "minecraft:spyglass": {
+      "path": "minecraft/spyglass.png",
+      "name": {
+        "en": "Spyglass",
+        "ru": "Подзорная труба"
+      }
+    },
+    "minecraft:string": {
+      "path": "minecraft/string.png",
+      "name": {
+        "en": "String",
+        "ru": "Нить"
+      }
+    },
+    "oc2r:block_operations_module": {
+      "path": "oc2r/block_operations_module.png",
+      "name": {
+        "en": "Block Operations Module",
+        "ru": "Модуль управления блоками"
+      }
+    },
+    "oc2r:bus_cable": {
+      "path": "oc2r/bus_cable.png",
+      "name": {
+        "en": "Bus Cable",
+        "ru": "Интерфейсный кабель"
+      }
+    },
+    "oc2r:bus_interface": {
+      "path": "oc2r/bus_interface.png",
+      "name": {
+        "en": "Bus Interface",
+        "ru": "Интерфейсная шина"
+      }
+    },
+    "oc2r:charger": {
+      "path": "oc2r/charger.png",
+      "name": {
+        "en": "Charger",
+        "ru": "Зарядное устройство"
+      }
+    },
+    "oc2r:circuit_board": {
+      "path": "oc2r/circuit_board.png",
+      "name": {
+        "en": "Circuit Board",
+        "ru": "Печатная плата"
+      }
+    },
+    "oc2r:computer": {
+      "path": "oc2r/computer.png",
+      "name": {
+        "en": "Computer",
+        "ru": "Компьютер"
+      }
+    },
+    "oc2r:cpu_tier_1": {
+      "path": "oc2r/cpu_tier_1.png",
+      "name": {
+        "en": "CPU Tier 1",
+        "ru": "CPU уровень 1"
+      }
+    },
+    "oc2r:cpu_tier_2": {
+      "path": "oc2r/cpu_tier_2.png",
+      "name": {
+        "en": "CPU Tier 2",
+        "ru": "CPU уровень 2"
+      }
+    },
+    "oc2r:cpu_tier_3": {
+      "path": "oc2r/cpu_tier_3.png",
+      "name": {
+        "en": "CPU Tier 3",
+        "ru": "CPU уровень 3"
+      }
+    },
+    "oc2r:cpu_tier_4": {
+      "path": "oc2r/cpu_tier_4.png",
+      "name": {
+        "en": "CPU Tier 4",
+        "ru": "CPU уровень 4"
+      }
+    },
+    "oc2r:cpu_tier_inf": {
+      "path": "oc2r/cpu_tier_inf.png",
+      "name": {
+        "en": "CPU Tier INF",
+        "ru": "CPU уровень INF"
+      }
+    },
+    "oc2r:crafting_module": {
+      "path": "oc2r/crafting_module.png",
+      "name": {
+        "en": "Crafting Module",
+        "ru": "Модуль крафта"
+      }
+    },
+    "oc2r:creative_energy": {
+      "path": "oc2r/creative_energy.png",
+      "name": {
+        "en": "Infinite Energy Cube",
+        "ru": "Энергокуб бесконечности"
+      }
+    },
+    "oc2r:file_import_export_card": {
+      "path": "oc2r/file_import_export_card.png",
+      "name": {
+        "en": "File Import/Export Card",
+        "ru": "Карта импорта/экспорта файлов"
+      }
+    },
+    "oc2r:flash_memory": {
+      "path": "oc2r/flash_memory.png",
+      "name": {
+        "en": "Flash Memory",
+        "ru": "Карта памяти"
+      }
+    },
+    "oc2r:flash_memory_custom": {
+      "path": "oc2r/flash_memory_custom.png",
+      "name": {
+        "en": "Custom Flash Memory",
+        "ru": "Пользовательская флеш-память"
+      }
+    },
+    "oc2r:flash_memory_medium": {
+      "path": "oc2r/flash_memory_medium.png",
+      "name": {
+        "en": "Medium Flash Memory",
+        "ru": "Средняя карта памяти"
+      }
+    },
+    "oc2r:flash_memory_onyxos": {
+      "path": "oc2r/flash_memory_onyxos.png",
+      "name": {
+        "en": "OnyxOS Flash Memory",
+        "ru": "Флеш-память OnyxOS"
+      }
+    },
+    "oc2r:flash_memory_small": {
+      "path": "oc2r/flash_memory_small.png",
+      "name": {
+        "en": "Small Flash Memory",
+        "ru": "Малая карта памяти"
+      }
+    },
+    "oc2r:floppy": {
+      "path": "oc2r/floppy.png",
+      "name": {
+        "en": "Floppy Disk",
+        "ru": "Дискета"
+      }
+    },
+    "oc2r:floppy_modern": {
+      "path": "oc2r/floppy_modern.png",
+      "name": {
+        "en": "Modern Floppy Disk",
+        "ru": "Современная дискета"
+      }
+    },
+    "oc2r:gps_tower": {
+      "path": "oc2r/gps_tower.png",
+      "name": {
+        "en": "Positioning Tower",
+        "ru": "GPS-вышка"
+      }
+    },
+    "oc2r:gpu_tier_1": {
+      "path": "oc2r/gpu_tier_1.png",
+      "name": {
+        "en": "GPU Tier 1",
+        "ru": "Видеокарта уровень 1"
+      }
+    },
+    "oc2r:gpu_tier_2": {
+      "path": "oc2r/gpu_tier_2.png",
+      "name": {
+        "en": "GPU Tier 2",
+        "ru": "Видеокарта уровень 2"
+      }
+    },
+    "oc2r:gpu_tier_3": {
+      "path": "oc2r/gpu_tier_3.png",
+      "name": {
+        "en": "GPU Tier 3",
+        "ru": "Видеокарта уровень 3"
+      }
+    },
+    "oc2r:gpu_tier_4": {
+      "path": "oc2r/gpu_tier_4.png",
+      "name": {
+        "en": "GPU Tier 4",
+        "ru": "Видеокарта уровень 4"
+      }
+    },
+    "oc2r:hard_drive_extra_large": {
+      "path": "oc2r/hard_drive_extra_large.png",
+      "name": {
+        "en": "Hard Drive (Extra Large)",
+        "ru": "Жесткий диск (сверхбольшой)"
+      }
+    },
+    "oc2r:hard_drive_large": {
+      "path": "oc2r/hard_drive_large.png",
+      "name": {
+        "en": "Hard Drive (Large)",
+        "ru": "Жесткий диск (большой)"
+      }
+    },
+    "oc2r:hard_drive_medium": {
+      "path": "oc2r/hard_drive_medium.png",
+      "name": {
+        "en": "Hard Drive (Medium)",
+        "ru": "Жесткий диск (средний)"
+      }
+    },
+    "oc2r:hard_drive_onyxos": {
+      "path": "oc2r/hard_drive_onyxos.png",
+      "name": {
+        "en": "OnyxOS Hard Drive",
+        "ru": "Жесткий диск OnyxOS"
+      }
+    },
+    "oc2r:hard_drive_small": {
+      "path": "oc2r/hard_drive_small.png",
+      "name": {
+        "en": "Hard Drive (Small)",
+        "ru": "Жесткий диск (малый)"
+      }
+    },
+    "oc2r:internet_card": {
+      "path": "oc2r/internet_card.png",
+      "name": {
+        "en": "Internet Card",
+        "ru": "Интернет-карта"
+      }
+    },
+    "oc2r:internet_gateway": {
+      "path": "oc2r/internet_gateway.png",
+      "name": {
+        "en": "Internet Gateway",
+        "ru": "Интернет-шлюз"
+      }
+    },
+    "oc2r:inventory_operations_module": {
+      "path": "oc2r/inventory_operations_module.png",
+      "name": {
+        "en": "Inventory Operations Module",
+        "ru": "Модуль управления инвентарем"
+      }
+    },
+    "oc2r:keyboard": {
+      "path": "oc2r/keyboard.png",
+      "name": {
+        "en": "Keyboard",
+        "ru": "Клавиатура"
+      }
+    },
+    "oc2r:machine_interface": {
+      "path": "oc2r/machine_interface.png",
+      "name": {
+        "en": "Machine Interface",
+        "ru": "Машинный интерфейс"
+      }
+    },
+    "oc2r:manual": {
+      "path": "oc2r/manual.png",
+      "name": {
+        "en": "The Computerist's Handbook",
+        "ru": "Справочник компьютерщика"
+      }
+    },
+    "oc2r:media_station": {
+      "path": "oc2r/media_station.png",
+      "name": {
+        "en": "Media Station",
+        "ru": "Медиастанция"
+      }
+    },
+    "oc2r:memory_extra_large": {
+      "path": "oc2r/memory_extra_large.png",
+      "name": {
+        "en": "Memory (Extra Large)",
+        "ru": "Память (сверхбольшой)"
+      }
+    },
+    "oc2r:memory_large": {
+      "path": "oc2r/memory_large.png",
+      "name": {
+        "en": "Memory (Large)",
+        "ru": "Память (большой)"
+      }
+    },
+    "oc2r:memory_medium": {
+      "path": "oc2r/memory_medium.png",
+      "name": {
+        "en": "Memory (Medium)",
+        "ru": "Память (средний)"
+      }
+    },
+    "oc2r:memory_small": {
+      "path": "oc2r/memory_small.png",
+      "name": {
+        "en": "Memory (Small)",
+        "ru": "Память (малый)"
+      }
+    },
+    "oc2r:network_cable": {
+      "path": "oc2r/network_cable.png",
+      "name": {
+        "en": "Network Cable",
+        "ru": "Сетевой кабель"
+      }
+    },
+    "oc2r:network_connector": {
+      "path": "oc2r/network_connector.png",
+      "name": {
+        "en": "Network Connector",
+        "ru": "Сетевой разъем"
+      }
+    },
+    "oc2r:network_hub": {
+      "path": "oc2r/network_hub.png",
+      "name": {
+        "en": "Network Hub",
+        "ru": "Сетевой концентратор"
+      }
+    },
+    "oc2r:network_interface_card": {
+      "path": "oc2r/network_interface_card.png",
+      "name": {
+        "en": "Network Interface Card",
+        "ru": "Сетевая интерфейсная карта"
+      }
+    },
+    "oc2r:network_switch": {
+      "path": "oc2r/network_switch.png",
+      "name": {
+        "en": "Network Switch",
+        "ru": "Сетевой коммутатор"
+      }
+    },
+    "oc2r:network_tunnel_card": {
+      "path": "oc2r/network_tunnel_card.png",
+      "name": {
+        "en": "Network Tunnel Card",
+        "ru": "Сетевая туннельная карта"
+      }
+    },
+    "oc2r:network_tunnel_module": {
+      "path": "oc2r/network_tunnel_module.png",
+      "name": {
+        "en": "Network Tunnel Module",
+        "ru": "Сетевой туннельный модуль"
+      }
+    },
+    "oc2r:pci_card_cage": {
+      "path": "oc2r/pci_card_cage.png",
+      "name": {
+        "en": "PCI Card Cage",
+        "ru": "Корзина PCI-карт"
+      }
+    },
+    "oc2r:projector": {
+      "path": "oc2r/projector.png",
+      "name": {
+        "en": "Projector",
+        "ru": "Проектор"
+      }
+    },
+    "oc2r:raw_silicon_wafer": {
+      "path": "oc2r/raw_silicon_wafer.png",
+      "name": {
+        "en": "Raw Silicon Wafer",
+        "ru": "Необработанная кремниевая пластина"
+      }
+    },
+    "oc2r:redstone_interface": {
+      "path": "oc2r/redstone_interface.png",
+      "name": {
+        "en": "Redstone Interface",
+        "ru": "Красный интерфейс"
+      }
+    },
+    "oc2r:redstone_interface_card": {
+      "path": "oc2r/redstone_interface_card.png",
+      "name": {
+        "en": "Redstone Interface Card",
+        "ru": "Красная интерфейсная карта"
+      }
+    },
+    "oc2r:robot": {
+      "path": "oc2r/robot.png",
+      "name": {
+        "en": "Robot",
+        "ru": "Робот"
+      }
+    },
+    "oc2r:scanner_module": {
+      "path": "oc2r/scanner_module.png",
+      "name": {
+        "en": "Scanner Module",
+        "ru": "Модуль сканирования"
+      }
+    },
+    "oc2r:silicon": {
+      "path": "oc2r/silicon.png",
+      "name": {
+        "en": "Silicon",
+        "ru": "Кремний"
+      }
+    },
+    "oc2r:silicon_blend": {
+      "path": "oc2r/silicon_blend.png",
+      "name": {
+        "en": "Silicon Blend",
+        "ru": "Смесь кремния"
+      }
+    },
+    "oc2r:silicon_wafer": {
+      "path": "oc2r/silicon_wafer.png",
+      "name": {
+        "en": "Silicon Wafer",
+        "ru": "Кремниевая пластина"
+      }
+    },
+    "oc2r:sound_card": {
+      "path": "oc2r/sound_card.png",
+      "name": {
+        "en": "Sound Card",
+        "ru": "Звуковая карта"
+      }
+    },
+    "oc2r:speaker": {
+      "path": "oc2r/speaker.png",
+      "name": {
+        "en": "Speaker",
+        "ru": "Динамик"
+      }
+    },
+    "oc2r:transistor": {
+      "path": "oc2r/transistor.png",
+      "name": {
+        "en": "Transistor",
+        "ru": "Транзистор"
+      }
+    },
+    "oc2r:vxlan_hub": {
+      "path": "oc2r/vxlan_hub.png",
+      "name": {
+        "en": "VXLAN Hub",
+        "ru": "VXLAN-концентратор"
+      }
+    },
+    "oc2r:wrench": {
+      "path": "oc2r/wrench.png",
+      "name": {
+        "en": "Scrench",
+        "ru": "Ключ"
+      }
+    }
+  },
+  "tags": {
+    "c:chests/wooden": "minecraft:chest",
+    "c:dusts/redstone": "minecraft:redstone",
+    "c:ender_pearls": "minecraft:ender_pearl",
+    "c:gems/diamond": "minecraft:diamond",
+    "c:gems/emerald": "minecraft:emerald",
+    "c:gems/quartz": "minecraft:quartz",
+    "c:glass_blocks": "minecraft:glass",
+    "c:ingots/copper": "minecraft:copper_ingot",
+    "c:ingots/gold": "minecraft:gold_ingot",
+    "c:ingots/iron": "minecraft:iron_ingot",
+    "c:ingots/netherite": "minecraft:netherite_ingot",
+    "c:sands": "minecraft:sand",
+    "c:silicon": "oc2r:silicon",
+    "c:storage_blocks/redstone": "minecraft:redstone_block",
+    "c:strings": "minecraft:string",
+    "minecraft:buttons": "minecraft:oak_button",
+    "oc2r:wrenches": "oc2r:wrench"
+  },
+  "tag_names": {
+    "c:chests/wooden": {
+      "en": "Wooden chests",
+      "ru": "Деревянные сундуки"
+    },
+    "c:dusts/redstone": {
+      "en": "Redstone dust",
+      "ru": "Красная пыль"
+    },
+    "c:ender_pearls": {
+      "en": "Ender pearls",
+      "ru": "Эндер-жемчуг"
+    },
+    "c:gems/diamond": {
+      "en": "Diamonds",
+      "ru": "Алмазы"
+    },
+    "c:gems/emerald": {
+      "en": "Emeralds",
+      "ru": "Изумруды"
+    },
+    "c:gems/quartz": {
+      "en": "Quartz gems",
+      "ru": "Кварц"
+    },
+    "c:glass_blocks": {
+      "en": "Glass blocks",
+      "ru": "Стеклянные блоки"
+    },
+    "c:ingots/copper": {
+      "en": "Copper ingots",
+      "ru": "Медные слитки"
+    },
+    "c:ingots/gold": {
+      "en": "Gold ingots",
+      "ru": "Золотые слитки"
+    },
+    "c:ingots/iron": {
+      "en": "Iron ingots",
+      "ru": "Железные слитки"
+    },
+    "c:ingots/netherite": {
+      "en": "Netherite ingots",
+      "ru": "Незеритовые слитки"
+    },
+    "c:sands": {
+      "en": "Sand",
+      "ru": "Песок"
+    },
+    "c:silicon": {
+      "en": "Silicon",
+      "ru": "Кремний"
+    },
+    "c:storage_blocks/redstone": {
+      "en": "Redstone blocks",
+      "ru": "Блоки красного камня"
+    },
+    "c:strings": {
+      "en": "String",
+      "ru": "Нити"
+    },
+    "minecraft:buttons": {
+      "en": "Buttons",
+      "ru": "Кнопки"
+    },
+    "oc2r:wrenches": {
+      "en": "Wrenches",
+      "ru": "Гаечные ключи"
+    }
+  }
+}

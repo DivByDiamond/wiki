@@ -1,3 +1,4 @@
+mod navigation;
 use crate::support::{app, app_with_state, json, make_key};
 use axum::{Router, body::Body, http::Request};
 use tower::ServiceExt;
