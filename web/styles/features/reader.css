@@ -1,0 +1,56 @@
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.linklike { padding: 0; font: inherit; color: var(--accent); background: none; border: 0; cursor: pointer; text-decoration: underline; }
+
+.reading-time { margin: -0.3rem 0 1rem; font-size: 0.85rem; color: var(--muted); }
+
+.code-block { position: relative; }
+.code-block pre { margin-top: 0; }
+.code-copy {
+  position: absolute; top: 0.4rem; right: 0.4rem;
+  min-height: 1.9rem; padding: 0.2rem 0.6rem;
+  font: inherit; font-size: 0.78rem; color: var(--fg);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 3px;
+  cursor: pointer; opacity: 0.85;
+}
+.code-copy:hover, .code-copy:focus-visible { opacity: 1; border-color: var(--accent); }
+
+:root {
+  --tok-comment: #5b6b61; --tok-string: #8a4b08; --tok-number: #1f5fa8;
+  --tok-keyword: #a3226b; --tok-builtin: #0b6e5c;
+}
+:root[data-theme="dark"] {
+  --tok-comment: #8fa196; --tok-string: #e5b567; --tok-number: #7db4f0;
+  --tok-keyword: #f08cc0; --tok-builtin: #62d3b8;
+}
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-string { color: var(--tok-string); }
+.tok-number { color: var(--tok-number); }
+.tok-keyword { color: var(--tok-keyword); font-weight: 600; }
+.tok-builtin { color: var(--tok-builtin); }
+
+.prose .has-anchor { position: relative; }
+.heading-anchor {
+  margin-left: 0.4em; font-weight: 400; color: var(--muted); text-decoration: none;
+  opacity: 0; transition: opacity 0.15s;
+}
+.has-anchor:hover .heading-anchor, .heading-anchor:focus-visible { opacity: 1; }
+@media (hover: none) { .heading-anchor { opacity: 0.5; } }
+
+.prose [id] { scroll-margin-top: 4.5rem; }
+
+.toc a.is-current { color: var(--fg); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
+
+.to-top {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 15;
+  width: 2.75rem; height: 2.75rem; font: inherit; font-size: 1.2rem; line-height: 1;
+  color: var(--on-accent); background: var(--accent);
+  border: 2px solid var(--ink); border-radius: 3px; cursor: pointer;
+}
+.to-top[hidden] { display: none; }
+
+.search-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 0.8rem; margin: 0 0 1.2rem; }
+.search-filters label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--muted); }
+.search-filters select {
+  min-height: 2.4rem; padding: 0.35rem 0.5rem; font: inherit; color: var(--fg);
+  background: var(--bg); border: 1px solid var(--muted); border-radius: 3px;
+}

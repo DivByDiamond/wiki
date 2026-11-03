@@ -2,6 +2,7 @@
 
 pub(super) mod guard;
 mod login;
+mod mine;
 mod propose;
 
 pub use guard::check_origin;
@@ -24,6 +25,7 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/github/callback", get(login::callback))
         .route("/auth/logout", post(login::logout))
         .merge(propose::routes())
+        .merge(mine::routes())
 }
 
 #[derive(Template)]

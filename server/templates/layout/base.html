@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}{{ shell.title }}{% endblock %} - OC2R Wiki</title>
 <script>
+document.documentElement.classList.add('js');
 try {
   var s = JSON.parse(localStorage.getItem('oc2r-wiki-settings') || '{}'), d = document.documentElement, t = s.theme || 'auto';
   if (t === 'auto') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -24,12 +25,13 @@ try {
 <a class="skip-link" href="#article">{{ shell.text("skip") }}</a>
 {% include "layout/header.html" %}
 <div class="layout">
-  <nav class="sidebar" aria-label="{{ shell.text("navigation") }}">
-    <details class="navigation" open>
-    <summary>{{ shell.text("navigation") }}</summary>
+  <div class="sidebar-backdrop" data-sidebar-backdrop></div>
+  <nav class="sidebar" id="sidebar" aria-label="{{ shell.text("navigation") }}">
+    <button class="btn sidebar-close" type="button" data-sidebar-close aria-label="{% if shell.lang == "ru" %}Закрыть{% else if shell.lang == "zh" %}关闭{% else %}Close{% endif %}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 3 10 10M13 3 3 13" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg></button>
+    <p class="sidebar-title">{{ shell.text("navigation") }}</p>
     {% for section in shell.sections %}
-    <details class="nav-section"{% if section.open %} open{% endif %}>
-    <summary>{{ section.name }}</summary>
+    <details class="nav-section"{% if section.open %} open{% endif %} data-nav-section="{{ section.name }}">
+    <summary><svg class="nav-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h6l2 2h8v12H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>{{ section.name }}</summary>
     <ul>
       {% for item in section.items %}
       <li><a href="/{{ shell.lang }}/{{ item.slug }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
@@ -37,7 +39,6 @@ try {
     </ul>
     </details>
     {% endfor %}
-    </details>
   </nav>
   <main class="article" id="article" tabindex="-1">
     {% block content %}{% endblock %}

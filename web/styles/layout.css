@@ -10,6 +10,8 @@
 
 .sidebar, .toc { font-size: 0.9rem; }
 .article { min-width: 0; grid-area: article; }
+/* Content sits on a panel above the stone page background (see pixel.css for the bevel). */
+.article, .sidebar, .toc { background: var(--bg); padding: 1rem; }
 .sidebar { grid-area: sidebar; min-width: 0; }
 .toc { grid-area: toc; min-width: 0; }
 
@@ -22,6 +24,7 @@
   text-decoration: none;
   border-radius: 2px;
 }
+.sidebar a, .toc a { transition: background-color var(--t) var(--ease), color var(--t) var(--ease); }
 .sidebar a:hover, .toc a:hover { background: var(--bg-alt); }
 .sidebar a[aria-current="page"] {
   background: var(--accent);
@@ -40,21 +43,21 @@
 .banner--warn { border-left-color: var(--warn); }
 
 .pager {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 2.5rem;
-  padding-top: 1rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--line);
 }
 
 .page-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; font-size: 0.9rem; }
 
-.prose { max-width: 48rem; }
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { line-height: 1.25; margin: 1.6em 0 0.5em; }
-.prose h1 { margin-top: 0; font-size: 1.9rem; }
-.prose h2 { font-size: 1.5rem; padding-bottom: 0.2em; border-bottom: 1px solid var(--line); }
-.prose h3 { font-size: 1.2rem; }
+.prose { max-width: 46rem; }
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { line-height: 1.3; margin: 1.6em 0 0.5em; }
+.prose h1 { margin-top: 0; font-size: 2rem; }
+.prose h2 { font-size: 1.55rem; padding-bottom: 0.2em; border-bottom: 1px solid var(--line); }
+.prose h3 { font-size: 1.25rem; }
 .prose pre {
   overflow-x: auto;
   padding: 0.8rem 1rem;
@@ -91,11 +94,31 @@
 .toc .nested { padding-left: .7rem; }
 .toc { max-height: calc(100dvh - 6rem); overflow-y: auto; }
 .toc a { padding: .3rem 0; line-height: 1.45; }
-.pager > div { max-width: 48%; }
 .pager > div:last-child { text-align: right; }
-.pager a { display: block; text-decoration: none; }
-.pager small { display: block; color: var(--muted); }
-.prose { line-height: 1.75; }
+.pager > div:empty { display: none; }
+.pager > div:only-child:last-child { grid-column: 2; }
+.pager a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 3.5rem;
+  height: 100%;
+  padding: .6rem 1rem;
+  color: var(--fg);
+  font-weight: 650;
+  text-decoration: none;
+  background: var(--slot);
+  border: 2px solid var(--ink);
+  box-shadow: inset 2px 2px 0 var(--bevel-hi), inset -2px -2px 0 var(--bevel-lo);
+  transition: background-color var(--t) var(--ease), transform var(--t) var(--ease);
+}
+.pager a:hover { background: var(--bg-alt); text-decoration: none; }
+.pager a:hover small { color: var(--accent); }
+.pager small { display: block; color: var(--muted); font-weight: 500; }
+.pager a[rel="prev"] small::before { content: "\2190  "; }
+.pager a[rel="next"] small::after { content: "  \2192"; }
+.pager a[rel="next"] { align-items: flex-end; }
+.prose { line-height: 1.7; }
 .prose h2, .prose h3, .prose h4 { scroll-margin-top: 7rem; }
 .prose pre { line-height: 1.6; }
 .prose img { border: 1px solid var(--line); border-radius: 3px; }
@@ -103,9 +126,19 @@
 #search-results { max-height: 65dvh; overflow-y: auto; }
 .search-results span { display: block; color: var(--muted); font-size: .9rem; }
 @media (max-width: 719px) {
-  .layout { gap: .6rem; padding-top: .5rem; }
-  .sidebar { border-bottom: 1px solid var(--line); padding-bottom: .5rem; }
-  .toc { max-height: 18rem; margin-bottom: 1rem; }
-  .article { padding-top: .5rem; }
+  .layout { gap: .75rem; padding: .75rem 10px 2rem; }
+  .article, .sidebar, .toc { padding: .85rem; }
+  .toc { max-height: 18rem; }
   .prose h1 { font-size: 1.65rem; }
+  .pager { grid-template-columns: minmax(0, 1fr); }
+  .pager > div:last-child, .pager a[rel="next"] { text-align: left; align-items: flex-start; }
+  .pager > div:only-child:last-child { grid-column: 1; }
+  /* Tables scroll inside themselves, never the page. */
+  .prose table { box-shadow: inset -10px 0 8px -8px rgb(0 0 0 / .25); }
+  .prose pre { max-width: 100%; }
+}
+@media (pointer: coarse), (max-width: 719px) {
+  .sidebar a, .toc a { min-height: 44px; display: flex; align-items: center; }
+  .toc summary { padding: .8rem 0; }
+  .page-actions a { display: inline-flex; align-items: center; min-height: 44px; }
 }

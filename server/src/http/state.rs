@@ -3,12 +3,18 @@ use crate::auth::{
     tokens::session::Sessions,
 };
 use crate::config::Config;
-use crate::domain::ports::{access::AccessRepo, pages::PageRepo, proposals::ProposalRepo};
+use crate::domain::{
+    feed::RecentRepo,
+    media::MediaRepo,
+    ports::{access::AccessRepo, pages::PageRepo, proposals::ProposalRepo},
+};
 use crate::http::limit::rate_limit::RateLimiter;
 use crate::store::{
     access::{SqliteAccess, SqliteProposals},
     content::SqlitePages,
     db::Db,
+    feed::SqliteRecent,
+    media::SqliteMedia,
 };
 use std::{sync::Arc, time::Duration};
 
@@ -17,6 +23,8 @@ pub struct AppState {
     pub pages: Arc<dyn PageRepo>,
     pub access: Arc<dyn AccessRepo>,
     pub proposals: Arc<dyn ProposalRepo>,
+    pub media: Arc<dyn MediaRepo>,
+    pub recent: Arc<dyn RecentRepo>,
     pub sessions: Arc<Sessions>,
     pub limiter: Arc<RateLimiter>,
     pub config: Arc<Config>,
@@ -34,7 +42,9 @@ impl AppState {
         Self {
             pages: Arc::new(SqlitePages::new(db.clone())),
             access: Arc::new(SqliteAccess::new(db.clone())),
-            proposals: Arc::new(SqliteProposals::new(db)),
+            proposals: Arc::new(SqliteProposals::new(db.clone())),
+            media: Arc::new(SqliteMedia::new(db.clone())),
+            recent: Arc::new(SqliteRecent::new(db)),
             sessions: Arc::new(Sessions::new()),
             limiter: Arc::new(limiter),
             github: Arc::new(RealGithub::new(&Config::default())),

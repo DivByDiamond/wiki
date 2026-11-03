@@ -1,0 +1,16 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>{{ shell.text("my_proposals") }}</h1>
+{% if rows.is_empty() %}<p>{{ shell.text("mine_empty") }}</p>{% else %}
+<ul class="my-proposals">
+  {% for r in rows %}
+  <li>
+    {% if r.href.is_empty() %}{{ r.title }}{% else %}<a href="{{ r.href }}">{{ r.title }}</a>{% endif %}
+    <span class="status status-{{ r.status }}">{% if r.status == "open" %}{{ shell.text("status_open") }}{% else if r.status == "accepted" %}{{ shell.text("status_accepted") }}{% else %}{{ shell.text("status_rejected") }}{% endif %}</span>
+    <span class="recent-meta">{{ r.date }}</span>
+    <span class="recent-summary">{{ r.summary }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

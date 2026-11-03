@@ -1,0 +1,18 @@
+@media print {
+  @page { margin: 1.5cm; }
+  :root, :root[data-theme="dark"] { color-scheme: light; --bg: #fff; --bg-alt: #fff; --fg: #000; --muted: #333; --line: #999; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  header, .site-header, .skip-link, .sidebar, .toc, .pager, .page-actions, .to-top, .code-copy,
+  .palette-overlay, .heading-anchor, .banner, #settings-panel, .search-filters { display: none !important; }
+  .layout { display: block; }
+  .article, .prose { max-width: none; margin: 0; padding: 0; }
+  .prose a { color: #000; text-decoration: underline; }
+  .prose a[href^="/"]:after, .prose a[href^="http"]:after { content: " (" attr(href) ")"; font-size: 0.85em; color: #333; word-break: break-all; }
+  .prose a[href^="#"]:after { content: ""; }
+  .prose pre { white-space: pre-wrap; word-break: break-word; border: 1px solid #999; background: #fff; box-shadow: none; }
+  .tok-comment, .tok-string, .tok-number, .tok-keyword, .tok-builtin { color: #000; }
+  .tok-keyword { font-weight: 700; }
+  .prose h1, .prose h2, .prose h3 { break-after: avoid; }
+  .prose pre, .prose table, .prose img, .callout { break-inside: avoid; }
+  .prose img { max-width: 100%; }
+}

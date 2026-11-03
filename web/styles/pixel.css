@@ -1,30 +1,19 @@
-/* Minecraft-flavored details; [data-pixel="0"] makes them thin and flat via the tokens. */
+/* Minecraft look: stone page, GUI-slot panels, beveled buttons. One bevel language:
+   light top-left edge + dark bottom-right edge inside a 2-3px ink outline.
+   [data-pixel="0"] makes everything thin and flat via the tokens. */
 
-.sidebar { padding-right: 0.5rem; }
+.site-header .logo, .logo-name { font-family: var(--font-pixel); font-variant-ligatures: none; }
 
-@media (min-width: 720px) {
-  .sidebar { border-right: var(--pixel-border); }
-}
-
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6,
-.site-header .logo {
-  font-family: var(--font-mono);
-}
-:root[data-pixel="1"] .prose h1 { letter-spacing: -0.02em; }
-
-.callout {
-  margin: 1.25rem 0;
-  padding: 0.75rem 1rem;
-  background: var(--bg-alt);
+:root[data-pixel="1"] .article,
+:root[data-pixel="1"] .sidebar,
+:root[data-pixel="1"] .toc {
   border: var(--pixel-border);
-  border-left-width: 6px;
-  border-left-color: var(--tip);
-  box-shadow: var(--pixel-shadow);
+  box-shadow: inset 3px 3px 0 var(--bevel-hi), inset -3px -3px 0 var(--bevel-lo), var(--pixel-shadow);
 }
-.callout.warn { border-left-color: var(--warn); }
-.callout.version { border-left-color: var(--version); }
-.callout > :first-child { margin-top: 0; }
-.callout > :last-child { margin-bottom: 0; }
+:root[data-pixel="0"] .article,
+:root[data-pixel="0"] .sidebar,
+:root[data-pixel="0"] .toc { background: transparent; padding-inline: 0; }
+:root[data-pixel="1"] .prose h1 { letter-spacing: -0.01em; }
 
 .recipe {
   display: grid;
@@ -64,7 +53,24 @@
   color: var(--fg);
 }
 
+/* Inventory-style buttons */
 :root[data-pixel="1"] .btn,
 :root[data-pixel="1"] .choice { border-radius: 0; }
-:root[data-pixel="1"] .btn { border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+:root[data-pixel="1"] .btn {
+  background: var(--slot);
+  border: 2px solid var(--ink);
+  box-shadow: inset 2px 2px 0 var(--bevel-hi), inset -2px -2px 0 var(--bevel-lo);
+}
+:root[data-pixel="1"] .btn:hover { background: var(--bg-alt); border-color: var(--ink); }
+:root[data-pixel="1"] .btn:active { box-shadow: inset 2px 2px 0 var(--bevel-lo), inset -2px -2px 0 var(--bevel-hi); padding-top: calc(.4rem + 1px); }
+:root[data-pixel="1"] .btn--primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: inset 2px 2px 0 rgb(255 255 255 / .35), inset -2px -2px 0 rgb(0 0 0 / .35);
+}
+:root[data-pixel="1"] .btn--primary:hover { background: var(--accent); filter: brightness(1.08); }
+:root[data-pixel="1"] .choice { border: 2px solid var(--ink); box-shadow: inset 2px 2px 0 var(--bevel-hi), inset -2px -2px 0 var(--bevel-lo); background: var(--slot); }
+:root[data-pixel="1"] .choice[aria-pressed="true"] { background: var(--bg-alt); box-shadow: inset 2px 2px 0 var(--bevel-lo), inset -2px -2px 0 var(--bevel-hi); outline-offset: 2px; }
+:root[data-pixel="1"] #settings-panel { border: var(--pixel-border); box-shadow: inset 3px 3px 0 var(--bevel-hi), inset -3px -3px 0 var(--bevel-lo), var(--pixel-shadow); }
+.btn { border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); }
 :root[data-pixel="1"] .btn:active { transform: translate(2px, 2px); box-shadow: none; }

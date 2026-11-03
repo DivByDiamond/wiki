@@ -5,8 +5,9 @@ pub fn clean(html: &str) -> String {
     b.add_tags(["div"]);
     b.add_allowed_classes(
         "div",
-        ["callout", "tip", "warn", "version", "recipe", "slot"],
+        ["callout", "note", "tip", "warn", "version", "recipe", "slot"],
     );
+    b.add_allowed_classes("code", ["language-lua"]);
     for tag in ["h2", "h3", "h4", "h5", "h6"] {
         b.add_tag_attributes(tag, ["id"]);
     }

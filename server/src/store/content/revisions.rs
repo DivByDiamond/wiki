@@ -13,7 +13,7 @@ fn author_parts(a: &Author) -> (&'static str, String) {
     }
 }
 
-fn author_from(kind: &str, r: String) -> Author {
+pub(crate) fn author_from(kind: &str, r: String) -> Author {
     match kind {
         "user" => Author::User(r),
         "api_key" => Author::ApiKey(r),

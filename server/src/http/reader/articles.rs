@@ -13,7 +13,7 @@ use crate::render;
 use askama::Template;
 use axum::{
     extract::{Path, Query, State},
-    response::Response,
+    response::{IntoResponse, Response},
 };
 use serde::Deserialize;
 
@@ -23,6 +23,8 @@ pub struct ArticleQuery {
     pub history: Option<String>,
     pub diff: Option<String>,
     pub proposed: Option<String>,
+    /// `?md`: the page source as Markdown.
+    pub md: Option<String>,
 }
 
 pub struct OldRev {
@@ -96,6 +98,9 @@ fn handle(
         }
         None => (page.current.clone(), None),
     };
+    if q.md.is_some() {
+        return Ok(markdown_response(revision.body));
+    }
     let document = render::document::render(&revision.body);
     shell.title = render::document::title(&revision.body).unwrap_or_else(|| slug.as_str().into());
     shell.headings = document.headings;
@@ -106,4 +111,15 @@ fn handle(
         missing_translation,
         proposed: q.proposed.is_some(),
     })
+}
+
+fn markdown_response(body: String) -> Response {
+    (
+        [(
+            axum::http::header::CONTENT_TYPE,
+            "text/markdown; charset=utf-8",
+        )],
+        body,
+    )
+        .into_response()
 }

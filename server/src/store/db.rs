@@ -4,10 +4,11 @@ use std::sync::{Arc, Mutex};
 
 pub type Db = Arc<Mutex<Connection>>;
 
-const MIGRATIONS: [&str; 3] = [
+const MIGRATIONS: [&str; 4] = [
     include_str!("sql/0001_content.sql"),
     include_str!("sql/0002_access.sql"),
     include_str!("sql/0003_search.sql"),
+    include_str!("sql/0004_media.sql"),
 ];
 
 pub fn err(e: rusqlite::Error) -> StoreError {
@@ -87,6 +88,6 @@ mod tests {
         let v: i64 = conn
             .pragma_query_value(None, "user_version", |r| r.get(0))
             .unwrap();
-        assert_eq!(v, 3);
+        assert_eq!(v, 4);
     }
 }

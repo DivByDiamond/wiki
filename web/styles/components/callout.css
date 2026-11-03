@@ -1,0 +1,45 @@
+/* Callouts look like Minecraft item tooltips: near-black purple box, violet frame.
+   The type is told by a text label and a glyph, never by colour alone. */
+.callout {
+  --c: var(--tt-tip);
+  position: relative;
+  margin: 1.5rem 0;
+  padding: .75rem 1rem .8rem;
+  color: var(--tt-fg);
+  background: var(--tt-bg);
+  border: 2px solid var(--tt-border);
+  border-left: 6px solid var(--c);
+  box-shadow: 0 0 0 2px var(--tt-bg), 3px 3px 0 2px rgb(0 0 0 / .35);
+  line-height: 1.6;
+}
+.callout::before {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--c);
+  font-family: var(--font-pixel);
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  content: "\25C6  Tip";
+}
+.callout.note { --c: var(--tt-note); }
+.callout.warn { --c: var(--tt-warn); }
+.callout.version { --c: var(--tt-version); }
+.callout.note::before { content: "\2139  Note"; }
+.callout.warn::before { content: "\25B2  Warning"; }
+.callout.version::before { content: "\25CF  Version"; }
+:lang(ru) .callout.tip::before { content: "\25C6  Совет"; }
+:lang(ru) .callout.note::before { content: "\2139  Заметка"; }
+:lang(ru) .callout.warn::before { content: "\25B2  Внимание"; }
+:lang(ru) .callout.version::before { content: "\25CF  Версия"; }
+:lang(zh) .callout.tip::before { content: "\25C6  提示"; }
+:lang(zh) .callout.note::before { content: "\2139  说明"; }
+:lang(zh) .callout.warn::before { content: "\25B2  警告"; }
+:lang(zh) .callout.version::before { content: "\25CF  版本"; }
+/* The version callout already opens with its own bold "Only for ..." line. */
+.callout > :first-child { margin-top: 0; }
+.callout > :last-child { margin-bottom: 0; }
+.callout a { color: var(--c); }
+.callout code, .prose .callout :not(pre) > code { background: rgb(255 255 255 / .1); color: inherit; }
+.callout pre { background: rgb(0 0 0 / .4); border-color: var(--tt-border); }
+:root[data-pixel="0"] .callout { border-radius: 4px; box-shadow: none; border-width: 1px; border-left-width: 5px; }

@@ -1,5 +1,11 @@
+@import "./features/reader.css";
+@import "./features/palette.css";
+@import "./features/print.css";
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4rem;
   padding: 0.4rem 0.9rem;
   font: inherit;
   font-size: 0.9rem;
@@ -11,6 +17,12 @@
   text-decoration: none;
 }
 .btn:hover { border-color: var(--accent); }
+.btn, .choice, .field input, .field select, .field textarea { transition: background-color var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease); }
+@media (pointer: coarse), (max-width: 719px) {
+  .btn, .choice, .field input, .field select, #search-input { min-height: 44px; }
+  .choice { min-width: 44px; }
+  .settings-check { min-height: 44px; }
+}
 .btn--primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
 
 .field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem; }
@@ -56,10 +68,10 @@
 }
 .choice[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 1px; font-weight: 700; }
 .choice[data-swatch] { min-width: 2.2rem; padding: 0; border-radius: 50%; width: 2.2rem; }
-.choice[data-swatch="green"] { background: #1d7a33; }
+.choice[data-swatch="green"] { background: #176b2c; }
 .choice[data-swatch="violet"] { background: #6a3dc2; }
-.choice[data-swatch="orange"] { background: #a34a00; }
-.choice[data-swatch="teal"] { background: #00776e; }
+.choice[data-swatch="orange"] { background: #9a4400; }
+.choice[data-swatch="teal"] { background: #00706a; }
 
 .search-results { list-style: none; margin: 0; padding: 0; }
 #search-results:not(:empty) {

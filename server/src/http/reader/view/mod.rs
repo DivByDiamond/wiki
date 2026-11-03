@@ -2,9 +2,24 @@
 
 mod admin_texts;
 mod date;
+mod reader_texts;
 mod texts;
 
 pub use date::format_utc;
+
+/// Display name of a page section key, as the sidebar shows it.
+pub fn section_label(lang: &str, key: &str) -> String {
+    if texts::section_rank(key) < 7 || key.is_empty() {
+        texts::text(lang, key).into()
+    } else {
+        key.into()
+    }
+}
+
+/// Sort position of a section key; the fixed documentation order comes first.
+pub fn section_rank(key: &str) -> usize {
+    texts::section_rank(key)
+}
 
 use crate::domain::page::Lang;
 use crate::error::AppResult;

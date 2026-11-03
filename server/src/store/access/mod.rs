@@ -107,6 +107,9 @@ impl ProposalRepo for SqliteProposals {
     fn list(&self, status: Status) -> StoreResult<Vec<Proposal>> {
         proposals::list(&self.db.lock().unwrap(), status)
     }
+    fn list_by_user(&self, user_id: i64, limit: u32) -> StoreResult<Vec<Proposal>> {
+        proposals::list_by_user(&self.db.lock().unwrap(), user_id, limit)
+    }
     fn count_open_by_user(&self, user_id: i64) -> StoreResult<u32> {
         proposals::count_open_by_user(&self.db.lock().unwrap(), user_id)
     }

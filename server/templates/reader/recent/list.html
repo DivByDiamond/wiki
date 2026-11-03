@@ -1,0 +1,16 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<h1>{{ shell.text("recent") }}</h1>
+<p><a href="/feed.atom" type="application/atom+xml">{{ shell.text("recent_feed") }}</a></p>
+{% if rows.is_empty() %}<p>{{ shell.text("recent_empty") }}</p>{% else %}
+<ul class="recent-changes">
+  {% for r in rows %}
+  <li>
+    <a href="{{ r.href }}">{{ r.title }}</a> <small>{{ r.lang }}</small>
+    <span class="recent-meta">{{ r.date }} · {{ shell.text("recent_by") }} {{ r.author }}</span>
+    <span class="recent-summary">{% if r.summary.is_empty() %}{{ shell.text("recent_no_summary") }}{% else %}{{ r.summary }}{% endif %}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

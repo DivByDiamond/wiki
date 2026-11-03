@@ -1,0 +1,30 @@
+/* Skeletons: put .skeleton on a block, or mark a container aria-busy="true" and
+   use .skeleton-line children. Static when the user prefers reduced motion. */
+.skeleton, .skeleton-line {
+  display: block;
+  min-height: 1rem;
+  background: linear-gradient(90deg, var(--bg-alt) 25%, var(--slot) 50%, var(--bg-alt) 75%) 0 0 / 200% 100%;
+  animation: skeleton-sweep 1.4s linear infinite;
+}
+.skeleton-line { height: 1rem; margin: .6rem 0; }
+.skeleton-line:nth-child(3n) { width: 60%; }
+.skeleton-line:nth-child(3n + 1) { width: 85%; }
+@keyframes skeleton-sweep { to { background-position: -200% 0; } }
+
+/* Search results while a request is in flight. */
+#search-results[aria-busy="true"]:empty::before,
+[data-skeleton]:empty::before {
+  content: "";
+  display: block;
+  height: 4.2rem;
+  background:
+    linear-gradient(var(--bg-alt) 1rem, transparent 0) 0 0 / 70% 100% no-repeat,
+    linear-gradient(var(--bg-alt) 1rem, transparent 0) 0 1.6rem / 90% 100% no-repeat,
+    linear-gradient(var(--bg-alt) 1rem, transparent 0) 0 3.2rem / 50% 100% no-repeat;
+  animation: skeleton-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes skeleton-pulse { from { opacity: .45; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .skeleton-line, [aria-busy="true"]::before { animation: none; }
+}

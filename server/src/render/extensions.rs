@@ -16,7 +16,7 @@ pub fn expand(src: &str) -> String {
             .take_while(|l| l.trim_end() != ":::")
             .collect();
         match name {
-            "tip" | "warn" => wrap(&mut out, &format!("callout {name}"), None, &body),
+            "note" | "tip" | "warn" => wrap(&mut out, &format!("callout {name}"), None, &body),
             "version" => wrap(
                 &mut out,
                 "callout version",
@@ -87,6 +87,19 @@ mod tests {
         assert!(out.contains("<div class=\"callout tip\">"));
         assert!(out.contains("</div>"));
         assert!(out.contains("Текст"));
+    }
+
+    #[test]
+    fn note_becomes_callout_div() {
+        let out = expand(":::note\nЗаметка\n:::");
+        assert!(out.contains("<div class=\"callout note\">"));
+    }
+
+    #[test]
+    fn sanitizer_keeps_callout_classes_but_not_arbitrary_ones() {
+        let html = crate::render::to_html(":::note\ntext\n:::\n\n<div class=\"callout evil\">x</div>");
+        assert!(html.contains("class=\"callout note\""), "{html}");
+        assert!(!html.contains("evil"), "{html}");
     }
 
     #[test]

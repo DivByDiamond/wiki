@@ -1,6 +1,7 @@
 //! Admin panel: pages, edit suggestions and API keys. Every route is admin-only.
 
 mod keys;
+mod media;
 mod pages;
 mod proposals;
 mod users;
@@ -38,6 +39,7 @@ pub fn routes() -> Router<AppState> {
         )
         .merge(proposals::routes())
         .merge(keys::routes())
+        .merge(media::routes())
         .merge(users::routes())
 }
 

@@ -1,3 +1,5 @@
+pub mod feed;
+pub mod media;
 pub mod page;
 pub mod ports;
 pub mod proposal;

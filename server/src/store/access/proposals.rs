@@ -74,6 +74,18 @@ pub fn list(conn: &Connection, status: Status) -> StoreResult<Vec<Proposal>> {
         .map_err(err)
 }
 
+pub fn list_by_user(conn: &Connection, user_id: i64, limit: u32) -> StoreResult<Vec<Proposal>> {
+    let mut stmt = conn
+        .prepare(&format!(
+            "select {COLS} from proposals where user_id = ?1 order by id desc limit ?2"
+        ))
+        .map_err(err)?;
+    stmt.query_map(params![user_id, i64::from(limit)], row)
+        .map_err(err)?
+        .collect::<Result<_, _>>()
+        .map_err(err)
+}
+
 fn count(conn: &Connection, sql: &str, args: impl rusqlite::Params) -> StoreResult<u32> {
     conn.query_row(sql, args, |r| r.get(0)).map_err(err)
 }

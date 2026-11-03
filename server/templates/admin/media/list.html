@@ -1,0 +1,27 @@
+{% extends "layout/base.html" %}
+{% block content %}
+<section class="admin-workspace">
+{% let admin_current = "media" %}
+{% include "admin/components/nav.html" %}
+<h1>{{ shell.text("admin_media") }}</h1>
+<h2>{{ shell.text("media_upload") }}</h2>
+<form method="post" action="/admin/media" enctype="multipart/form-data">
+  <p><input type="file" name="file" accept="image/png,image/jpeg,image/webp,image/gif" required></p>
+  <p><small>{{ shell.text("media_hint") }}</small></p>
+  <button class="btn" type="submit">{{ shell.text("media_upload") }}</button>
+</form>
+{% if rows.is_empty() %}<p>{{ shell.text("media_empty") }}</p>{% else %}
+<ul class="media-list">
+  {% for r in rows %}
+  <li>
+    <a href="/media/{{ r.name }}"><img src="/media/{{ r.name }}" alt="" width="96" loading="lazy"></a>
+    <span>{{ r.date }} · {{ r.size_kb }} KB</span>
+    <label>{{ shell.text("media_snippet") }}
+      <input type="text" readonly value="{{ r.snippet }}" size="48" onfocus="this.select()" onclick="this.select()">
+    </label>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+</section>
+{% endblock %}

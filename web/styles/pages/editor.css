@@ -1,0 +1,17 @@
+/* Editor: toolbar, restore banner, split view */
+#editor-toolbar { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .75rem; }
+#editor-toolbar .btn { min-width: 2.75rem; min-height: 2.75rem; }
+.editor-btn-bold { font-weight: 700; }
+.editor-btn-italic { font-style: italic; }
+.editor-restore { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: 1rem; }
+.editor-views { display: flex; gap: .4rem; margin: 0 0 1rem; }
+.editor-views .btn { min-height: 2.75rem; }
+.editor-views .btn[aria-pressed="true"] { border-color: var(--accent); }
+.admin-editor-layout[data-view="edit"] .admin-preview-pane,
+.admin-editor-layout[data-view="preview"] .admin-editor { display: none; }
+@media (min-width: 1100px) {
+  .editor-views { display: none; }
+  .admin-editor-layout[data-view] .admin-preview-pane,
+  .admin-editor-layout[data-view] .admin-editor { display: block; }
+  .admin-editor-layout #editor { height: max(20rem, calc(100dvh - 20rem)); resize: vertical; }
+}

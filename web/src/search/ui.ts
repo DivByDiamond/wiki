@@ -1,12 +1,11 @@
 import { debounce } from "../shared/dom.ts";
-import { onEscape, onSlash } from "../shared/keys.ts";
+import { onEscape } from "../shared/keys.ts";
 import { fetchFragment } from "./index.ts";
 
 export function mountSearch(): void {
   const input = document.getElementById("search-input") as HTMLInputElement | null;
   const box = document.getElementById("search-results");
   if (!input) return;
-  onSlash(() => input.focus());
   if (!box) return;
 
   let latest = 0;

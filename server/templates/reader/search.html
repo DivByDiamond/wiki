@@ -1,6 +1,25 @@
 {% extends "layout/base.html" %}
 {% block content %}
 <h1>{{ shell.text("search") }}</h1>
+<form class="search-filters" action="/{{ shell.lang }}/search" method="get">
+  <input type="hidden" name="q" value="{{ shell.query }}">
+  <label>{{ shell.text("filter_language") }}
+    <select name="lang">
+      <option value=""{% if lang_filter.is_empty() %} selected{% endif %}>{{ shell.lang }}</option>
+      <option value="all"{% if lang_filter == "all" %} selected{% endif %}>{{ shell.text("filter_all_languages") }}</option>
+      <option value="en"{% if lang_filter == "en" %} selected{% endif %}>English</option>
+      <option value="ru"{% if lang_filter == "ru" %} selected{% endif %}>Русский</option>
+      <option value="zh"{% if lang_filter == "zh" %} selected{% endif %}>中文</option>
+    </select>
+  </label>
+  <label>{{ shell.text("filter_section") }}
+    <select name="section">
+      <option value="">{{ shell.text("filter_all_sections") }}</option>
+      {% for s in sections %}<option value="{{ s.key }}"{% if s.key == section_filter %} selected{% endif %}>{{ s.label }}</option>{% endfor %}
+    </select>
+  </label>
+  <button class="btn" type="submit">{{ shell.text("filter_apply") }}</button>
+</form>
 {% if hits.is_empty() && !shell.query.is_empty() %}<p>{{ shell.text("empty") }}</p>{% endif %}
-{% block results %}<ul class="search-results">{% for h in hits %}<li><a href="/{{ h.lang }}/{{ h.slug }}">{{ h.title }}</a> <small>{{ h.lang }}</small><span>{{ h.snippet|safe }}</span></li>{% endfor %}</ul>{% endblock %}
+{% block results %}<ul class="search-results">{% for h in hits %}<li data-section="{{ h.section }}"><a href="/{{ h.lang }}/{{ h.slug }}">{{ h.title }}</a> <small>{{ h.lang }}</small><span>{{ h.snippet|safe }}</span></li>{% endfor %}</ul>{% endblock %}
 {% endblock %}

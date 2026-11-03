@@ -1,6 +1,14 @@
 //! Reader chrome translated independently from article content.
+mod extra;
+
 pub fn text(lang: &str, key: &str) -> &'static str {
     if let Some(text) = super::admin_texts::text(lang, key) {
+        return text;
+    }
+    if let Some(text) = super::reader_texts::text(lang, key) {
+        return text;
+    }
+    if let Some(text) = extra::text(lang, key) {
         return text;
     }
     let (en, ru, zh) = match key {

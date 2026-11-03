@@ -8,6 +8,7 @@
 <div class="prose"{% if missing_translation %} lang="en"{% endif %}>{{ html|safe }}</div>
 <div class="page-actions">
   <a href="/{{ shell.lang }}/{{ shell.path }}?history">{{ shell.text("history") }}</a>
+  <a href="/{{ shell.lang }}/{{ shell.path }}?md" download>{{ shell.text("export_markdown") }}</a>
   {% if !missing_translation %}<a href="/propose/{{ shell.lang }}/{{ shell.path }}">{{ shell.text("edit") }}</a>{% endif %}
 </div>
 <nav class="pager" aria-label="{{ shell.text("navigation") }}">

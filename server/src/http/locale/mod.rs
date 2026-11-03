@@ -45,7 +45,9 @@ pub async fn remember(State(s): State<AppState>, req: Request, next: Next) -> Re
     let locale = Locale::resolve(req.headers(), req.uri());
     let needs_cookie = locale.prefixed && cookie(req.headers(), COOKIE) != Some(locale.lang.code());
     let mut response = next.run(req).await;
-    let private = locale.path.starts_with("/admin") || locale.path.starts_with("/auth/");
+    let private = locale.path.starts_with("/admin")
+        || locale.path.starts_with("/account")
+        || locale.path.starts_with("/auth/");
     let html = response
         .headers()
         .get(header::CONTENT_TYPE)

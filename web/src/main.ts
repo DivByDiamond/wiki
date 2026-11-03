@@ -1,8 +1,12 @@
+import { mountPalette } from "./search/palette.ts";
+import { mountReader } from "./reader/index.ts";
 import { mountSearch } from "./search/ui.ts";
 import { mountPanel } from "./settings/panel.ts";
 import { apply } from "./settings/theme.ts";
 import { load, save, type Settings } from "./settings/store.ts";
+import { mountLightbox } from "./lightbox/lightbox.ts";
 import { mountHeader } from "./shared/header.ts";
+import { mountSidebar } from "./shared/sidebar.ts";
 
 function storage(): Storage | null {
   try { return window.localStorage; } catch { return null; }
@@ -24,8 +28,10 @@ function start(): void {
     refresh();
   });
   mountSearch();
-  const navigation = document.querySelector<HTMLDetailsElement>(".navigation");
-  if (navigation && window.matchMedia("(max-width: 719px)").matches) navigation.open = false;
+  mountPalette();
+  mountReader();
+  mountLightbox();
+  mountSidebar();
   if (document.getElementById("editor") || document.getElementById("merge")) {
     void import("./editor/editor.ts").then((m) => m.mountEditor());
   }

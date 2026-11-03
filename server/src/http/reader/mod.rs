@@ -1,6 +1,7 @@
 mod articles;
 mod history;
 mod notfound;
+mod recent;
 mod search;
 pub(crate) mod view;
 
@@ -23,6 +24,8 @@ pub fn routes() -> Router<AppState> {
         .route("/", get(crate::http::locale::home))
         .route("/language/{lang}", get(crate::http::locale::switch))
         .route("/{lang}", get(lang_root))
+        .route("/feed.atom", get(recent::feed))
+        .route("/{lang}/recent", get(recent::recent))
         .route("/{lang}/search", get(search::search))
         .route("/{lang}/{*slug}", get(articles::article))
         .fallback(fallback)
