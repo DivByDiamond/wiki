@@ -24,7 +24,7 @@ By default the result is the base's world X, Y, Z. A damaged tower raises an err
 The radio network and relative-coordinate configuration described here are local development changes after the baseline source revision linked below. Published builds may not include them.
 :::
 
-Enable `gameplay.relative_coordinates` in the common OC2R config. `gameplay.gps_tower_range` controls the maximum straight-line 3D hop distance, defaulting to 45 blocks.
+Enable `gameplay.relative_coordinates` in the common OC2R config. `gameplay.gps_tower_range` controls the maximum horizontal hop distance, defaulting to 45 blocks. Coverage is circular in X/Z and ignores height, while reported coordinates still include Y.
 
 Call `setAsReference()` on the first tower and read `getNetworkId()`. At additional towers, pass that ID to `joinNetwork(id)`. A network may have only one reference; its position is `(0, 0, 0)`.
 

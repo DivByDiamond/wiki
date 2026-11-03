@@ -20,7 +20,7 @@ gps_tower_range = 45
 
 `relative_coordinates` defaults to `false`, preserving the tower's existing world XYZ API. When enabled, `getPosition()` returns an offset from that tower's network reference. Robot positions remain relative to their placement/calibration origin in both modes.
 
-`gps_tower_range` is the maximum straight-line 3D distance between neighboring stations, measured between their base blocks. Its default is 45 blocks; accepted values are 1–1024. A chain can span a greater distance. Obstacles do not attenuate the signal.
+`gps_tower_range` is the maximum horizontal distance between neighboring stations, measured between their base blocks in X/Z; height is ignored. Its default is 45 blocks; accepted values are 1–1024. Coverage is circular, not square: an offset of 45 in both X and Z is outside the default radius. Reported offsets still include Y. A chain can span a greater distance. Obstacles do not attenuate the signal.
 
 Restart after changing the server configuration so every program starts with the intended coordinate mode. Scripts should not retain a coordinate-frame assumption across a mode change.
 
