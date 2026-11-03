@@ -27,7 +27,7 @@
   --accent: #176b2c;
   --font-size: 17px;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-pixel: "Pixelify Sans", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-pixel: "Pixelify Sans", var(--font-body);
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --pixel: 1;
   --pixel-border: 3px solid var(--ink);
@@ -97,6 +97,8 @@
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
+  /* Latin only: the Cyrillic glyphs of this pixel font are hard to read, those fall back to the body font. */
+  unicode-range: U+0020-007E, U+00A0-00FF, U+2013-2014, U+2018-201D, U+2026;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -117,7 +119,7 @@ a { color: var(--accent); text-underline-offset: 2px; }
 a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 :root[data-pixel="0"] body { background: var(--bg); }
-h1, h2, h3, h4 { font-family: var(--font-pixel); font-weight: 600; font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0; }
+h1, h2, h3, h4 { font-family: var(--font-pixel); font-weight: 700; font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0; }
 img { max-width: 100%; height: auto; }
 hr { border: 0; border-top: 1px solid var(--line); }
 
