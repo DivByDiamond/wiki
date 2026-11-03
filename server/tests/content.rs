@@ -56,7 +56,7 @@ async fn all_bundled_articles_and_local_links_are_readable() {
 }
 
 #[tokio::test]
-async fn reader_has_titles_outline_language_fallback_and_ordered_navigation() {
+async fn reader_has_titles_translations_and_ordered_navigation() {
     let db = open_memory().unwrap();
     catalog::import(&db, &catalog::bundled().unwrap(), true).unwrap();
     let app = router(AppState::new(db));
@@ -80,7 +80,7 @@ async fn reader_has_titles_outline_language_fallback_and_ordered_navigation() {
     );
     assert!(
         body.contains("/ru/systems/buildroot"),
-        "English-only pages are discoverable"
+        "Translated technical pages are discoverable"
     );
     let response = app
         .oneshot(
@@ -101,6 +101,28 @@ async fn reader_has_titles_outline_language_fallback_and_ordered_navigation() {
             .to_vec(),
     )
     .unwrap();
+    assert!(!body.contains("Перевода пока нет"));
+    assert!(body.contains("lang=\"ru\""));
+}
+
+#[tokio::test]
+async fn reader_falls_back_when_translation_is_missing() {
+    let db = open_memory().unwrap();
+    let mut bundle = catalog::bundled().unwrap();
+    bundle.pages.retain(|page| page.lang == "en");
+    catalog::import(&db, &bundle, true).unwrap();
+    let app = router(AppState::new(db));
+    let response = app
+        .oneshot(
+            Request::get("/ru/systems/buildroot")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    let body = String::from_utf8(bytes.to_vec()).unwrap();
     assert!(body.contains("Перевода пока нет") && body.contains("lang=\"en\""));
 }
 

@@ -11,9 +11,11 @@ def slug_for(path):
 
 
 def section_for(slug):
+    if slug == "reference/cables":
+        return "project"
     if slug == "recipes":
         return "recipes"
-    if slug in ("block/gps_tower", "reference/gps-networks", "reference/networking", "reference/cables"):
+    if slug in ("block/gps_tower", "reference/gps-networks", "reference/networking"):
         return "networking"
     if slug.startswith("robotics/"):
         return "robotics"

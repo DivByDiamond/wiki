@@ -101,7 +101,7 @@ def render(recipes, lang, labels, revision):
     for name, recipe in recipes:
         result = recipe['result']
         item = result if isinstance(result, str) else result['id']
-        label = item_name(item, labels)
+        label = visual_item({'id': item}, labels, lang, manifest)['name']
         if name == 'unflash':
             label = 'Очистка прошивки' if ru else 'Clear firmware'
         out.append(f'- [{label}](#recipe-{name})')
@@ -110,7 +110,7 @@ def render(recipes, lang, labels, revision):
         result = recipe['result']
         if isinstance(result, str):
             result = {'id': result}
-        label = item_name(result['id'], labels)
+        label = visual_item(result, labels, lang, manifest)['name']
         if name == 'unflash':
             label = 'Очистка прошивки' if ru else 'Clear firmware'
         out.append(f'## {label} {{#recipe-{name}}}')

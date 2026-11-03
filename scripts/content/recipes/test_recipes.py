@@ -60,4 +60,5 @@ class RecipeReferenceTest(unittest.TestCase):
             attach(pages, source)
             self.assertEqual(once, pages[('ru', 'item/cpu')]['body'])
             self.assertIn('/ru/recipes#recipe-cpu_tier_1', once)
+            self.assertNotIn('[cpu_tier_1]', once)
             self.assertTrue(once.endswith('Source.\n'))

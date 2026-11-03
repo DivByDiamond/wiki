@@ -9,7 +9,7 @@ Rust backend, TypeScript frontend, one binary, one SQLite file.
 ![TypeScript](https://img.shields.io/badge/TypeScript-Bun-3178c6?style=flat-square&logo=typescript&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-FTS5-003b57?style=flat-square&logo=sqlite&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square&logo=gnu&logoColor=white)
-![Content](https://img.shields.io/badge/content-158%20pages-green?style=flat-square)
+![Content](https://img.shields.io/badge/content-163%20pages-green?style=flat-square)
 
 [English](#english) | [Русский](#русский)
 
@@ -59,7 +59,7 @@ cd .. && cargo build --release -p oc2r-wiki
 
 ### Read locally
 
-An empty database is populated automatically with 158 pages from OC2R (English, Russian, Chinese). After building the frontend, run:
+An empty database is populated automatically with 163 pages from OC2R (English, Russian, Chinese). After building the frontend, run:
 
 ```bash
 cargo run -p oc2r-wiki
@@ -169,7 +169,7 @@ cd .. && cargo build --release -p oc2r-wiki
 
 ### Локальный запуск
 
-В пустую базу автоматически загружаются 158 страниц из OC2R на русском, английском и китайском. После сборки фронтенда:
+В пустую базу автоматически загружаются 163 страниц из OC2R на русском, английском и китайском. После сборки фронтенда:
 
 ```bash
 cargo run -p oc2r-wiki

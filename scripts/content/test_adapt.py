@@ -45,3 +45,15 @@ class PhotoAttachmentTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class CatalogLocaleTest(unittest.TestCase):
+    def test_every_english_article_has_a_russian_version(self):
+        import json
+        from pathlib import Path
+        pages = json.loads((Path(__file__).resolve().parents[2] / 'content/catalog.json').read_text())['pages']
+        slugs = {lang: {p['slug'] for p in pages if p['lang'] == lang} for lang in ('en', 'ru')}
+        self.assertEqual(slugs['en'] - slugs['ru'], set())
+
+    def test_historical_cable_plan_is_in_project(self):
+        from adapt import section_for
+        self.assertEqual(section_for('reference/cables'), 'project')
