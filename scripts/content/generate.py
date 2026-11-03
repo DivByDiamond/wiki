@@ -8,6 +8,8 @@ import shutil
 import subprocess
 from adapt import LOCALES, convert, section_for, slug_for
 from photos import attach
+from recipes import pages as recipe_pages
+from recipes.links import attach as attach_recipes
 
 ROOT = Path(__file__).resolve().parents[2]
 TECHNICAL = {
@@ -23,6 +25,8 @@ TECHNICAL = {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
+    parser.add_argument("--only", action="append", default=[], metavar="SLUG",
+                        help="Refresh only these slugs, preserving other bundled articles.")
     args = parser.parse_args()
     source = args.source.resolve()
     manual = source / "src/main/resources/assets/oc2r/doc"
@@ -34,22 +38,35 @@ def main():
     inputs = [(lang, slug_for(p.relative_to(manual / locale).as_posix()), p)
               for locale, lang in LOCALES.items() for p in sorted((manual / locale).rglob("*.md"))]
     known = {(lang, slug) for lang, slug, _ in inputs}
-    pages = {}
+    previous = json.loads((ROOT / "content/catalog.json").read_text()) if args.only else None
+    pages = {(p["lang"], p["slug"]): dict(p, source_revision=p.get("source_revision", previous["source_revision"]))
+             for p in previous["pages"]} if previous else {}
+
+    def selected(slug):
+        return not args.only or slug in args.only
 
     def add(lang, slug, body, origin, digest):
+        if not selected(slug):
+            return
         labels = {"ru": "Источник OC2R", "en": "OC2R source", "zh": "OC2R 来源"}
-        body = body.rstrip() + f"\n\n---\n\n[{labels[lang]}]({url}{origin}) · `{revision[:12]}`\n"
+        source_url = url.replace("/blob/", "/tree/") if (source / origin).is_dir() else url
+        body = body.rstrip() + f"\n\n---\n\n[{labels[lang]}]({source_url}{origin}) · `{revision[:12]}`\n"
         first = next((line[2:].strip() for line in body.splitlines() if line.startswith("# ")), slug)
         pages[(lang, slug)] = dict(lang=lang, slug=slug, title=first, section=section_for(slug),
-                                  position=0, body=body, source=origin, source_sha256=digest)
+                                  position=0, body=body, source=origin, source_sha256=digest,
+                                  source_revision=revision)
 
     for lang, slug, path in inputs:
+        if not selected(slug):
+            continue
         locale = next(k for k, v in LOCALES.items() if v == lang)
         body = convert(path.read_text(), path.relative_to(manual / locale).as_posix(), lang, known)
         add(lang, slug, body, path.relative_to(source).as_posix(), hashlib.sha256(path.read_bytes()).hexdigest())
     # Technical documents retain links to files in the exact source revision.
     import re
     for origin, slug in TECHNICAL.items():
+        if not selected(slug):
+            continue
         path = source / origin
         body = path.read_text()
         def technical_link(m):
@@ -64,6 +81,8 @@ def main():
     for path in sorted((ROOT / "content/overrides").rglob("*.md")):
         lang, *parts = path.relative_to(ROOT / "content/overrides").parts
         slug = "/".join(parts).removesuffix(".md")
+        if not selected(slug):
+            continue
         raw = path.read_text()
         origin, expected, body = raw.split("\n", 2)
         origin = origin.removeprefix("source: ")
@@ -71,12 +90,16 @@ def main():
         if expected != f"source_sha256: {digest}":
             raise ValueError(f"Review curated article {path}: its OC2R source changed. Update source_sha256 after reviewing the text.")
         add(lang, slug, body.strip(), origin, digest)
-    preferred = ["start", "getting_started", "basics", "block/index", "item/index", "networking", "robotics", "systems/overview", "systems/onyxos", "scripting"]
+    if selected("recipes"):
+        for lang, body, origin, digest in recipe_pages(source, revision):
+            add(lang, "recipes", body, origin, digest)
+    preferred = ["start", "getting_started", "basics", "block/index", "item/index", "recipes", "networking", "robotics", "systems/overview", "systems/onyxos", "scripting"]
     for page in pages.values():
         page["position"] = preferred.index(page["slug"]) if page["slug"] in preferred else 100
     illustrations = json.loads((ROOT / "content/illustrations.json").read_text())
     for page in pages.values():
         page["body"] = attach(page["body"], page["lang"], page["slug"], illustrations)
+    attach_recipes(pages, source)
     output = dict(source_revision=revision, source_dirty=dirty, pages=sorted(pages.values(), key=lambda p: (p["lang"], p["slug"])))
     (ROOT / "content/catalog.json").write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n")
     for path in (manual / "img").glob("*.png"):

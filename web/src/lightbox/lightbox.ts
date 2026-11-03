@@ -119,7 +119,10 @@ export function mountLightbox(): void {
 
     // Click or tap on the image toggles zoom at that point; click on the empty backdrop closes.
     stage.addEventListener("click", (e) => {
-      if (e.target !== img) { if (view.scale === 1) close(); return; }
+      // Pointer capture retargets the click to the stage, so hit-test by coordinates instead of e.target.
+      const box = img.getBoundingClientRect();
+      const onImage = e.clientX >= box.left && e.clientX <= box.right && e.clientY >= box.top && e.clientY <= box.bottom;
+      if (!onImage) { if (view.scale === 1) close(); return; }
       const r = stage.getBoundingClientRect();
       const px = e.clientX - r.left - r.width / 2;
       const py = e.clientY - r.top - r.height / 2;

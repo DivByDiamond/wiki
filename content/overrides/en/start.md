@@ -22,6 +22,10 @@ Follow the [quickstart guide](/en/getting_started) from installing components to
 | Automate physical tasks | [Robotics](/en/robotics) |
 | Use devices from OnyxOS | [Native Onyx RPC](/en/reference/onyx-rpc) |
 
+## Crafting
+
+Find ingredients, crafting grids and furnace recipes in [all crafting recipes](/en/recipes).
+
 ## Using this wiki
 
 Browse the sections, search for a device, or use the table of contents on a long page. Switching language keeps the current article. Pages without a translation fall back to English.

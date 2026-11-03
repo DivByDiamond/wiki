@@ -11,6 +11,10 @@ def slug_for(path):
 
 
 def section_for(slug):
+    if slug == "recipes":
+        return "hardware"
+    if slug.startswith("robotics/"):
+        return "robotics"
     if slug.startswith("systems/"):
         return "systems"
     if slug.startswith("reference/") or slug == "scripting":
