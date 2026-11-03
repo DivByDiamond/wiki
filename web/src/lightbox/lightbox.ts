@@ -3,7 +3,6 @@ import { limitPan, RESET, zoomAt, type View } from "./zoom.ts";
 const LABELS: Record<string, Record<string, string>> = {
   en: { close: "Close", zoomIn: "Zoom in", zoomOut: "Zoom out", reset: "Reset zoom", prev: "Previous image", next: "Next image" },
   ru: { close: "Закрыть", zoomIn: "Приблизить", zoomOut: "Отдалить", reset: "Сбросить масштаб", prev: "Предыдущее фото", next: "Следующее фото" },
-  zh: { close: "关闭", zoomIn: "放大", zoomOut: "缩小", reset: "重置缩放", prev: "上一张", next: "下一张" },
 };
 
 const SELECTOR = ".prose img";

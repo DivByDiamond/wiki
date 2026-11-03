@@ -48,7 +48,7 @@ def main():
     def add(lang, slug, body, origin, digest):
         if not selected(slug):
             return
-        labels = {"ru": "Источник OC2R", "en": "OC2R source", "zh": "OC2R 来源"}
+        labels = {"ru": "Источник OC2R", "en": "OC2R source"}
         source_url = url.replace("/blob/", "/tree/") if (source / origin).is_dir() else url
         body = body.rstrip() + f"\n\n---\n\n[{labels[lang]}]({source_url}{origin}) · `{revision[:12]}`\n"
         first = next((line[2:].strip() for line in body.splitlines() if line.startswith("# ")), slug)

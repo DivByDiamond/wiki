@@ -43,9 +43,9 @@ mod tests {
     fn browser_quality_regions_and_fallback() {
         for (value, expected) in [
             ("ru-RU, en;q=0.8", Lang::Ru),
-            ("zh-Hant-TW,en;q=0.8", Lang::Zh),
+            ("zh-Hant-TW,en;q=0.8", Lang::En),
             ("ru;q=0.2, en-US;q=0.9", Lang::En),
-            ("de-DE,zh-CN;q=0.6", Lang::Zh),
+            ("de-DE,zh-CN;q=0.6", Lang::En),
             ("ru;q=0,zh;q=0", Lang::En),
             ("ru;q=NaN, en", Lang::En),
             ("de-DE,*;q=0.5", Lang::En),

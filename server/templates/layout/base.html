@@ -27,7 +27,7 @@ try {
 <div class="layout">
   <div class="sidebar-backdrop" data-sidebar-backdrop></div>
   <nav class="sidebar" id="sidebar" aria-label="{{ shell.text("navigation") }}">
-    <button class="btn sidebar-close" type="button" data-sidebar-close aria-label="{% if shell.lang == "ru" %}Закрыть{% else if shell.lang == "zh" %}关闭{% else %}Close{% endif %}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 3 10 10M13 3 3 13" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg></button>
+    <button class="btn sidebar-close" type="button" data-sidebar-close aria-label="{% if shell.lang == "ru" %}Закрыть{% else %}Close{% endif %}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 3 10 10M13 3 3 13" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg></button>
     <p class="sidebar-title">{{ shell.text("navigation") }}</p>
     {% for section in shell.sections %}
     <details class="nav-section"{% if section.open %} open{% endif %} data-nav-section="{{ section.name }}">

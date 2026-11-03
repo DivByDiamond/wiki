@@ -57,3 +57,9 @@ class CatalogLocaleTest(unittest.TestCase):
     def test_historical_cable_plan_is_in_project(self):
         from adapt import section_for
         self.assertEqual(section_for('reference/cables'), 'project')
+
+    def test_catalog_has_only_supported_languages(self):
+        import json
+        from pathlib import Path
+        pages = json.loads((Path(__file__).resolve().parents[2] / 'content/catalog.json').read_text())['pages']
+        self.assertEqual({p['lang'] for p in pages}, {'en', 'ru'})

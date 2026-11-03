@@ -9,7 +9,7 @@ Rust backend, TypeScript frontend, one binary, one SQLite file.
 ![TypeScript](https://img.shields.io/badge/TypeScript-Bun-3178c6?style=flat-square&logo=typescript&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-FTS5-003b57?style=flat-square&logo=sqlite&logoColor=white)
 ![License](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square&logo=gnu&logoColor=white)
-![Content](https://img.shields.io/badge/content-163%20pages-green?style=flat-square)
+![Content](https://img.shields.io/badge/content-121%20pages-green?style=flat-square)
 
 [English](#english) | [Русский](#русский)
 
@@ -39,7 +39,7 @@ Admins and API keys edit pages directly. Everyone else signs in with GitHub and 
 | Admin panel | Markdown editor with live preview, suggestion queue, history and rollback, key management |
 | Server-side rendering | Markdown is rendered and sanitized on the server, pages work without JavaScript |
 | Search | Full-text search (SQLite FTS5) |
-| Languages | English, Russian, Chinese; browser detection, remembered choice, English fallback |
+| Languages | English, Russian; browser detection, remembered choice, English fallback |
 | Reader settings | Light or dark theme, accent color, font size, optional pixel borders, stored in the browser |
 
 ### Tech stack
@@ -59,7 +59,7 @@ cd .. && cargo build --release -p oc2r-wiki
 
 ### Read locally
 
-An empty database is populated automatically with 163 pages from OC2R (English, Russian, Chinese). After building the frontend, run:
+An empty database is populated automatically with 121 pages from OC2R (English, Russian). After building the frontend, run:
 
 ```bash
 cargo run -p oc2r-wiki
@@ -149,7 +149,7 @@ OC2R Wiki - сайт документации мода [OC2R] на `wiki.loki-co
 | Админка | Markdown-редактор с живым превью, очередь предложений, история и откат, управление ключами |
 | Рендер на сервере | Markdown рендерится и очищается на сервере, страницы работают без JavaScript |
 | Поиск | Полнотекстовый поиск (SQLite FTS5) |
-| Языки | Английский, русский, китайский; выбор по браузеру, сохранение языка, откат на английский |
+| Языки | Английский, русский; выбор по браузеру, сохранение языка, откат на английский |
 | Настройки читателя | Светлая или тёмная тема, акцентный цвет, размер шрифта, пиксель-рамки по желанию, хранятся в браузере |
 
 ### Технологии
@@ -169,7 +169,7 @@ cd .. && cargo build --release -p oc2r-wiki
 
 ### Локальный запуск
 
-В пустую базу автоматически загружаются 163 страниц из OC2R на русском, английском и китайском. После сборки фронтенда:
+В пустую базу автоматически загружаются 121 страниц из OC2R на русском и английском. После сборки фронтенда:
 
 ```bash
 cargo run -p oc2r-wiki

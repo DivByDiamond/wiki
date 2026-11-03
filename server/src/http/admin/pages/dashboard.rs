@@ -33,7 +33,7 @@ async fn create(Auth(actor): Auth, viewer: Viewer, Query(f): Query<Address>) -> 
     let run = || -> AppResult<Response> {
         admin_only(&actor)?;
         let (lang, slug) = target(&f.lang, f.slug.trim()).map_err(|_| {
-            AppError::Invalid("Choose en, ru or zh and a lowercase page address.".into())
+            AppError::Invalid("Choose en or ru and a lowercase page address.".into())
         })?;
         crate::http::ensure_slug_allowed(slug.as_str())?;
         Ok(Redirect::to(&format!("/admin/edit/{}/{}", lang.code(), slug.as_str())).into_response())

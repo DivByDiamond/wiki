@@ -46,7 +46,7 @@ async fn recent_page_lists_revisions_newest_first() {
 async fn recent_page_is_localized() {
     let (app, ..) = app_with_state();
     let mut headings = Vec::new();
-    for lang in ["en", "ru", "zh"] {
+    for lang in ["en", "ru"] {
         let body = text(get(&app, &format!("/{lang}/recent"), None).await).await;
         assert!(
             body.contains(&format!("<html lang=\"{lang}\""))
@@ -63,7 +63,7 @@ async fn recent_page_is_localized() {
         );
     }
     assert!(
-        headings[0] != headings[1] && headings[1] != headings[2],
+        headings[0] != headings[1],
         "{headings:?}"
     );
     assert_eq!(get(&app, "/xx/recent", None).await.status(), 404);

@@ -26,7 +26,7 @@ impl LangFilter {
             Self::Only(l) => vec![l],
             Self::All => {
                 let mut v = vec![current];
-                v.extend([Lang::En, Lang::Ru, Lang::Zh].into_iter().filter(|l| *l != current));
+                v.extend([Lang::En, Lang::Ru].into_iter().filter(|l| *l != current));
                 v
             }
         }
@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn all_searches_current_language_first() {
-        assert_eq!(LangFilter::All.searches(Lang::Ru), vec![Lang::Ru, Lang::En, Lang::Zh]);
+        assert_eq!(LangFilter::All.searches(Lang::Ru), vec![Lang::Ru, Lang::En]);
     }
 
     #[test]

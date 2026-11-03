@@ -2,7 +2,7 @@
 import posixpath
 import re
 
-LOCALES = {"en_us": "en", "ru_ru": "ru", "zh_cn": "zh"}
+LOCALES = {"en_us": "en", "ru_ru": "ru"}
 SECTIONS = ["start", "hardware", "recipes", "networking", "robotics", "systems", "scripting", "project"]
 
 

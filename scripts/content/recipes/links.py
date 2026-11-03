@@ -28,12 +28,12 @@ def attach(pages, source):
         if not names:
             page['body'] = body
             continue
-        title = {'ru': 'Крафты и рецепты', 'en': 'Crafting recipes', 'zh': '合成配方'}[lang]
+        title = {'ru': 'Крафты и рецепты', 'en': 'Crafting recipes'}[lang]
         def label(name):
             if not name:
                 return title
             if name == 'unflash':
-                return {'ru': 'Очистка прошивки', 'en': 'Clear firmware', 'zh': '清除固件'}[lang]
+                return {'ru': 'Очистка прошивки', 'en': 'Clear firmware'}[lang]
             return manifest['items'].get(results[name], {}).get('name', {}).get(lang) or name
         links = '\n'.join(f'- [{label(name)}](/{lang}/recipes' + (f'#recipe-{name}' if name else '') + ')' for name in names)
         block = f'<!-- wiki-recipes -->\n## {title}\n\n{links}\n<!-- /wiki-recipes -->'

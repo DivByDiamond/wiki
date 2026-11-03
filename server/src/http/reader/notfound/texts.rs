@@ -29,14 +29,6 @@ pub fn texts(lang: Lang) -> Texts {
             home: "На главную",
             similar: "Похожие страницы",
         },
-        Lang::Zh => Texts {
-            heading: "页面未找到",
-            message: "此页面不存在，可能已被移动或删除。",
-            placeholder: "搜索维基",
-            search: "搜索",
-            home: "返回首页",
-            similar: "相似页面",
-        },
     }
 }
 
@@ -46,7 +38,7 @@ mod tests {
 
     #[test]
     fn every_language_has_all_texts() {
-        for lang in [Lang::En, Lang::Ru, Lang::Zh] {
+        for lang in [Lang::En, Lang::Ru] {
             let t = texts(lang);
             for s in [
                 t.heading,

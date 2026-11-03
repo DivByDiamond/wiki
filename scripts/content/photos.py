@@ -32,10 +32,9 @@ def attach(body, lang, slug, data):
         parts.insert(position, block('lead', figure(plan['lead'], eager=True)))
         body = '\n\n'.join(parts) + '\n'
     if plan.get('gallery'):
-        heading = {'en': 'In game', 'ru': 'В игре', 'zh': '游戏画面'}.get(lang, 'In game')
+        heading = {'en': 'In game', 'ru': 'В игре'}.get(lang, 'In game')
         note = {'en': 'Actual Minecraft 26.1.2 screenshots from the OC2R demonstration world.',
-                'ru': 'Реальные скриншоты Minecraft 26.1.2 из демонстрационного мира OC2R.',
-                'zh': '来自 OC2R 演示世界的真实 Minecraft 26.1.2 截图。'}.get(lang)
+                'ru': 'Реальные скриншоты Minecraft 26.1.2 из демонстрационного мира OC2R.'}.get(lang)
         content = f'## {heading}\n\n{note}\n\n' + '\n\n'.join(figure(name) for name in plan['gallery'])
         gallery = block('gallery', content)
         # Generated source provenance remains the last block, not part of a gallery.

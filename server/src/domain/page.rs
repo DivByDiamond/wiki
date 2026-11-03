@@ -4,7 +4,6 @@ use super::revision::Revision;
 pub enum Lang {
     En,
     Ru,
-    Zh,
 }
 
 impl Lang {
@@ -12,7 +11,6 @@ impl Lang {
         match s {
             "en" => Some(Lang::En),
             "ru" => Some(Lang::Ru),
-            "zh" => Some(Lang::Zh),
             _ => None,
         }
     }
@@ -21,7 +19,6 @@ impl Lang {
         match self {
             Lang::En => "en",
             Lang::Ru => "ru",
-            Lang::Zh => "zh",
         }
     }
 }
@@ -79,7 +76,7 @@ mod tests {
 
     #[test]
     fn lang_roundtrip() {
-        for c in ["en", "ru", "zh"] {
+        for c in ["en", "ru"] {
             assert_eq!(Lang::parse(c).unwrap().code(), c);
         }
         assert!(Lang::parse("de").is_none());

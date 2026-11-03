@@ -8,13 +8,14 @@ use crate::{
 fn bundle_is_seeded_searchable_and_idempotent() {
     let db = open_memory().unwrap();
     let catalog = bundled().unwrap();
-    assert!(catalog.pages.len() >= 130);
+    assert!(catalog.pages.len() >= 100);
+    assert!(catalog.pages.iter().all(|p| matches!(p.lang.as_str(), "en" | "ru")));
     assert_eq!(
         import(&db, &catalog, true).unwrap().created,
         catalog.pages.len()
     );
     let repo = SqlitePages::new(db.clone());
-    for lang in [Lang::Ru, Lang::En, Lang::Zh] {
+    for lang in [Lang::Ru, Lang::En] {
         assert!(
             repo.find(&Slug::parse("start").unwrap(), lang)
                 .unwrap()

@@ -46,7 +46,7 @@ async fn article_renders_markdown_in_layout() {
     assert!(body.contains(r#"id="search-form""#) && body.contains(r#"id="search-input""#));
     assert!(body.contains(r#"id="settings-toggle""#) && body.contains(r#"id="search-results""#));
     assert!(body.contains(r#"aria-current="page""#));
-    assert!(body.contains("/ru/a") && body.contains("/zh/a"));
+    assert!(body.contains("/ru/a") && !body.contains("/zh/a"));
     assert!(body.contains("?history"));
 }
 

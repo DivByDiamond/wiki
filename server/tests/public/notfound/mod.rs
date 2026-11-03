@@ -18,7 +18,6 @@ async fn status_is_404_and_heading_is_localized() {
     for (lang, heading) in [
         ("en", "Page not found"),
         ("ru", "Страница не найдена"),
-        ("zh", "页面未找到"),
     ] {
         let (status, body) = page(&app, &format!("/{lang}/missing")).await;
         assert_eq!(status, 404, "{lang}");

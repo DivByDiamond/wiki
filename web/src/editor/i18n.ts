@@ -18,16 +18,7 @@ const RU: EditorText = {
   unsaved: "Есть несохранённые изменения.", saveFailed: "Не удалось сохранить. Черновик сохранён, попробуйте ещё раз.",
   viewEdit: "Редактор", viewPreview: "Предпросмотр", viewSplit: "Рядом",
 };
-const ZH: EditorText = {
-  bold: "加粗", italic: "斜体", link: "链接",
-  boldTip: "加粗 (Ctrl+B)", italicTip: "斜体 (Ctrl+I)", linkTip: "插入链接 (Ctrl+K)",
-  tip: "提示", warn: "警告", recipe: "合成配方", version: "版本",
-  blockTip: "插入区块：", save: "保存 (Ctrl+S)",
-  restore: "在此浏览器中发现未保存的草稿。", restoreBtn: "恢复草稿", discardBtn: "丢弃",
-  unsaved: "有未保存的更改。", saveFailed: "保存失败。草稿已保留，请重试。",
-  viewEdit: "编辑", viewPreview: "预览", viewSplit: "分栏",
-};
 
 export function editorText(lang: string): EditorText {
-  return lang === "ru" ? RU : lang === "zh" ? ZH : EN;
+  return lang === "ru" ? RU : EN;
 }

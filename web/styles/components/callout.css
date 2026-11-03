@@ -32,10 +32,6 @@
 :lang(ru) .callout.note::before { content: "\2139  Заметка"; }
 :lang(ru) .callout.warn::before { content: "\25B2  Внимание"; }
 :lang(ru) .callout.version::before { content: "\25CF  Версия"; }
-:lang(zh) .callout.tip::before { content: "\25C6  提示"; }
-:lang(zh) .callout.note::before { content: "\2139  说明"; }
-:lang(zh) .callout.warn::before { content: "\25B2  警告"; }
-:lang(zh) .callout.version::before { content: "\25CF  版本"; }
 /* The version callout already opens with its own bold "Only for ..." line. */
 .callout > :first-child { margin-top: 0; }
 .callout > :last-child { margin-bottom: 0; }

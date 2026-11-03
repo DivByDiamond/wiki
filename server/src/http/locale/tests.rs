@@ -39,9 +39,9 @@ async fn root_uses_browser_cookie_and_english_fallback() {
     for (cookie, browser, expected) in [
         ("", "", "/en/start"),
         ("", "ru-RU,en;q=0.5", "/ru/start"),
-        ("", "zh-Hans-CN", "/zh/start"),
+        ("", "zh-Hans-CN", "/en/start"),
         ("wiki_language=en", "ru", "/en/start"),
-        ("wiki_language=zh", "en", "/zh/start"),
+        ("wiki_language=zh", "en", "/en/start"),
         ("wiki_language=invalid", "de", "/en/start"),
     ] {
         let response = request(state(), "/", cookie, browser).await;
@@ -51,7 +51,7 @@ async fn root_uses_browser_cookie_and_english_fallback() {
 
 #[tokio::test]
 async fn explicit_public_language_overrides_and_remembers_choice() {
-    let response = request(state(), "/ru/start", "wiki_language=zh", "en").await;
+    let response = request(state(), "/ru/start", "wiki_language=en", "en").await;
     let cookies: Vec<_> = response
         .headers()
         .get_all("set-cookie")
@@ -80,14 +80,14 @@ async fn admin_uses_remembered_language_and_switches_without_leaving_page() {
     assert_eq!(response.headers()["cache-control"], "private, no-store");
     let html = body(response).await;
     assert!(html.contains("<html lang=\"ru\">"));
-    assert!(html.contains("/language/zh?next=%2Fadmin%3Fq%3Dmachine%26lang%3Den"));
-    let response = request(state, "/language/zh?next=%2Fadmin", &cookie, "en").await;
+    assert!(html.contains("/language/ru?next=%2Fadmin%3Fq%3Dmachine%26lang%3Den"));
+    let response = request(state, "/language/ru?next=%2Fadmin", &cookie, "en").await;
     assert_eq!(response.headers()["location"], "/admin");
     assert!(
         response.headers()["set-cookie"]
             .to_str()
             .unwrap()
-            .starts_with("wiki_language=zh;")
+            .starts_with("wiki_language=ru;")
     );
 }
 
@@ -98,7 +98,7 @@ async fn language_switch_preserves_long_multilingual_filters() {
         super::encode("Операционные системы и программирование 中文界面")
     );
     assert!(target.len() > 200);
-    let url = format!("/language/zh?next={}", super::encode(&target));
+    let url = format!("/language/ru?next={}", super::encode(&target));
     let response = request(state(), &url, "wiki_language=ru", "en").await;
     assert_eq!(response.headers()["location"].to_str().unwrap(), target);
 }
@@ -118,8 +118,8 @@ async fn language_switch_rejects_external_redirect() {
 #[tokio::test]
 async fn login_and_logout_keep_language_preference() {
     let state = state();
-    let response = request(state.clone(), "/auth/github", "wiki_language=zh", "en").await;
-    assert!(body(response).await.contains("<html lang=\"zh\">"));
+    let response = request(state.clone(), "/auth/github", "wiki_language=ru", "en").await;
+    assert!(body(response).await.contains("<html lang=\"ru\">"));
     let response = router(state)
         .oneshot(
             Request::post("/auth/logout")
@@ -142,9 +142,9 @@ async fn login_and_logout_keep_language_preference() {
 #[tokio::test]
 async fn admin_denial_and_failed_save_keep_selected_language() {
     let state = state();
-    let response = request(state.clone(), "/admin", "wiki_language=zh", "en").await;
+    let response = request(state.clone(), "/admin", "wiki_language=ru", "en").await;
     assert_eq!(response.status(), 401);
-    assert!(body(response).await.contains("<html lang=\"zh\">"));
+    assert!(body(response).await.contains("<html lang=\"ru\">"));
     let user = state.access.upsert_user(18, "admin").unwrap();
     state.access.set_admin(user.id, true).unwrap();
     let session = state.sessions.create(user.id);
@@ -224,4 +224,12 @@ async fn oauth_round_trip_preserves_language_and_return_destination() {
             .iter()
             .all(|value| !value.to_str().unwrap().starts_with("wiki_language="))
     );
+}
+
+#[tokio::test]
+async fn removed_language_routes_are_unavailable() {
+    assert!(crate::domain::page::Lang::parse("zh").is_none());
+    for path in ["/zh/start", "/zh/recent", "/language/zh?next=%2Fadmin"] {
+        assert_eq!(request(state(), path, "", "en").await.status(), 404, "{path}");
+    }
 }

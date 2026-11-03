@@ -22,9 +22,9 @@
         </summary>
         <div class="header-dropdown language-dropdown">
           <nav aria-label="{{ shell.text("language") }}">
-            {% for l in ["en", "ru", "zh"] %}
+            {% for l in ["en", "ru"] %}
             <a class="menu-item" lang="{{ l }}" hreflang="{{ l }}" href="{{ shell.language_url(l) }}"{% if *l == shell.lang %} aria-current="true"{% endif %}>
-              <span class="language-name">{% if *l == "en" %}English{% else if *l == "ru" %}Русский{% else %}中文{% endif %}</span>
+              <span class="language-name">{% if *l == "en" %}English{% else %}Русский{% endif %}</span>
               <span class="language-code" aria-hidden="true">{{ l }}</span>
             </a>
             {% endfor %}

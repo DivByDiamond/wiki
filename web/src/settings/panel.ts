@@ -5,7 +5,6 @@ import { ACCENTS, SIZES, THEMES, type Settings } from "./store.ts";
 const LABELS = {
   en: { title: "Reading settings", theme: "Theme", accent: "Accent", size: "Font size", pixel: "Pixel borders", light: "Light", dark: "Dark", auto: "System", green: "Green", violet: "Violet", orange: "Orange", teal: "Teal" },
   ru: { title: "Настройки чтения", theme: "Тема", accent: "Акцент", size: "Размер текста", pixel: "Пиксельные рамки", light: "Светлая", dark: "Тёмная", auto: "Системная", green: "Зелёный", violet: "Фиолетовый", orange: "Оранжевый", teal: "Бирюзовый" },
-  zh: { title: "阅读设置", theme: "主题", accent: "强调色", size: "字号", pixel: "像素边框", light: "浅色", dark: "深色", auto: "跟随系统", green: "绿色", violet: "紫色", orange: "橙色", teal: "青色" },
 } as const;
 
 const SIZE_LABEL = { s: "A-", m: "A", l: "A+" } as const;
@@ -25,7 +24,7 @@ export function mountPanel(get: () => Settings, set: (s: Settings) => void): voi
   const toggle = document.getElementById("settings-toggle");
   if (!toggle) return;
   const lang = document.documentElement.lang;
-  const labels = LABELS[lang === "ru" || lang === "zh" ? lang : "en"];
+  const labels = LABELS[lang === "ru" ? lang : "en"];
   const panel = el("div", { id: "settings-panel", class: "card", role: "dialog", "aria-label": labels.title, hidden: "" });
   document.body.append(panel);
 
