@@ -1,25 +1,27 @@
 source: docs/roadmap/multiloader.md
-source_sha256: 154a14b1e589d972eb264ec7b0375e8b4f59b8fc3cbdd560e518cad752e9ffe1
+source_sha256: 7ba4f45a508c8becc9d7b32850f8ac8be0900d480d819aa3cf01fedefdae75bd
 # Minecraft versions and loaders
 
-This page describes the build and verification targets recorded in the OC2R source revision linked below. Choose a mod artifact matching both your Minecraft version and loader.
+The current OC2R source has six build targets. Choose an artifact matching both your Minecraft version and loader.
 
-## Target matrix
+## Implemented targets
 
-| Minecraft | NeoForge | Fabric |
-|---|---|---|
-| 1.21.1 | Build and verification target | Build and verification target |
-| 26.1.2 | Build and verification target | Future work; no build node |
-| 26.2 | Build and verification target | Future work; no build node |
+| Minecraft | NeoForge | Fabric | Java |
+|---|---|---|---|
+| 1.21.1 | Implemented | Implemented | 21 |
+| 26.1.2 | Implemented | Implemented | 25 |
+| 26.2 | Implemented | Implemented | 25 |
 
-The source records four targets, not every combination of the three Minecraft versions and two loaders. The `settings.gradle.kts` build includes three NeoForge nodes and only the 1.21.1 Fabric node. The 26.x builds use a Java 25 toolchain; the 1.21.1 builds use Java 21.
+Fabric 26.1.2 and 26.2 have been accepted, merged and verified in CI. The earlier statement that Fabric 26.x was future work is outdated. Local acceptance included server tests and client runs on both modern versions.
 
-## Release availability
+## Download availability
 
-The release workflow is configured for those four artifacts. Platform uploads depend on the repository's platform settings and on artifacts being built. A configured build target does not guarantee that a particular release is already downloadable on every platform.
+Check the artifacts in [OC2R releases](https://github.com/DivByDiamond/OC2R/releases). An implemented build target does not establish publication on every distribution platform. In the source revision linked below, publication of the new Fabric 26.x targets is a separate step deferred at the owner's request.
 
-Check the Minecraft version and loader shown on the release file before installing it. Keep the mod jar in the instance's `mods` directory. Fabric also requires its declared dependencies: Fabric API, Team Reborn Energy, and Forge Config API Port.
+NeoForge and Fabric artifacts are not interchangeable. Fabric also requires compatible Fabric API, Team Reborn Energy and Forge Config API Port versions declared for the selected artifact.
 
-## Reading development documents
+## Reading the acceptance reports
 
-The older `docs/MULTILOADER.md` describes the original six-target design. Use the current roadmap and build configuration to distinguish implemented targets from future work. Feature behavior can also depend on server configuration; this wiki is a snapshot of the linked source revision.
+Dated roadmap sections preserve earlier limitations. The current summary records all six targets as implemented. Use the current acceptance report for implementation status and the release page for downloadable artifacts.
+
+The [Fabric 26.x acceptance report](https://github.com/DivByDiamond/OC2R/blob/39eb8109e2e38fdb047af98d8e6f7ded0194f498/docs/roadmap/fabric-26-acceptance.md) contains the target matrix and validation results. Server settings may change hardware characteristics.

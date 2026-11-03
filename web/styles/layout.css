@@ -93,7 +93,7 @@
 .sidebar a { padding: .4rem .65rem; line-height: 1.4; }
 .toc .nested { padding-left: .7rem; }
 .toc { max-height: calc(100dvh - 6rem); overflow-y: auto; }
-.toc a { padding: .3rem 0; line-height: 1.45; }
+.toc a { padding: .3rem .4rem .3rem .75rem; line-height: 1.45; }
 .pager > div:last-child { text-align: right; }
 .pager > div:empty { display: none; }
 .pager > div:only-child:last-child { grid-column: 2; }

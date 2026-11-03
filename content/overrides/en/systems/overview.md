@@ -1,5 +1,5 @@
 source: docs/ONYXOS.md
-source_sha256: 579be4a8cb9d3806d64bdea13395668fc3f22b0d33754c537f94ea5331991dd8
+source_sha256: 9d90ffe814cdfc7813871d64b8e2d94dcaf75bf07bfe3d614b51e3f361cedc02
 # Operating systems
 
 A computer's firmware selects its operating system. OC2R includes Linux (Minux / Buildroot) and OnyxOS. Power the computer off before changing firmware.
