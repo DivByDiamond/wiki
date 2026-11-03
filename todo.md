@@ -3,6 +3,8 @@
 > Historical implementation plan; unchecked boxes below are not a current status report.
 > The implementation is present. Bundled content, reader completion and verification are documented in [docs/content.md](docs/content.md) and [docs/verification.md](docs/verification.md).
 
+> Следующий этап (QoL и дизайн): [docs/roadmap.md](docs/roadmap.md).
+
 ## Current completion audit (2026-10-23)
 
 The historical step checkboxes below include test-first and commit instructions;
