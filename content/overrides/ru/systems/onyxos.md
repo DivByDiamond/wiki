@@ -1,5 +1,5 @@
 source: docs/ONYXOS.md
-source_sha256: 9d90ffe814cdfc7813871d64b8e2d94dcaf75bf07bfe3d614b51e3f361cedc02
+source_sha256: 8782f86d2042037a65f0753ff52430820d16b3ad69e9f683f700f3d42c1892f1
 # OnyxOS
 
 OnyxOS : альтернативная гостевая ОС для компьютеров OC2R. Комплект включает прошивку OpenSBI, ядро OnyxKernel, оболочку и корневую файловую систему OnyxFS.

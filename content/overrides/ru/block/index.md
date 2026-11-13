@@ -1,5 +1,5 @@
 source: src/main/resources/assets/oc2r/doc/ru_ru/block/index.md
-source_sha256: 9867226e7ab31ee1a774b719b6c00b4eb77bec872c68853844212275bc50c61c
+source_sha256: 37e90a1d257ac2dbd71ec546dc110c2003e6255b70735eaa0bbe3cfada0b0981
 # Блоки
 Здесь представлены ссылки на документации для всех блоков мода. Если вас интересуют предметы - перейдите на страницу [списка предметов](/ru/item/index).
 

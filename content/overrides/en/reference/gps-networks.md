@@ -1,5 +1,5 @@
 source: src/main/java/li/cil/oc2/common/blockentity/gps/GpsTowerBlockEntity.java
-source_sha256: 3da469883651bf9200f33140ec46912e2e1b07e38aea2fee16b95c38e79db9c8
+source_sha256: 0a29cb000a5968834a1fbae03122b755e2d0139dad56768409f13102018cfa32
 # GPS networks and relative coordinates
 
 :::version In development

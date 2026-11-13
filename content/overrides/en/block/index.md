@@ -1,5 +1,5 @@
 source: src/main/resources/assets/oc2r/doc/en_us/block/index.md
-source_sha256: ac5b28ddace84dc34aa449f9d20e9780206dda1c26e3b667bfdf40f894b9e718
+source_sha256: 795759d6fad8c93ca018216ff29f199996075effec92304ab06d4e9acf5e9984
 # Blocks
 This index lists all documented blocks. If you're looking for an item, see the [item index](/en/item/index) instead.
 

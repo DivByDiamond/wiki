@@ -1,5 +1,5 @@
 source: src/main/java/li/cil/oc2/common/entity/Robot.java
-source_sha256: d2e76e84ca12fbf30abe4fe9f4df6c06efc6ef38c38587418d4ee2ae2b622ada
+source_sha256: 1adfe1c1b5ce92d39e0d068f1b9cd923c137897234468179ecc814a92e7916be
 # Координаты и навигация робота
 
 У робота есть локальная позиция и компас. Команды движения принимают направление относительно корпуса. Встроенной команды перехода к координатам нет.

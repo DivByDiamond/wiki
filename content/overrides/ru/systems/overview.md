@@ -1,5 +1,5 @@
 source: docs/ONYXOS.md
-source_sha256: 9d90ffe814cdfc7813871d64b8e2d94dcaf75bf07bfe3d614b51e3f361cedc02
+source_sha256: 8782f86d2042037a65f0753ff52430820d16b3ad69e9f683f700f3d42c1892f1
 # Операционные системы
 
 Операционную систему выбирает прошивка компьютера. В OC2R доступны Linux (Minux / Buildroot) и OnyxOS. Перед заменой прошивки выключите компьютер.

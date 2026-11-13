@@ -1,5 +1,5 @@
 source: src/main/resources/assets/oc2r/doc/ru_ru/item/robot.md
-source_sha256: fd285dfa30b5bb7b85e3581b7e9181d37570beee682fb733358ab235d598bb3a
+source_sha256: 3bf6168ab11f8a02804fa64a7bd5ff1b760cd9c3a3313d7fddc7c0efc33b4d27
 # Робот
 `oc2r:robot`
 

@@ -1,5 +1,5 @@
 source: src/main/java/li/cil/oc2/common/entity/robot/misc/RobotInventory.java
-source_sha256: cf95702e18d887d4b21cf4159feb5beac1e35016f60464404be6d9524a303304
+source_sha256: 64ec5e34530569ac917129d82f7ec221678b88af3e9dbbc5c814a42e2caeb1ea
 # Первый робот
 
 Сначала проверьте движение без дополнительных модулей. Потом подключайте добычу, инвентарь и сканер по одному. Так проще понять, какой компонент нужен программе.

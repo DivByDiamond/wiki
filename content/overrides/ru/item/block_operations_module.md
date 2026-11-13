@@ -1,5 +1,5 @@
 source: src/main/resources/assets/oc2r/doc/ru_ru/item/block_operations_module.md
-source_sha256: 3450dbbfb24127031e816e74b3418aef284c67a798a6705cf81506e376d0153d
+source_sha256: 19ae1fc3fb09618ea35b2af408c7f576c51fb62ab8f1a09d9dd6b86e278cfd77
 # Модуль управления блоками
 `oc2r:block_operations_module`
 
