@@ -22,5 +22,8 @@ To quickly access the manual entry for a block in the world, simply use this [ma
 - [Machine interface](/en/block/machine_interface)
 - [GPS tower](/en/block/gps_tower)
 - [VXLAN hub](/en/block/vxlan_hub)
+- [Network Switch](/en/block/network_switch)
+- [Wireless access point](/en/block/wireless_access_point)
+- [Environment sensor](/en/block/environment_sensor)
 - [PCI card cage](/en/block/pci_card_cage)
 - [Creative energy source](/en/block/creative_energy)

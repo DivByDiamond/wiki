@@ -1,5 +1,5 @@
 source: docs/NETWORKING.md
-source_sha256: ce13165fef7556796b53863e2fca652314db592d61e9d180f8f64f7902ba32f6
+source_sha256: 8da36ea04bb7efa055c8ee16fdc484fc7787e023003a4a3a58c90bc972c07893
 # VXLAN hub: setup and network access
 
 The VXLAN hub joins the in-game connector network to your own machine over UDP, as if the guest were plugged into an Ethernet cable on your PC. From the PC you can reach the guest (ping, `nc`, `ssh` when the guest runs `sshd`), and if you want you can route the guest to the ordinary internet through the PC.
@@ -67,7 +67,43 @@ ip link set eth0 up
 ping 10.77.0.1
 ```
 
-For OnyxOS: `netcfg list`, then `netcfg set <index> 10.77.0.2 255.255.255.0 0.0.0.0 0.0.0.0` (see below for gateway and DNS when going to the internet). From the PC: `ping 10.77.0.2`. If the guest runs a TCP server the PC can reach it through the tunnel: `ssh user@10.77.0.2` works for a guest with `sshd`. The bundled OnyxOS has no `sshd`.
+For OnyxOS: `netcfg list`, then `netcfg set <index> 10.77.0.2 255.255.255.0 0.0.0.0 0.0.0.0` (see below for gateway and DNS when going to the internet). From the PC: `ping 10.77.0.2`. If the guest runs a TCP server the PC can reach it through the tunnel: `ssh user@10.77.0.2` works for a guest with `sshd`. The bundled OnyxOS has no `sshd`; it has `rshd` instead (see below).
+
+### A shell in the guest from your PC
+
+OnyxOS has no `sshd`, but it has `rshd`, a plain line shell over TCP that works with ordinary `nc`, `ncat` or `socat`.
+
+1. Put a network interface card (all sides enabled) in a computer with the OnyxOS flash. Wire it to the hub as: network connector against the computer, network cable, second connector against the hub. A hub placed right against the computer does not work: a hub only floods frames, and it is the connectors that poll the card.
+2. On the server set `vxlan.enable=true` and `remoteHost=<PC address>`; right-click the hub to read its VNI.
+3. In the guest, as `root`, set the address and start the shell:
+
+```text
+netcfg set 0 192.168.77.2 255.255.255.0 0.0.0.0 0.0.0.0
+rshd -f 2323 mysecret
+```
+
+4. On the PC, with the hub's VNI:
+
+```sh
+ip link add vx0 type vxlan id <VNI> remote <server> dstport 4789 local <PC address>
+ip addr add 192.168.77.1/24 dev vx0 && ip link set vx0 up
+ping 192.168.77.2
+ncat 192.168.77.2 2323
+```
+
+Answer with the password and type commands. Each line is run by `/bin/osh`, the output goes back over the socket and `cd` is remembered. A session ends on `exit`, `quit`, `logout`, Ctrl-D or a dropped connection. There is one session at a time; a line is limited to 250 characters, the output of one command to 32 KiB and its run time to 120 seconds.
+
+**What is not protected.** Nothing is encrypted: the password, commands and output travel in clear text, and the password shows in the shell history and the argument list. Whoever knows the password gets a root shell in the guest. There is no terminal (no history or completion; a program that reads stdin sees end of file). A client that connects and stays silent holds the service until it disconnects.
+
+`rshd -f` takes over the guest console. `rshd 2323 mysecret` (without `-f`) starts the service in the background but does not fit a 16 MiB computer. To start at boot:
+
+```text
+echo 2323 mysecret > /etc/rshd.conf
+echo on > /etc/init/rshd.enabled
+```
+
+then restart the computer. This needs the OnyxOS image of 13 November 2026 or newer; saved roots keep their own files and do not receive `rshd` by themselves.
+
 
 ## 4. Giving the guest the ordinary internet
 

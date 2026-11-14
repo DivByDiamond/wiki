@@ -21,5 +21,8 @@ source_sha256: 37e90a1d257ac2dbd71ec546dc110c2003e6255b70735eaa0bbe3cfada0b0981
 - [Машинный интерфейс](/ru/block/machine_interface)
 - [GPS-башня](/ru/block/gps_tower)
 - [VXLAN-концентратор](/ru/block/vxlan_hub)
+- [Сетевой коммутатор](/ru/block/network_switch)
+- [Беспроводная точка доступа](/ru/block/wireless_access_point)
+- [Датчик среды](/ru/block/environment_sensor)
 - [Корпус PCI](/ru/block/pci_card_cage)
 - [Творческий источник энергии](/ru/block/creative_energy)

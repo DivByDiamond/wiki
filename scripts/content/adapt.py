@@ -15,7 +15,7 @@ def section_for(slug):
         return "project"
     if slug == "recipes":
         return "recipes"
-    if slug in ("block/gps_tower", "reference/gps-networks", "reference/networking", "reference/vxlan"):
+    if slug in ("block/gps_tower", "reference/gps-networks", "reference/networking", "reference/vxlan", "reference/ora-radio"):
         return "networking"
     if slug.startswith("robotics/"):
         return "robotics"

@@ -1,5 +1,5 @@
 source: docs/BUILDROOT.md
-source_sha256: d21744b90362ac061fb7e042c7937b9c277a5d63f3f965ad26b8b6de7497be0b
+source_sha256: bb3efc419b03f0dc5bc5b13ec981d4ce2ac8718f3a1fe31b6579372790910f82
 # Buildroot и образ Linux
 
 Комплектный образ Linux собирается проектом `fnuecke/sedna-buildroot`. Зависимость загружается из [Maven-репозитория](https://fnuecke.github.io/maven) скриптом `scripts/download-libs.sh` в каталог `libs/`.
@@ -52,7 +52,7 @@ tcc redstone_blink.c rpc.c -o redstone_blink
 
 ## Где задаётся версия
 
-- В `gradle.properties`: `sedna_buildroot_version=0.2.10`.
+- В `gradle.properties`: `sedna_buildroot_version=0.2.12`.
 - В `build.gradle.kts`: зависимость `implementation("li.cil.sedna:sedna-buildroot:${sedna_buildroot_version}")`.
 - В `scripts/download-libs.sh`: загрузка JAR из `https://fnuecke.github.io/maven` в `libs/`.
 

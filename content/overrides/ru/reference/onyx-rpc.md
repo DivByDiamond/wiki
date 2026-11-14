@@ -1,5 +1,5 @@
 source: docs/ONYX_RPC.md
-source_sha256: 6e232585dab92fcd91f4d58b4f76fddcb0c4e13adfa0b9c598bab6dba0ee45f4
+source_sha256: f914ef624bde3c262859afcbb0ad186287a52282a3d2e2024f5241648fceb9cb
 # Устройства OnyxOS: oc2ctl
 
 В комплектном образе OnyxOS есть `oc2ctl` и библиотека C для доступа к шине устройств OC2R. Они работают внутри гостевой ОС через `/dev/hvc0`. Ethernet для этого не нужен. Одновременно шиной RPC должен владеть только один процесс.
