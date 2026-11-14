@@ -1,5 +1,5 @@
 source: docs/ONYXOS.md
-source_sha256: 977c590aa8ec83802650b38215bae9d2e0867bea7d593e23afe9a6482e8b8b23
+source_sha256: f44044aa8c5102410b9525b81b2b74d0894e5fa9455c0dcf9d0972114e679be7
 # Operating systems
 
 A computer's firmware selects its operating system. OC2R includes Linux (Minux / Buildroot) and OnyxOS. Power the computer off before changing firmware.
@@ -16,7 +16,7 @@ OnyxOS has its own kernel, filesystem, and userspace. Linux commands and Lua exa
 
 Log in as `root` with an empty password. Four 16 MiB memory modules provide the tested 64 MiB configuration, not a measured minimum for every application. Read the [image documentation](/en/systems/onyxos-reference) for the precise build and supported behavior.
 
-The image also contains the build for the [tablet](/en/item/tablet) and the `rshd` remote shell for access from a PC through the [VXLAN hub](/en/reference/vxlan). It was rebuilt on 13 November 2026.
+The image also contains the build for the [tablet](/en/item/tablet), the `rshd` remote shell for access from a PC through the [VXLAN hub](/en/reference/vxlan), and `play`, a terminal player for DFPWM music on a [speaker](/en/block/speaker) or a [sound card](/en/item/sound_card). It was rebuilt on 14 November 2026.
 
 ## Saved roots
 
