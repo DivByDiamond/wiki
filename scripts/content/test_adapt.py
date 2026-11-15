@@ -42,6 +42,15 @@ class PhotoAttachmentTest(unittest.TestCase):
         source = '# Other\n\nEditor text.\n'
         self.assertEqual(attach(source, 'en', 'other', self.plan()), source)
 
+    def test_reading_preview_preserves_original_link_and_aspect_ratio(self):
+        from photos import attach
+        plan = self.plan()
+        plan['photos']['screen']['preview'] = {'file': 'screen-preview-1234.webp'}
+        result = attach('# Page\n\nIntro.\n', 'en', 'page', plan)
+        self.assertIn('href="/static/photos/screen-abcd.webp"', result)
+        self.assertIn('src="/static/photos/screen-preview-1234.webp"', result)
+        self.assertIn('width="800" height="450"', result)
+
 
 if __name__ == '__main__':
     unittest.main()

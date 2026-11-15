@@ -42,6 +42,10 @@ pub fn preferred(headers: &HeaderMap) -> Lang {
 
 /// Explicit language URLs persist across public pages, admin, OAuth and logout.
 pub async fn remember(State(s): State<AppState>, req: Request, next: Next) -> Response {
+    // Embedded files have identical bytes for every language/session.
+    if req.uri().path().starts_with("/static/") {
+        return next.run(req).await;
+    }
     let locale = Locale::resolve(req.headers(), req.uri());
     let needs_cookie = locale.prefixed && cookie(req.headers(), COOKIE) != Some(locale.lang.code());
     let mut response = next.run(req).await;

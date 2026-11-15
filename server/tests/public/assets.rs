@@ -106,3 +106,33 @@ async fn traversal_is_rejected() {
         assert!(s == 404 || s == 400, "{uri} -> {s}");
     }
 }
+
+#[tokio::test]
+async fn only_verified_bundle_versions_and_photo_hashes_are_immutable() {
+    require_built();
+    let (app, ..) = app();
+    let version = oc2r_wiki::http::assets::version();
+    for path in [
+        format!("/static/app.css?v={version}"),
+        format!("/static/app.js?v={version}"),
+        "/static/photos/laboratory-overview-preview-47207d8b59.webp".into(),
+    ] {
+        let response = get(&app, &path).await;
+        assert_eq!(response.status(), 200, "{path}");
+        assert_eq!(
+            response.headers()["cache-control"],
+            "public, max-age=31536000, immutable"
+        );
+        assert!(!response.headers().contains_key("vary"));
+        assert!(!response.headers().contains_key("set-cookie"));
+    }
+    for path in [
+        "/static/app.css?v=stale",
+        "/static/app.css?v=anything",
+        "/static/fonts/monocraft-bold.woff2",
+    ] {
+        let response = get(&app, path).await;
+        assert_eq!(response.status(), 200);
+        assert_eq!(response.headers()["cache-control"], "no-cache");
+    }
+}

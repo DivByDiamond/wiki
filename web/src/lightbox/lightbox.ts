@@ -49,7 +49,11 @@ export function mountLightbox(): void {
   const show = (i: number) => {
     index = (i + list.length) % list.length;
     const src = list[index];
-    img.src = src.currentSrc || src.src;
+    const link = src.closest<HTMLAnchorElement>("a[href]");
+    // Reading previews link to the original screenshot for zooming.
+    const original = link?.getAttribute("href");
+    img.src = original && /\.(?:avif|webp|png|jpe?g|gif)(?:[?#]|$)/i.test(original)
+      ? link!.href : src.currentSrc || src.src;
     img.alt = src.alt;
     const text = src.alt || src.closest("figure")?.querySelector("figcaption")?.textContent || "";
     caption.textContent = text ? `${text} (${index + 1}/${list.length})` : `${index + 1}/${list.length}`;

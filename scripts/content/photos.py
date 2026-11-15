@@ -17,7 +17,8 @@ def attach(body, lang, slug, data):
         caption = photo['caption'].get(lang, photo['caption']['en'])
         caption += f" (Minecraft {data['capture']['minecraft']})"
         url = '/static/photos/' + photo['file']
-        image = (f'<a href="{url}"><img src="{url}" alt="{html.escape(caption, quote=True)}" '
+        preview = '/static/photos/' + photo.get('preview', photo)['file']
+        image = (f'<a href="{url}"><img src="{preview}" alt="{html.escape(caption, quote=True)}" '
                  f'width="{photo["width"]}" height="{photo["height"]}" '
                  f'loading="{"eager" if eager else "lazy"}" decoding="async"></a>')
         return image + '\n\n*' + caption + '*'

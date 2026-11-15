@@ -22,7 +22,13 @@
       "width": 1896,
       "height": 969,
       "source_sha256": "02f5514aef547094d340bfc4813101198b42b550dd37ba6c7e78efb3f68d2319",
-      "sha256": "3bb659aa5bd3c4aba4a8575427523038025786eb141fc28daeb47e61e89a973b"
+      "sha256": "3bb659aa5bd3c4aba4a8575427523038025786eb141fc28daeb47e61e89a973b",
+      "preview": {
+        "file": "laboratory-overview-preview-47207d8b59.webp",
+        "width": 960,
+        "height": 491,
+        "sha256": "47207d8b59b669d4228870df6220703df7e468a1dcf07de6145fe65ce0fe19b6"
+      }
     },
     "computer-powered-monitor": {
       "source": "computer-powered-monitor.png",

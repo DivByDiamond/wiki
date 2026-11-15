@@ -1,13 +1,13 @@
 //! Static frontend assets (`web/dist`) embedded into the binary.
 //! `build.rs` guarantees the folder exists at compile time (and, in release
 //! builds, that the bundle is present). Names are not hashed, so every file is
-//! served with `no-cache` and an ETag from its embedded sha256.
+//! revalidated unless the URL contains a verified content version/hash.
 
 use super::state::AppState;
 use axum::{
     Router,
     extract::Path,
-    http::{HeaderMap, HeaderValue, StatusCode, header},
+    http::{HeaderMap, HeaderValue, StatusCode, Uri, header},
     response::{IntoResponse, Response},
     routing::get,
 };
@@ -33,7 +33,7 @@ pub fn routes() -> Router<AppState> {
     Router::new().route("/static/{*path}", get(serve))
 }
 
-async fn serve(Path(path): Path<String>, headers: HeaderMap) -> Response {
+async fn serve(Path(path): Path<String>, uri: Uri, headers: HeaderMap) -> Response {
     // Embedded keys never contain `..`, `\` or empty segments, so a lookup of
     // anything else misses; reject explicitly as defence in depth.
     let bad = path.contains('\\')
@@ -51,9 +51,26 @@ async fn serve(Path(path): Path<String>, headers: HeaderMap) -> Response {
             .map(|b| format!("{b:02x}"))
             .collect::<String>()
     );
-    // File names are not hashed, so browsers must revalidate on every use.
+    // Only verified URLs are immutable. An arbitrary ?v= must never freeze stale assets.
+    let query_version = format!("v={}", version());
+    let bundle = matches!(path.as_str(), "app.css" | "app.js" | "favicon.svg")
+        && uri.query() == Some(query_version.as_str());
+    let digest = file.metadata.sha256_hash();
+    let short_hash: String = digest[..5]
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    let photo = path.starts_with("photos/")
+        && path
+            .rsplit_once('.')
+            .is_some_and(|(stem, _)| stem.ends_with(&format!("-{short_hash}")));
+    let cache = if bundle || photo {
+        "public, max-age=31536000, immutable"
+    } else {
+        "no-cache"
+    };
     let common = [
-        (header::CACHE_CONTROL, "no-cache"),
+        (header::CACHE_CONTROL, cache),
         (header::ETAG, etag.as_str()),
         (header::X_CONTENT_TYPE_OPTIONS, "nosniff"),
     ];

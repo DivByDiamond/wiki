@@ -33,6 +33,8 @@ def main():
             digest = hashlib.sha256(payload).hexdigest()
             file = f'{name}-{digest[:10]}.webp'
             (out / file).write_bytes(payload)
+            if entry.get('sha256') != digest:
+                entry.pop('preview', None)
             entry.update(file=file, width=crop.width, height=crop.height,
                          source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                          sha256=digest)
